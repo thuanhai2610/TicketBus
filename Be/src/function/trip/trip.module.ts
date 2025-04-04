@@ -3,11 +3,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { Trip, TripSchema } from './schemas/trip.schema';
 import { TripRepository } from './trip.repsitory';
-import { CompaniesController } from './trip.controller';
-import { CompaniesService } from './trip.service';
+import { TripController } from './trip.controller';
+import {  TripService } from './trip.service';
 import { Company, CompanySchema } from '../companies/schemas/company.schema';
 import { VehicleModule } from '../vehicle/vehicle.module';
 import { DriverModule } from '../driver/driver.module';
+import { CompaniesService } from '../companies/company.service';
 
 
 @Module({
@@ -17,8 +18,8 @@ import { DriverModule } from '../driver/driver.module';
     ]),
     VehicleModule, DriverModule
   ],
-  controllers: [CompaniesController],
-  providers: [CompaniesService, TripRepository],
-  exports: [CompaniesService],
+  controllers: [TripController],
+  providers: [ TripRepository, TripService], 
+  exports: [ TripService],
 })
 export class TripModule {}

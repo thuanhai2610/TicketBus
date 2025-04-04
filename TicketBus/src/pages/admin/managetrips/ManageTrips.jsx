@@ -22,14 +22,16 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
+import MenuItem from '@mui/material/MenuItem';
 
-const ManageCompanies = () => {
+const ManageTrips = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [openViewDialog, setOpenViewDialog] = useState(false); // New dialog for viewing details
+  const [openViewDialog, setOpenViewDialog] = useState(false); 
+  const [openCreateTripDialog, setOpenCreateTripDialog] = useState(false);
   const [notification, setNotification] = useState({
     open: false,
     message: "",
@@ -42,12 +44,111 @@ const ManageCompanies = () => {
     address: "",
   });
   const [editCompany, setEditCompany] = useState(null);
-  const [viewCompany, setViewCompany] = useState(null); // State for the company being viewed
-  const [vehicles, setVehicles] = useState([]); // State to store vehicles
-  const [vehiclesLoading, setVehiclesLoading] = useState(false); // Loading state for vehicles
-  const [vehiclesError, setVehiclesError] = useState(null); // Error state for vehicles
+  const [viewCompany, setViewCompany] = useState(null); 
+  const [vehicles, setVehicles] = useState([]); 
+  const [vehiclesLoading, setVehiclesLoading] = useState(false); 
+  const [vehiclesError, setVehiclesError] = useState(null); 
+  const [trips, setTrips] = useState([]); 
+  const [tripsLoading, setTripsLoading] = useState(false); 
+  const [tripsError, setTripsError] = useState(null);
+  const [newTrip, setNewTrip] = useState({
+    tripId: "",
+    vehicleId: "",
+    companyId: "",
+    driverId: "",
+    departurePoint: "",
+    destinationPoint: "",
+    departureDate: "",
+    departureHour: "",
+    arrivalDate: "",
+    arrivalHour: "",
+    price: "",
+    status: "",
+  });
+  const [openCreateVehicleDialog, setOpenCreateVehicleDialog] = useState(false);
+const [newVehicle, setNewVehicle] = useState({
+  vehicleId: "",
+  companyId: "",
+  lisencePlate: "",
+  vehicleType: "",
+  seatCount: "",
+});
+const handleCloseCreateVehicleDialog = () => {
+  setOpenCreateVehicleDialog(false);
+  setNewVehicle({
+    vehicleId: "",
+    companyId: "",
+    lisencePlate: "",
+    vehicleType: "",
+    seatCount: "",
+  });
+};
 
-  // Fetch companies from the backend
+const handleVehicleInputChange = (e) => {
+  const { name, value } = e.target;
+  // For numeric fields like seatCount, convert string to number
+  if (name === "seatCount") {
+    setNewVehicle({
+      ...newVehicle,
+      [name]: value === "" ? "" : Number(value),
+    });
+  } else {
+    setNewVehicle({
+      ...newVehicle,
+      [name]: value,
+    });
+  }
+};
+const handleCreateVehicle = async () => {
+  try {
+    const companyResponse = await axios.get(
+      `http://localhost:3001/companies?companyId=${viewCompany.companyId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    if (!companyResponse.data || companyResponse.data.length === 0) {
+      throw new Error("Công ty không tồn tại.");
+    }
+    // Create the vehicle
+    const vehicleToSend = {
+      ...newVehicle,
+      seatCount: Number(newVehicle.seatCount),
+    };
+
+    const response = await axios.post(
+      "http://localhost:3001/vehicle",
+      vehicleToSend,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    handleCloseCreateVehicleDialog();
+    setNotification({
+      open: true,
+      message: "Xe đã được tạo thành công",
+      severity: "success",
+    });
+
+    // Refresh the vehicles list
+    if (viewCompany) {
+      fetchVehicles(viewCompany.companyId);
+    }
+  } catch (error) {
+    console.error("Error creating vehicle:", error);
+    setNotification({
+      open: true,
+      message: error.message || "Không thể tạo xe. Vui lòng thử lại sau.",
+      severity: "error",
+    });
+  }
+};
   const fetchCompanies = async () => {
     try {
       setLoading(true);
@@ -65,7 +166,6 @@ const ManageCompanies = () => {
     }
   };
 
-  // Fetch vehicles for a specific company
   const fetchVehicles = async (companyId) => {
     try {
       setVehiclesLoading(true);
@@ -86,7 +186,27 @@ const ManageCompanies = () => {
       setVehiclesLoading(false);
     }
   };
-
+  const fetchTrips = async (companyId) => {
+    try {
+      setTripsLoading(true);
+      setTripsError(null);
+      const response = await axios.get(
+        `http://localhost:3001/trip?companyId=${companyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("Trips response:", response.data);
+      setTrips(response.data);
+      setTripsLoading(false);
+    } catch (error) {
+      console.error("Error fetching trips:", error);
+      setTripsError("Không thể tải danh sách chuyến đi. Vui lòng thử lại sau.");
+      setTripsLoading(false);
+    }
+  };
   useEffect(() => {
     fetchCompanies();
   }, []);
@@ -119,12 +239,14 @@ const ManageCompanies = () => {
     setViewCompany(company);
     setOpenViewDialog(true);
     fetchVehicles(company.companyId); // Fetch vehicles when opening the view dialog
+    fetchTrips(company.companyId);
   };
 
   const handleCloseViewDialog = () => {
     setOpenViewDialog(false);
     setViewCompany(null);
     setVehicles([]); // Clear vehicles when closing the dialog
+    setTrips([]);
   };
 
   const handleInputChange = (e) => {
@@ -204,7 +326,102 @@ const ManageCompanies = () => {
   const handleCloseNotification = () => {
     setNotification({ ...notification, open: false });
   };
+  const handleOpenCreateTripDialog = () => {
+    setNewTrip({
+      ...newTrip,
+      companyId: viewCompany.companyId,
+      
+    });
+    setOpenCreateTripDialog(true);
+  };
 
+  const handleCloseCreateTripDialog = () => {
+    setOpenCreateTripDialog(false);
+    setNewTrip({
+      tripId: "",
+      vehicleId: "",
+      companyId: "",
+      driverId: "",
+      departurePoint: "",
+      destinationPoint: "",
+      departureDate: "",
+      departureHour: "",
+      arrivalDate: "",
+      arrivalHour: "",
+      price: "",
+      status: "",
+    });
+  };
+  const handleTripInputChange = (e) => {
+    const { name, value } = e.target;
+    
+    // For numeric fields, convert string to number
+    if (name === "price") {
+      setNewTrip({
+        ...newTrip,
+        [name]: value === "" ? "" : Number(value)
+      });
+    } else {
+      setNewTrip({
+        ...newTrip,
+        [name]: value
+      });
+    }
+  };
+
+  const handleCreateTrip = async () => {
+    try {
+      // Combine departureDate and departureHour into departureTime
+      const [depDay, depMonth, depYear] = newTrip.departureDate.split("-");
+      const [depHour, depMinute] = newTrip.departureHour.split(":");
+      
+      // Create a Date object in Vietnam time (UTC+7)
+      const localDepartureDate = new Date(depYear, depMonth - 1, depDay, depHour, depMinute, 0);
+      
+      // Convert to UTC format
+      const departureTime = localDepartureDate.toISOString();
+
+      // Combine arrivalDate and arrivalHour into arrivalTime
+      const [arrDay, arrMonth, arrYear] = newTrip.arrivalDate.split("-");
+      const [arrHour, arrMinute] = newTrip.arrivalHour.split(":");
+      
+      const localArrivalDate = new Date(arrYear, arrMonth - 1, arrDay, arrHour, arrMinute, 0);
+      
+      const arrivalTime = localArrivalDate.toISOString();
+
+      // Create the trip object with combined times
+      const tripToSend = {
+          ...newTrip,
+          departureTime,
+          arrivalTime,
+      };
+  
+      console.log("Sending trip:", tripToSend); // Log the trip object
+      const response = await axios.post("http://localhost:3001/trip", tripToSend, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Response:", response.data);
+      handleCloseCreateTripDialog();
+      setNotification({
+        open: true,
+        message: "Chuyến đi đã được tạo thành công",
+        severity: "success",
+      });
+      if (viewCompany) {
+        fetchTrips(viewCompany.companyId);
+      }
+    } catch (error) {
+      console.error("Error creating trip:", error);
+      console.log("Server response:", error.response?.data);
+      setNotification({
+        open: true,
+        message: error.response?.data?.message || "Không thể tạo chuyến đi. Vui lòng thử lại sau.",
+        severity: "error",
+      });
+    }
+  };
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" my={4}>
@@ -470,9 +687,28 @@ const ManageCompanies = () => {
 
               {/* Vehicles Section */}
               <Box sx={{ mt: 4 }}>
-                <Typography variant="h6" gutterBottom>
-                  Danh sách xe của công ty
-                </Typography>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+    <Typography variant="h6">
+      Danh sách xe công ty
+    </Typography>
+    <Button
+      variant="contained"
+      color="primary"
+      startIcon={<AddIcon />}
+      onClick={() => {
+    setNewVehicle({
+      vehicleId: "",
+      companyId: viewCompany.companyId, // Initialize with viewCompany.companyId
+      lisencePlate: "",
+      vehicleType: "",
+      seatCount: "",
+    });
+    setOpenCreateVehicleDialog(true);
+  }}
+    >
+      Thêm xe mới
+    </Button>
+  </Box>
                 {vehiclesLoading ? (
                   <Box display="flex" justifyContent="center" my={2}>
                     <CircularProgress />
@@ -521,6 +757,96 @@ const ManageCompanies = () => {
                   </Typography>
                 )}
               </Box>
+           {/* Trips Section */}
+<Box sx={{ mt: 4 }}>
+  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+    <Typography variant="h6">
+      Chuyến đi
+    </Typography>
+    <Button
+      variant="contained"
+      color="primary"
+      startIcon={<AddIcon />}
+      onClick={handleOpenCreateTripDialog}
+    >
+      Thêm chuyến đi mới
+    </Button>
+  </Box>
+  
+  {tripsLoading ? (
+    <Box display="flex" justifyContent="center" my={2}>
+      <CircularProgress />
+    </Box>
+  ) : tripsError ? (
+    <Typography color="error" variant="body1">
+      {tripsError}
+    </Typography>
+  ) : trips.length > 0 ? (
+    // Rest of the trips table code...
+                  <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="departure table">
+                      <TableHead>
+                        <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+                          <TableCell>
+                            <strong>ID chuyến đi</strong>
+                          </TableCell>
+                          <TableCell>
+                            <strong>ID Xe</strong>
+                          </TableCell>
+                          <TableCell>
+                            <strong>Giờ khởi hành</strong>
+                          </TableCell>
+                          <TableCell>
+                            <strong>Điểm khởi hành</strong>
+                          </TableCell>
+                          <TableCell>
+                            <strong>Điểm đến</strong>
+                          </TableCell>
+                          <TableCell>
+                            <strong>Giờ đến</strong>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+  {trips.map((trip) => {
+    // Parse the UTC time from the database
+    const departureDate = new Date(trip.departureTime);
+    const arrivalDate = new Date(trip.arrivalTime);
+
+    // Function to format the date and time in UTC (as stored in the database)
+    const formatUTCTime = (date) => {
+      const day = String(date.getUTCDate()).padStart(2, "0");
+      const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+      const year = date.getUTCFullYear();
+      const hours = String(date.getUTCHours()).padStart(2, "0");
+      const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+      return `${hours}:${minutes} ${day}/${month}/${year}`;
+    };
+
+    return (
+      <TableRow
+        key={trip._id || trip.tripId}
+        sx={{ "&:hover": { backgroundColor: "#f9f9f9" } }}
+      >
+        <TableCell>{trip.tripId}</TableCell>
+        <TableCell>{trip.vehicleId}</TableCell>
+
+        <TableCell>{formatUTCTime(departureDate)}</TableCell>
+        <TableCell>{trip.departurePoint}</TableCell>
+        <TableCell>{trip.destinationPoint}</TableCell>
+        <TableCell>{formatUTCTime(arrivalDate)}</TableCell>
+      </TableRow>
+    );
+  })}
+</TableBody>
+                    </Table>
+                  </TableContainer>
+                ) : (
+                  <Typography variant="body1">
+                    Không có chuyến đi nào thuộc công ty này.
+                  </Typography>
+                )}
+              </Box>
             </>
           )}
         </DialogContent>
@@ -528,7 +854,308 @@ const ManageCompanies = () => {
           <Button onClick={handleCloseViewDialog}>Đóng</Button>
         </DialogActions>
       </Dialog>
-
+      <Dialog
+  open={openCreateTripDialog}
+  onClose={handleCloseCreateTripDialog}
+  maxWidth="sm"
+  fullWidth
+>
+  <DialogTitle>Tạo Tuyến Đi Xe</DialogTitle>
+  <DialogContent>
+    <Box component="form" sx={{ mt: 2 }}>
+      <TextField
+        name="tripId"
+        label="ID chuyến đi"
+        fullWidth
+        margin="normal"
+        value={newTrip.tripId}
+        onChange={handleTripInputChange}
+        required
+      />
+      <TextField
+        name="vehicleId"
+        label="ID xe"
+        fullWidth
+        margin="normal"
+        value={newTrip.vehicleId}
+        onChange={handleTripInputChange}
+        required
+      />
+      <TextField
+        name="companyId"
+        label="ID công ty"
+        fullWidth
+        margin="normal"
+        value={newTrip.companyId}
+        onChange={handleTripInputChange}
+        required
+        disabled
+      />
+      <TextField
+        name="driverId"
+        label="ID tài xế"
+        fullWidth
+        margin="normal"
+        value={newTrip.driverId}
+        onChange={handleTripInputChange}
+        required
+      />
+      <TextField
+        name="departurePoint"
+        label="Điểm khởi hành"
+        select
+        fullWidth
+        margin="normal"
+        value={newTrip.departurePoint}
+        onChange={handleTripInputChange}
+        required
+      >
+        <MenuItem value="Bến xe Đà nẵng">Bến xe Đà nẵng</MenuItem>
+        <MenuItem value="Bến xe Huế">Bến xe Huế</MenuItem>
+        <MenuItem value="Bến xe Quảng Ngãi">Bến xe Quảng Ngãi</MenuItem>
+        <MenuItem value="Bến xe Bình Định">Bến xe Bình Định</MenuItem>
+        <MenuItem value="Bến xe Phú Yên">Bến xe Phú Yên</MenuItem>
+        <MenuItem value="Bến xe Gia Lai">Bến xe Gia Lai</MenuItem>
+        <MenuItem value="Bến xe Nha Trang">Bến xe Nha Trang</MenuItem>
+        <MenuItem value="Bến Xe DakLak">Bến Xe DakLak</MenuItem>
+        <MenuItem value="Bến Xe KonTum">Bến Xe KonTum</MenuItem>
+      </TextField>
+      <TextField
+        name="destinationPoint"
+        label="Điểm đến"
+        select
+        fullWidth
+        margin="normal"
+        value={newTrip.destinationPoint}
+        onChange={handleTripInputChange}
+        required
+      >
+        <MenuItem value="Bến xe Huế">Bến xe Huế</MenuItem>
+        <MenuItem value="Bến xe Quảng Ngãi">Bến xe Quảng Ngãi</MenuItem>
+        <MenuItem value="Bến xe Bình Định">Bến xe Bình Định</MenuItem>
+        <MenuItem value="Bến xe Phú Yên">Bến xe Phú Yên</MenuItem>
+        <MenuItem value="Bến xe Gia Lai">Bến xe Gia Lai</MenuItem>
+        <MenuItem value="Bến xe Nha Trang">Bến xe Nha Trang</MenuItem>
+        <MenuItem value="Bến Xe DakLak">Bến Xe DakLak</MenuItem>
+        <MenuItem value="Bến Xe KonTum">Bến Xe KonTum</MenuItem>
+      </TextField>
+      <TextField
+        name="departureDate"
+        label="Ngày khởi hành (DD-MM-YYYY)"
+        fullWidth
+        margin="normal"
+        value={newTrip.departureDate}
+        onChange={handleTripInputChange}
+        required
+        placeholder="05-04-2025"
+        inputProps={{ pattern: "\\d{2}-\\d{2}-\\d{4}" }}
+        error={!newTrip.departureDate && !/^\d{2}-\d{2}-\d{4}$/.test(newTrip.departureDate)}
+        helperText={
+          newTrip.departureDate && !/^\d{2}-\d{2}-\d{4}$/.test(newTrip.departureDate)
+            ? "Phải có định dạng DD-MM-YYYY (ví dụ: 05-04-2025)"
+            : ""
+        }
+      />
+      <TextField
+        name="departureHour"
+        label="Giờ khởi hành (HH:MM)"
+        fullWidth
+        margin="normal"
+        value={newTrip.departureHour}
+        onChange={handleTripInputChange}
+        required
+        placeholder="10:00"
+        inputProps={{ pattern: "([0-1]?[0-9]|2[0-3]):[0-5][0-9]" }}
+        error={!newTrip.departureHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.departureHour)}
+        helperText={
+          newTrip.departureHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.departureHour)
+            ? "Phải có định dạng HH:MM (ví dụ: 10:00)"
+            : ""
+        }
+      />
+      <TextField
+        name="arrivalDate"
+        label="Ngày đến (DD-MM-YYYY)"
+        fullWidth
+        margin="normal"
+        value={newTrip.arrivalDate}
+        onChange={handleTripInputChange}
+        required
+        placeholder="05-04-2025"
+        inputProps={{ pattern: "\\d{2}-\\d{2}-\\d{4}" }}
+        error={!newTrip.arrivalDate && !/^\d{2}-\d{2}-\d{4}$/.test(newTrip.arrivalDate)}
+        helperText={
+          newTrip.arrivalDate && !/^\d{2}-\d{2}-\d{4}$/.test(newTrip.arrivalDate)
+            ? "Phải có định dạng DD-MM-YYYY (ví dụ: 05-04-2025)"
+            : ""
+        }
+      />
+      <TextField
+        name="arrivalHour"
+        label="Giờ đến (HH:MM)"
+        fullWidth
+        margin="normal"
+        value={newTrip.arrivalHour}
+        onChange={handleTripInputChange}
+        required
+        placeholder="12:00"
+        inputProps={{ pattern: "([0-1]?[0-9]|2[0-3]):[0-5][0-9]" }}
+        error={!newTrip.arrivalHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.arrivalHour)}
+        helperText={
+          newTrip.arrivalHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.arrivalHour)
+            ? "Phải có định dạng HH:MM (ví dụ: 12:00)"
+            : ""
+        }
+      />
+      <TextField
+        name="price"
+        label="Giá vé"
+        type="number"
+        fullWidth
+        margin="normal"
+        value={newTrip.price}
+        onChange={handleTripInputChange}
+        required
+        error={!newTrip.price !== "" && (isNaN(newTrip.price) || newTrip.price <= 0)}
+        helperText={
+          newTrip.price !== "" && (isNaN(newTrip.price) || newTrip.price <= 0)
+            ? "Giá vé phải là một số lớn hơn 0"
+            : ""
+        }
+        inputProps={{ min: 1 }}
+      />
+      <TextField
+        name="status"
+        label="Trạng thái"
+        select
+        fullWidth
+        margin="normal"
+        value={newTrip.status}
+        onChange={handleTripInputChange}
+        required
+      >
+        <MenuItem value="PENDING">PENDING</MenuItem>
+        <MenuItem value="COMPLETED">COMPLETED</MenuItem>
+        <MenuItem value="CANCELLED">CANCELLED</MenuItem>
+      </TextField>
+    </Box>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseCreateTripDialog}>Hủy</Button>
+    <Button
+      onClick={handleCreateTrip}
+      variant="contained"
+      color="primary"
+      disabled={
+        !newTrip.tripId ||
+        !newTrip.vehicleId ||
+        !newTrip.companyId ||
+        !newTrip.driverId ||
+        !newTrip.departurePoint ||
+        !newTrip.destinationPoint ||
+        !newTrip.departureDate ||
+        !newTrip.departureHour ||
+        !newTrip.arrivalDate ||
+        !newTrip.arrivalHour ||
+        !newTrip.price ||
+        !newTrip.status ||
+        !/^\d{2}-\d{2}-\d{4}$/.test(newTrip.departureDate) ||
+        !/^\d{2}-\d{2}-\d{4}$/.test(newTrip.arrivalDate) ||
+        !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.departureHour) ||
+        !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.arrivalHour) ||
+        isNaN(newTrip.price) ||
+        newTrip.price <= 0
+      }
+    >
+      Tạo
+    </Button>
+   
+  </DialogActions>
+</Dialog>
+ <Dialog
+  open={openCreateVehicleDialog}
+  onClose={handleCloseCreateVehicleDialog}
+  maxWidth="sm"
+  fullWidth
+>
+  <DialogTitle>Tạo Xe Mới</DialogTitle>
+  <DialogContent>
+    <Box component="form" sx={{ mt: 2 }}>
+      <TextField
+        name="vehicleId"
+        label="ID xe"
+        fullWidth
+        margin="normal"
+        value={newVehicle.vehicleId}
+        onChange={handleVehicleInputChange}
+        required
+      />
+      <TextField
+        name="companyId"
+        label="ID công ty"
+        fullWidth
+        margin="normal"
+        value={viewCompany ? viewCompany.companyId : ""}
+        onChange={handleVehicleInputChange}
+        required
+        disabled // Disable the field since it should be pre-filled and uneditable
+      />
+      <TextField
+        name="lisencePlate"
+        label="Biển số xe"
+        fullWidth
+        margin="normal"
+        value={newVehicle.lisencePlate}
+        onChange={handleVehicleInputChange}
+        required
+      />
+      <TextField
+        name="vehicleType"
+        label="Loại xe"
+        select
+        fullWidth
+        margin="normal"
+        value={newVehicle.vehicleType}
+        onChange={handleVehicleInputChange}
+        required
+      >
+        <MenuItem value="GIUONGNAM">GIUONGNAM</MenuItem>
+        <MenuItem value="NGOI">NGOI</MenuItem>
+      </TextField>
+      <TextField
+        name="seatCount"
+        label="Số ghế"
+        type="number"
+        fullWidth
+        margin="normal"
+        value={newVehicle.seatCount}
+        onChange={handleVehicleInputChange}
+        required
+        error={
+          newVehicle.seatCount !== "" &&
+          (isNaN(newVehicle.seatCount) || newVehicle.seatCount <= 0)
+        }
+        helperText={
+          newVehicle.seatCount !== "" &&
+          (isNaN(newVehicle.seatCount) || newVehicle.seatCount <= 0)
+            ? "Số ghế phải là một số lớn hơn 0"
+            : ""
+        }
+        inputProps={{ min: 1 }}
+      />
+    </Box>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseCreateVehicleDialog}>Hủy</Button>
+    <Button
+      onClick={handleCreateVehicle}
+      variant="contained"
+      color="primary"
+    >
+      Tạo
+    </Button>
+  </DialogActions>
+</Dialog>
       <Snackbar
         open={notification.open}
         autoHideDuration={6000}
@@ -547,4 +1174,4 @@ const ManageCompanies = () => {
   );
 };
 
-export default ManageCompanies;
+export default ManageTrips;
