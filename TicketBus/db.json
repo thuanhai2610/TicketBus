@@ -1,0 +1,169 @@
+{
+  "revenue": [
+    {
+      "month": "Jan",
+      "revenue": 31000,
+      "dailyRevenue": [
+        { "day": "1", "revenue": 1000 },
+        { "day": "2", "revenue": 1200 },
+        { "day": "3", "revenue": 1500 },
+        { "day": "4", "revenue": 1600 },
+        { "day": "5", "revenue": 1700 },
+        { "day": "6", "revenue": 1800 },
+        { "day": "7", "revenue": 1900 },
+        { "day": "8", "revenue": 2000 },
+        { "day": "9", "revenue": 2100 },
+        { "day": "10", "revenue": 2200 }
+      ]
+    },
+    {
+      "month": "Feb",
+      "revenue": 28000,
+      "dailyRevenue": [
+        { "day": "1", "revenue": 900 },
+        { "day": "2", "revenue": 1100 },
+        { "day": "3", "revenue": 1300 },
+        { "day": "4", "revenue": 1400 },
+        { "day": "5", "revenue": 1500 },
+        { "day": "6", "revenue": 1600 },
+        { "day": "7", "revenue": 1700 },
+        { "day": "8", "revenue": 1800 },
+        { "day": "9", "revenue": 1900 },
+        { "day": "10", "revenue": 2000 }
+      ]
+    },
+    {
+      "month": "Mar",
+      "revenue": 35000,
+      "dailyRevenue": [
+        { "day": "1", "revenue": 1100 },
+        { "day": "2", "revenue": 1300 },
+        { "day": "3", "revenue": 1500 },
+        { "day": "4", "revenue": 1600 },
+        { "day": "5", "revenue": 1700 },
+        { "day": "6", "revenue": 1800 },
+        { "day": "7", "revenue": 2000 },
+        { "day": "8", "revenue": 2100 },
+        { "day": "9", "revenue": 2200 },
+        { "day": "10", "revenue": 2300 }
+      ]
+    },
+    {
+      "month": "Apr",
+      "revenue": 40000,
+      "dailyRevenue": [
+        { "day": "1", "revenue": 1200 },
+        { "day": "2", "revenue": 1400 },
+        { "day": "3", "revenue": 1600 },
+        { "day": "4", "revenue": 1800 },
+        { "day": "5", "revenue": 1900 },
+        { "day": "6", "revenue": 2000 },
+        { "day": "7", "revenue": 2100 },
+        { "day": "8", "revenue": 2200 },
+        { "day": "9", "revenue": 2300 },
+        { "day": "10", "revenue": 2500 }
+      ]
+    },
+    {
+      "month": "May",
+      "revenue": 42000,
+      "dailyRevenue": [
+        { "day": "1", "revenue": 1300 },
+        { "day": "2", "revenue": 1500 },
+        { "day": "3", "revenue": 1700 },
+        { "day": "4", "revenue": 1900 },
+        { "day": "5", "revenue": 2000 },
+        { "day": "6", "revenue": 2100 },
+        { "day": "7", "revenue": 2200 },
+        { "day": "8", "revenue": 2300 },
+        { "day": "9", "revenue": 2400 },
+        { "day": "10", "revenue": 2600 }
+      ]
+    },
+    {
+      "month": "Jun",
+      "revenue": 45000,
+      "dailyRevenue": [
+        { "day": "1", "revenue": 1400 },
+        { "day": "2", "revenue": 1600 },
+        { "day": "3", "revenue": 1800 },
+        { "day": "4", "revenue": 2000 },
+        { "day": "5", "revenue": 2100 },
+        { "day": "6", "revenue": 2200 },
+        { "day": "7", "revenue": 2300 },
+        { "day": "8", "revenue": 2400 },
+        { "day": "9", "revenue": 2500 },
+        { "day": "10", "revenue": 2700 }
+      ]
+    },
+    {
+      "month": "Jul",
+      "revenue": 48000,
+      "dailyRevenue": [
+        { "day": "1", "revenue": 1500 },
+        { "day": "2", "revenue": 1700 },
+        { "day": "3", "revenue": 1900 },
+        { "day": "4", "revenue": 2100 },
+        { "day": "5", "revenue": 2200 },
+        { "day": "6", "revenue": 2300 },
+        { "day": "7", "revenue": 2400 },
+        { "day": "8", "revenue": 2500 },
+        { "day": "9", "revenue": 2600 },
+        { "day": "10", "revenue": 2800 }
+      ]
+    },
+    {
+      "month": "Aug",
+      "revenue": 50000,
+      "dailyRevenue": [
+        { "day": "1", "revenue": 1600 },
+        { "day": "2", "revenue": 1800 },
+        { "day": "3", "revenue": 2000 },
+        { "day": "4", "revenue": 2200 },
+        { "day": "5", "revenue": 2300 },
+        { "day": "6", "revenue": 2400 },
+        { "day": "7", "revenue": 2500 },
+        { "day": "8", "revenue": 2600 },
+        { "day": "9", "revenue": 2700 },
+        { "day": "10", "revenue": 2900 }
+      ]
+    },
+    {
+      "month": "Sep",
+      "revenue": 52000,
+      "dailyRevenue": [
+        { "day": "1", "revenue": 1700 },
+        { "day": "2", "revenue": 1900 },
+        { "day": "3", "revenue": 2100 },
+        { "day": "4", "revenue": 2300 },
+        { "day": "5", "revenue": 2400 },
+        { "day": "6", "revenue": 2500 },
+        { "day": "7", "revenue": 2600 },
+        { "day": "8", "revenue": 2700 },
+        { "day": "9", "revenue": 2800 },
+        { "day": "1", "revenue": 1700 },
+        { "day": "2", "revenue": 1900 },
+        { "day": "3", "revenue": 2100 },
+        { "day": "4", "revenue": 2300 },
+        { "day": "5", "revenue": 2400 },
+        { "day": "6", "revenue": 2500 },
+        { "day": "7", "revenue": 2600 },
+        { "day": "8", "revenue": 2700 },
+        { "day": "9", "revenue": 2800 },
+        { "day": "1", "revenue": 1700 },
+        { "day": "2", "revenue": 1900 },
+        { "day": "3", "revenue": 2100 },
+        { "day": "4", "revenue": 2300 },
+        { "day": "5", "revenue": 2400 },
+        { "day": "6", "revenue": 2500 },
+        { "day": "7", "revenue": 2600 },
+        { "day": "8", "revenue": 2700 },
+        { "day": "9", "revenue": 2800 },
+        { "day": "7", "revenue": 2600 },
+        { "day": "8", "revenue": 2700 },
+        { "day": "9", "revenue": 2800 },
+        { "day": "10", "revenue": 3000 }
+      ]
+    }
+  ]
+}
