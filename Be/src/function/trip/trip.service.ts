@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { Trip, TripDocument } from './schemas/trip.schema';
@@ -83,8 +83,12 @@ export class TripService {
     return this.tripRepository.findAll();
   }
 
-  findOne(id: string): Promise<Trip> {
-    return this.tripRepository.findOne(id);
+  async findOne(tripId: string): Promise<TripDocument> {
+    const trip = await this.tripModel.findOne({ tripId }).exec();
+    if (!trip) {
+      throw new NotFoundException(`Trip with ID ${tripId} not found`);
+    }
+    return trip;
   }
 
   update(id: string, updateTripDto: UpdateTripDto): Promise<Trip> {
@@ -104,8 +108,6 @@ export class TripService {
         }
       }
     ]).exec();
-    
-    console.log(`Found trip: ${JSON.stringify(trip)}`);
     return trip || [];
   }
 }

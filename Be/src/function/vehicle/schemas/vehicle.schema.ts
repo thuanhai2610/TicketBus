@@ -13,8 +13,12 @@ export class Vehicle {
     lisencePlate: string;
     @Prop({required: true, enum : ['GIUONGNAM' , 'NGOI']})
     vehicleType: string;
-    @Prop({required: true, type: Number})
+    @Prop({required: true, type: Number, default: 32})
     seatCount: number;
+    @Prop({required: true, type: Number, default: function () {
+      return this.seatCount || 32;
+    },})
+availableSeats: number;
 }
 
 export const VehicleSchema = SchemaFactory.createForClass(Vehicle);
@@ -27,5 +31,13 @@ VehicleSchema.pre('save', async function (next) {
     return next(error);
   }
 
+  next();
+});
+
+VehicleSchema.pre('save', function (next) {
+  const vehicle = this as VehicleDocument;
+  if (vehicle.availableSeats < 0 || vehicle.availableSeats > vehicle.seatCount) {
+    return next(new Error('availableSeats must be between 0 and seatCount'));
+  }
   next();
 });

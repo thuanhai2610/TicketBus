@@ -17,6 +17,8 @@ import { CompaniesModule } from './function/companies/company.module';
 import { VehicleModule } from './function/vehicle/vehicle.module';
 import { DriverModule } from './function/driver/driver.module';
 import { TripModule } from './function/trip/trip.module';
+import { TicketModule } from './function/tickets/ticket.module';
+import { SeatModule } from './function/seats/seat.module';
 @Module({
   imports: [AuthModule, PendingUsersModule, ItemsModule, MongooseModule.forRoot('mongodb://localhost:27017/admin'),ConfigModule.forRoot({
       isGlobal: true, 
@@ -42,7 +44,7 @@ import { TripModule } from './function/trip/trip.module';
           strict: true,
         }
        }
-    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule
+    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule
   ],
 
   controllers: [AppController],

@@ -113,6 +113,11 @@ import { AuthGuard } from '@nestjs/passport';
           phone: user.phone || 'N/A',
           email: user.email || 'N/A',
           dob: user.dob || 'N/A',
+          firstName: user.firstName || 'N/A',
+          lastName: user.lastName || 'N/A',
+          gender: user.gender || 'N/A',
+          role: user.role || 'N/A',
+          avatar: user.avatar || 'N/A',
         }));
     }
   }
