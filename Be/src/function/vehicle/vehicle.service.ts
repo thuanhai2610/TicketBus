@@ -26,9 +26,12 @@ export class VehicleService {
   findAll(): Promise<Vehicle[]> {
     return this.vehicleRepository.findAll();
   }
-
-  findOne(id: string): Promise<Vehicle> {
+  findOneId(id: string): Promise<Vehicle> {
     return this.vehicleRepository.findOne(id);
+  }
+
+  findOne(vehicleId: string): Promise<Vehicle> {
+    return this.vehicleRepository.findOne(vehicleId);
   }
 
   update(id: string, updateVehicleDto: UpdateVehicleDto): Promise<Vehicle> {
@@ -50,48 +53,63 @@ export class VehicleService {
       }
     ]).exec();
     
-    console.log(`Found vehicles: ${JSON.stringify(vehicles)}`);
     return vehicles || [];
   }
-  async updateSeatCount(vehicleId: string, increment: boolean = false): Promise<VehicleDocument> {
+  async updateSeatCount(vehicleId: string, increment: boolean = false): Promise<Vehicle> {
+    console.log(`Starting updateSeatCount for vehicle ${vehicleId}, increment=${increment}`);
+    
     // Fetch the vehicle
     const vehicle = await this.findOne(vehicleId);
     if (!vehicle) {
       throw new NotFoundException('Vehicle not found');
     }
-  
+    
     // Get current seat counts
     const available = vehicle.availableSeats;
     const total = vehicle.seatCount;
-  
+    
+    // Debug logging
+    console.log(`Current available seats: ${available}, total seats: ${total}`);
+    
     // Validate seat counts
     if (typeof available !== 'number' || typeof total !== 'number' || total <= 0) {
       throw new BadRequestException('Invalid seat count values');
     }
-  
+    
     let newAvailable: number;
     if (increment) {
-      // Increment available seats (e.g., when a booking is cancelled)
-      newAvailable = Math.min(available + 1, total); // Ensure it doesn't exceed total
+      newAvailable = Math.min(available + 1, total); 
+      console.log(`Incrementing seats, new available: ${newAvailable}`);
     } else {
-      // Decrement available seats (e.g., when a ticket is booked)
       if (available <= 0) {
         throw new BadRequestException('No seats available');
       }
       newAvailable = available - 1;
+      console.log(`Decrementing seats, new available: ${newAvailable}`);
     }
-  
-    // Update the availableSeats field
-    const updatedVehicle = await this.vehicleModel
-  .findOneAndUpdate(
-    { vehicleId, availableSeats: available }, // Check current availableSeats
-    { $set: { availableSeats: newAvailable } },
-    { new: true }
-  )
-  .exec();
-if (!updatedVehicle) {
-  throw new BadRequestException('Seat count changed during update, please try again');
+    
+    try {
+      // Force update using updateOne instead of findOneAndUpdate to avoid potential issues
+      const updateResult = await this.vehicleModel.updateOne(
+        { vehicleId },
+        { $set: { availableSeats: newAvailable } }
+      ).exec();
+      
+      if (updateResult.matchedCount === 0) {
+        throw new BadRequestException('Vehicle not found during update');
+      }
+      
+      // Now fetch the updated vehicle to return
+      const updatedVehicle = await this.findOne(vehicleId);
+      if (!updatedVehicle) {
+        throw new BadRequestException('Failed to retrieve updated vehicle');
+      }
+      
+      console.log(`Updated vehicle availableSeats: ${updatedVehicle.availableSeats}`);
+      return updatedVehicle;
+    } catch (error) {
+      console.error(`Error updating vehicle seat count: ${error.message}`);
+      throw new BadRequestException(`Failed to update vehicle seat count: ${error.message}`);
+    }
+  }
 }
-  
-    return updatedVehicle;
-  }}

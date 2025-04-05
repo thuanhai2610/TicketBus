@@ -22,14 +22,14 @@ export class VehicleRepository {
     return this.vehicleModel.find().exec();
   }
 
-  async findOne(id: string): Promise<Vehicle> {
-    const vehicle = await this.vehicleModel.findById(id).exec();
+  async findOne(vehicleId: string): Promise<Vehicle> {
+    const vehicle = await this.vehicleModel.findOne({ vehicleId }).exec();
     if (!vehicle) {
-      throw new NotFoundException(`Vehicle with ID ${id} not found`);
+      throw new NotFoundException(`Vehicle with ID ${vehicleId} not found`);
     }
     return vehicle;
   }
-
+ 
   async update(id: string, updateVehicleDto: UpdateVehicleDto): Promise<Vehicle> {
     const updatedVehicle = await this.vehicleModel
       .findByIdAndUpdate(id, updateVehicleDto, { new: true })
