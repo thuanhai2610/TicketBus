@@ -17,6 +17,8 @@ const Navbar = () => {
     const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
+    const [firstName, setFirstName] = useState(''); // New state for firstName
+    const [lastName, setLastName] = useState('');
     const [avatar, setAvatar] = useState('');
     const navigate = useNavigate();
 
@@ -36,7 +38,8 @@ const Navbar = () => {
                         const response = await axios.get(`${API_BASE_URL}/user/profile?username=${decoded.username}`, {
                             headers: { Authorization: `Bearer ${token}` },
                         });
-
+                        setFirstName(response.data.firstName || '');
+                        setLastName(response.data.lastName || '');
                         if (response.data.avatar) {
                             if (response.data.avatar.startsWith('http')) {
                                 setAvatar(response.data.avatar);
@@ -48,6 +51,8 @@ const Navbar = () => {
                         }
                     } catch (error) {
                         console.error("Lỗi lấy dữ liệu người dùng", error);
+                        setFirstName('');
+                        setLastName('');
                         setAvatar('');
                     }
                 };
@@ -64,6 +69,8 @@ const Navbar = () => {
         localStorage.removeItem("token");
         setIsLoggedIn(false);
         setUsername('');
+        setFirstName(''); // Reset firstName
+        setLastName('');
         setAvatar('');
         navigate("/");
         window.location.reload();
@@ -140,7 +147,9 @@ const Navbar = () => {
                                 )}
 
                             </DropdownMenuTrigger>
-
+                            <span className="text-black dark:text-white font-medium">
+                            {firstName} {lastName}
+      </span>
                             <DropdownMenuContent className="bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-lg p-2">
 
                                 <DropdownMenuItem >{username}</DropdownMenuItem>

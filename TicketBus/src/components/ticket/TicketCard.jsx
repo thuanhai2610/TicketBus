@@ -8,11 +8,11 @@ import { Link } from 'react-router-dom'
 // eslint-disable-next-line no-unused-vars
 const TicketCard = ({ icon: Icon, busName, routeFrom, routeTo, arrivalTime,departureTime, price, availableSeats }) => {
     return (
-        <div className='w-full rounded-xl p-5 border-2 border-neutral-300 space-y-5'>
+        <div className='w-full rounded-xl p-5 border-2 border-neutral-300 space-y-5 justify-center'>
             
 
             {/* Bus info , routes , */}
-            <div className="space-y-5 w-full border-b border-neutral-300/60 pb-4">
+            <div className="space-y-5 w-full border-b border-neutral-300/60 pb-4 justify-center">
                 {/* Route */}
                 <div className="space-y-5">
 

@@ -8,6 +8,7 @@ export class CreateTripDto {
   @IsNotEmpty()
   @IsString()
   tripId: string;
+  
   @IsNotEmpty()
   @IsString()
   @Prop({required: true, type: String, ref : 'Company' })

@@ -4,9 +4,9 @@ import { Document } from 'mongoose';
 
 export type TripDocument = Trip & Document;
 
-@Schema({ timestamps: true , collection : 'trip'})
+@Schema({ timestamps: true , collection : 'trip', _id: false})
 export class Trip {
-  @Prop({ required: true })
+  @Prop({ required: true, type: String })
   tripId: string;
 
   @Prop({required: true, type: String, ref : 'Company' })

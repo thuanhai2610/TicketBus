@@ -20,6 +20,8 @@ import ProtectedRoute from "./components/protected/ProtectedRoute";
 import VerifyOtp from "./pages/login/VerifyOtp";
 import Profile from "./pages/profile/Profile";
 import UpdateProfile from "./pages/profile/UpdateProfile";
+import Detail from "./pages/ticket/detail/Detail";
+import Checkout from "./pages/ticket/checkout/Checkout";
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
@@ -61,6 +63,8 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/user/profile" element={<Profile />} />
             <Route path="/update-profile" element={<UpdateProfile />} />
+            <Route path="/bus-tickets/detail" element={<Detail />} />
+            <Route path="/bus-tickets/checkout" element={<Checkout />} />
 
             {/* Admin Routes */}
             <Route path="/admin/*" element={
