@@ -58,14 +58,13 @@ const ManageCustomers = () => {
     fetchUsers();
   }, [token]);
 
-  // Format ngày sinh (dob) để hiển thị
+
   const formatDate = (date) => {
     if (!date) return "N/A"; // Nếu không có ngày, trả về giá trị mặc định
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) return "Invalid Date"; // Kiểm tra nếu ngày hợp lệ
     return parsedDate.toISOString().split("T")[0];
-  };
-
+  }
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Danh sách khách hàng</h2>
@@ -141,6 +140,7 @@ const ManageCustomers = () => {
       )}
     </div>
   );
+
 };
 
 export default ManageCustomers;
