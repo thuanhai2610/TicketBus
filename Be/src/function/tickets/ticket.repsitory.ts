@@ -51,4 +51,7 @@ export class TicketRepository {
     
     return deletedTicket;
   }
+  async findTicketById(ticketId: string): Promise<Ticket | null> {
+    return this.ticketModel.findOne({ ticketId }).exec();
+  }
 }

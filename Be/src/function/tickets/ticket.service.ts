@@ -8,11 +8,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { TripService } from '../trip/trip.service';
 import { SeatService } from '../seats/seat.service';
 import { VehicleService } from '../vehicle/vehicle.service';
+import { TicketRepository } from './ticket.repsitory';
 
 @Injectable()
 export class TicketService {
   constructor(
     @InjectModel(Ticket.name) private ticketModel: Model<TicketDocument>,
+    private readonly ticketRepository: TicketRepository,
     private tripService: TripService,
     private seatService: SeatService,
     private vehicleService: VehicleService
@@ -53,6 +55,7 @@ export class TicketService {
     // Create the ticket
     const ticket = new this.ticketModel({
       ...createTicketDto,
+      
       ticketPrice: trip.price,
       status: ticketStatus,
       bookedAt: new Date(),
@@ -192,5 +195,12 @@ export class TicketService {
   // Find tickets by trip ID
   async findByTripId(tripId: string): Promise<Ticket[]> {
     return this.ticketModel.find({ tripId }).exec();
+  }
+  async findTicketById(ticketId: string): Promise<Ticket> {
+    const ticket = await this.ticketRepository.findTicketById(ticketId);
+    if (!ticket) {
+      throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
+    }
+    return ticket;
   }
 }

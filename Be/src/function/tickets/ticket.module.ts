@@ -22,6 +22,6 @@ import { VehicleModule } from '../vehicle/vehicle.module';
   ],
   controllers: [TicketController],
   providers: [TicketService, TicketRepository],
-  exports: [TicketService, MongooseModule],
+  exports: [TicketService, MongooseModule.forFeature([{ name: Ticket.name, schema: TicketSchema }]), TicketRepository, SeatModule],
 })
 export class TicketModule {}
