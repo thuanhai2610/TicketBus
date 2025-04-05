@@ -8,18 +8,17 @@ import {  TripService } from './trip.service';
 import { Company, CompanySchema } from '../companies/schemas/company.schema';
 import { VehicleModule } from '../vehicle/vehicle.module';
 import { DriverModule } from '../driver/driver.module';
-import { CompaniesService } from '../companies/company.service';
-
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Trip.name, schema: TripSchema },
       { name: Company.name, schema: CompanySchema },
+    
     ]),
     VehicleModule, DriverModule
   ],
   controllers: [TripController],
   providers: [ TripRepository, TripService], 
-  exports: [ TripService],
+  exports: [ TripService, MongooseModule.forFeature([{ name: Trip.name, schema: TripSchema }]), TripRepository],
 })
 export class TripModule {}

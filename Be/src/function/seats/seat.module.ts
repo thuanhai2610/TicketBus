@@ -6,6 +6,7 @@ import { SeatRepository } from './seat.repsitory';
 import { SeatController } from './seat.controller';
 import { SeatService } from './seat.service';
 import { Company, CompanySchema } from '../companies/schemas/company.schema';
+import { VehicleModule } from '../vehicle/vehicle.module';
 
 
 
@@ -13,8 +14,8 @@ import { Company, CompanySchema } from '../companies/schemas/company.schema';
   imports: [
     MongooseModule.forFeature([{ name: Seat.name, schema: SeatSchema },
        { name: Company.name, schema: CompanySchema }
-    ]),
-  ],
+    ]),VehicleModule,
+  ], 
   controllers: [SeatController],
   providers: [SeatService, SeatRepository],
   exports: [SeatService, MongooseModule],

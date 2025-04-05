@@ -28,7 +28,6 @@ export class Ticket {
     @Prop({required: true, type: Number, ref : 'Trip' })
     ticketPrice: number;
   
-
     @Prop({required: true, type: String, enum: ['Ready', 'Paid', 'Ordered', 'Cancelled'], default: 'Ready' })
      status: string;
   

@@ -17,6 +17,6 @@ import { Company, CompanySchema } from '../companies/schemas/company.schema';
   ],
   controllers: [VehicleController],
   providers: [VehicleService, VehicleRepository],
-  exports: [VehicleService, MongooseModule],
+  exports: [VehicleService, MongooseModule.forFeature([{ name: Vehicle.name, schema: VehicleSchema }, { name: Company.name, schema: CompanySchema }]), VehicleRepository],
 })
 export class VehicleModule {}

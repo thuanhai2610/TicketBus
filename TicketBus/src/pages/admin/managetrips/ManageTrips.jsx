@@ -409,7 +409,6 @@ const ManageTrips = () => {
         departureTime,
         arrivalTime,
       };
-
       const response = await axios.post("http://localhost:3001/trip", tripToSend, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -711,7 +710,6 @@ const ManageTrips = () => {
                           <TableCell><strong>Biển số xe</strong></TableCell>
                           <TableCell><strong>Loại xe</strong></TableCell>
                           <TableCell><strong>Số ghế</strong></TableCell>
-                          <TableCell><strong>Số ghế trống</strong></TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -723,8 +721,8 @@ const ManageTrips = () => {
                             <TableCell>{vehicle.vehicleId}</TableCell>
                             <TableCell>{vehicle.lisencePlate}</TableCell>
                             <TableCell>{vehicle.vehicleType}</TableCell>
-                            <TableCell>{vehicle.seatCount}</TableCell>
-                            <TableCell>{vehicle.availableSeats}</TableCell>
+                            <TableCell>{vehicle.availableSeats}/{vehicle.seatCount}</TableCell>
+
                           </TableRow>
                         ))}
                       </TableBody>

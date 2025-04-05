@@ -23,8 +23,8 @@ export class VehicleController {
   // }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.vehicleService.findOne(id);
+  findOne(@Param('companyId') companyId: string) {
+    return this.vehicleService.findOne(companyId);
   }
 
   @Put(':id')

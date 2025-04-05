@@ -4,15 +4,15 @@ import { Document } from 'mongoose';
 
 export type TripDocument = Trip & Document;
 
-@Schema({ timestamps: true , collection : 'trip', _id: false})
+@Schema({ timestamps: true , collection : 'trip'})
 export class Trip {
-  @Prop({ required: true, type: String })
+  @Prop({ required: true, type: String})
   tripId: string;
 
-  @Prop({required: true, type: String, ref : 'Company' })
+  @Prop({required: true, type: String, ref : 'Company'})
   companyId: string;
 
-  @Prop({ required: true, type: String, ref: 'Vehicle' }) 
+  @Prop({ required: true, type: String, ref: 'Vehicle'}) 
   vehicleId: string;
 
   @Prop({ required: true, type: String, ref: 'Driver' }) 

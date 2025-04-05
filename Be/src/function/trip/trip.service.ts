@@ -83,7 +83,7 @@ export class TripService {
     return this.tripRepository.findAll();
   }
 
-  async findOne(tripId: string): Promise<TripDocument> {
+  async findOne(tripId: string): Promise<Trip> {
     const trip = await this.tripModel.findOne({ tripId }).exec();
     if (!trip) {
       throw new NotFoundException(`Trip with ID ${tripId} not found`);
