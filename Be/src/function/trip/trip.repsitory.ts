@@ -18,7 +18,7 @@ export class TripRepository {
     return newTrip.save();
   }
 
-  async findAll(): Promise<Trip[]> {
+  async findAll(): Promise<Trip[]> { 
     return this.tripModel.find().exec();
   }
 

@@ -30,8 +30,17 @@ export class VehicleService {
     return this.vehicleRepository.findOne(id);
   }
 
-  findOne(vehicleId: string): Promise<Vehicle> {
-    return this.vehicleRepository.findOne(vehicleId);
+  async findOne(vehicleId: string): Promise<Vehicle> {
+    try {
+      const vehicle = await this.vehicleModel.findOne({ vehicleId }).exec();
+      if (vehicle) {
+        return vehicle;
+      }
+      
+      throw new NotFoundException(`Vehicle with ID ${vehicleId} not found`);
+    } catch (error) {
+      throw new NotFoundException(`Vehicle with ID ${vehicleId} not found: ${error.message}`);
+    }
   }
 
   update(id: string, updateVehicleDto: UpdateVehicleDto): Promise<Vehicle> {

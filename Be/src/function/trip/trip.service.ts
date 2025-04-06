@@ -79,8 +79,8 @@ export class TripService {
     return trip.save();
   }
 
-  findAll(): Promise<Trip[]> {
-    return this.tripRepository.findAll();
+  async findAll(): Promise<Trip[]> {
+    return this.tripRepository.findAll(); 
   }
 
   async findOne(tripId: string): Promise<Trip> {
