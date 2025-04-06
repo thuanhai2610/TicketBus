@@ -13,7 +13,7 @@ const Checkout = () => {
         title={'Checkout '}
       />
 
-      <RootLayout className="space-y-12 w-full pb-16">
+      <RootLayout className="space-y-12 w-full pb-16 py-8">
         <div className="w-full grid grid-cols-7 items-start gap-44 relative">
 
             {/* Passenger Detail */}
