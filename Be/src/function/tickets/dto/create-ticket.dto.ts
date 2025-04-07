@@ -10,11 +10,14 @@ export class CreateTicketDto {
     @IsString()
     @Prop({required: true, type: String, ref : 'Company' })
     companyId: string;
+    @IsNotEmpty()
+    @IsString()
+    vehicleId: string;
 
     @IsNotEmpty()
     @IsString()
     @Prop({required: true, type: String, ref : 'User' })
-   userId: string;
+   username: string;
 
 
     @IsNotEmpty()

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaUserCircle } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
 
 const Profile = () => {
     const [profile, setProfile] = useState(null);
@@ -14,72 +15,74 @@ const Profile = () => {
     const BACKEND_URL = "http://localhost:3001";
 
     useEffect(() => {
-        const fetchProfile = async () => {
+        const token = localStorage.getItem("token");
+        if (token) {
             try {
-                const queryParams = new URLSearchParams(location.search);
-                const username = queryParams.get("username");
-                if (!username) throw new Error("Username is required");
+                const decoded = jwtDecode(token);
+                const currentTime = Date.now() / 1000;
 
-                const response = await axios.get(`${BACKEND_URL}/user/profile?username=${username}`);
-                const avatar = response.data.avatar ? `${BACKEND_URL}${response.data.avatar}` : null;
-                const dobDate = response.data.dob ? new Date(response.data.dob) : null;
+                // Check if token is expired
+                if (decoded.exp < currentTime) {
+                    console.error("Token has expired");
+                    handleLogout();
+                    return;
+                }
 
-                const formattedDob = dobDate && !isNaN(dobDate.getTime())
-                    ? `${dobDate.getDate().toString().padStart(2, '0')}/${(dobDate.getMonth() + 1).toString().padStart(2, '0')}/${dobDate.getFullYear()}`
-                    : "Chưa cập nhật";
+                const fetchProfile = async () => {
+                    try {
+                        const response = await axios.get(`${BACKEND_URL}/user/profile`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                        });
 
-                setProfile({
-                    ...response.data,
-                    avatar,
-                    dob: formattedDob
-                });
+                        const avatar = response.data.avatar
+                            ? response.data.avatar.startsWith('http')
+                                ? response.data.avatar
+                                : `${BACKEND_URL}${response.data.avatar}`
+                            : null;
 
-                setLoading(false);
-            } catch (err) {
-                console.error("Error fetching profile:", err);
-                setError("Không tìm thấy người dùng hoặc lỗi server!");
-                setLoading(false);
+                        const dobDate = response.data.dob ? new Date(response.data.dob) : null;
+                        const formattedDob = dobDate && !isNaN(dobDate.getTime())
+                            ? `${dobDate.getDate().toString().padStart(2, '0')}/${(dobDate.getMonth() + 1).toString().padStart(2, '0')}/${dobDate.getFullYear()}`
+                            : "Chưa cập nhật";
+
+                        setProfile({
+                            ...response.data,
+                            avatar,
+                            dob: formattedDob,
+                        });
+
+                        setLoading(false);
+                    } catch (err) {
+                        console.error("Error fetching profile:", err);
+                        if (err.response?.status === 401) {
+                            handleLogout();
+                        } else {
+                            setError("Không tìm thấy người dùng hoặc lỗi server!");
+                            setLoading(false);
+                        }
+                    }
+                };
+
+                fetchProfile();
+
+                // Clear the updated state if it exists
+                if (location.state?.updated) {
+                    window.history.replaceState({}, document.title);
+                }
+            } catch (error) {
+                console.error("Invalid token:", error);
+                handleLogout();
             }
-        };
-
-        fetchProfile();
-    }, [location]);useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const queryParams = new URLSearchParams(location.search);
-                const username = queryParams.get("username");
-                if (!username) throw new Error("Username is required");
-    
-                const response = await axios.get(`${BACKEND_URL}/user/profile?username=${username}`);
-                const avatar = response.data.avatar ? `${BACKEND_URL}${response.data.avatar}` : null;
-                const dobDate = response.data.dob ? new Date(response.data.dob) : null;
-    
-                const formattedDob = dobDate && !isNaN(dobDate.getTime())
-                    ? `${dobDate.getDate().toString().padStart(2, '0')}/${(dobDate.getMonth() + 1).toString().padStart(2, '0')}/${dobDate.getFullYear()}`
-                    : "Chưa cập nhật";
-    
-                setProfile({
-                    ...response.data,
-                    avatar,
-                    dob: formattedDob
-                });
-    
-                setLoading(false);
-            } catch (err) {
-                console.error("Error fetching profile:", err);
-                setError("Không tìm thấy người dùng hoặc lỗi server!");
-                setLoading(false);
-            }
-        };
-    
-        fetchProfile();
-    
-
-        if (location.state?.updated) {
-            window.history.replaceState({}, document.title); 
+        } else {
+            navigate('/login');
         }
     }, [location]);
-    
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+        window.location.reload();
+    };
 
     const handleEditProfile = () => {
         if (profile?.username) {
@@ -146,7 +149,6 @@ const Profile = () => {
             </div>
         </div>
     );
-
 };
 
 // Reusable Input Field Component

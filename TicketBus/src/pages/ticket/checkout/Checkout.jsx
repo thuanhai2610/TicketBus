@@ -4,7 +4,10 @@ import TopLayout from '../../../layout/toppage/TopLayout';
 import RootLayout from '../../../layout/RootLayout';
 import PassengerData from './passengerdata/PassengerData';
 import BookingStatus from './bookingstatus/BookingStatus';
+import { useLocation } from 'react-router-dom';
 const Checkout = () => {
+  const location = useLocation();
+  const { tripInfo, selectedSeats, vehicleId, seatData, username, tripId } = location.state || {};
   return (
     <div>
         {/* Top Layout */}
@@ -19,7 +22,11 @@ const Checkout = () => {
             {/* Passenger Detail */}
             <PassengerData />
             {/* Ticket Report Status */}
-            <BookingStatus />
+            <BookingStatus tripInfo={tripInfo}
+            selectedSeats={selectedSeats}
+            vehicleId={vehicleId}
+            seatData={seatData} />
+            
 
         </div>
       </RootLayout>

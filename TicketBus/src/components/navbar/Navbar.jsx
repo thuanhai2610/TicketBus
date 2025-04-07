@@ -35,7 +35,7 @@ const Navbar = () => {
 
                 const fetchUserData = async () => {
                     try {
-                        const response = await axios.get(`${API_BASE_URL}/user/profile?username=${decoded.username}`, {
+                        const response = await axios.get(`${API_BASE_URL}/user/profile`, {
                             headers: { Authorization: `Bearer ${token}` },
                         });
                         setFirstName(response.data.firstName || '');
@@ -77,7 +77,7 @@ const Navbar = () => {
     };
 
     const handleGoToProfile = () => {
-        navigate(`/user/profile?username=${username}`);
+        navigate(`/user/profile`);
     };
 
     useEffect(() => {
