@@ -30,8 +30,17 @@ export class VehicleService {
     return this.vehicleRepository.findOne(id);
   }
 
-  findOne(vehicleId: string): Promise<Vehicle> {
-    return this.vehicleRepository.findOne(vehicleId);
+  async findOne(vehicleId: string): Promise<Vehicle> {
+    try {
+      const vehicle = await this.vehicleModel.findOne({ vehicleId }).exec();
+      if (vehicle) {
+        return vehicle;
+      }
+      
+      throw new NotFoundException(`Vehicle with ID ${vehicleId} not found`);
+    } catch (error) {
+      throw new NotFoundException(`Vehicle with ID ${vehicleId} not found: ${error.message}`);
+    }
   }
 
   update(id: string, updateVehicleDto: UpdateVehicleDto): Promise<Vehicle> {
@@ -55,61 +64,98 @@ export class VehicleService {
     
     return vehicles || [];
   }
-  async updateSeatCount(vehicleId: string, increment: boolean = false): Promise<Vehicle> {
-    console.log(`Starting updateSeatCount for vehicle ${vehicleId}, increment=${increment}`);
+  async updateSeatCount(vehicleId: string, arg2?: string[] | boolean, arg3?: number | boolean): Promise<Vehicle> {
+    console.log(`Starting updateSeatCount for vehicle ${vehicleId}`);
     
-    // Fetch the vehicle
-    const vehicle = await this.findOne(vehicleId);
-    if (!vehicle) {
-      throw new NotFoundException('Vehicle not found');
-    }
+    let seatNumbers: string[] = [];
+    let increment: boolean = false;
+    let count: number = 1;
     
-    // Get current seat counts
-    const available = vehicle.availableSeats;
-    const total = vehicle.seatCount;
-    
-    // Debug logging
-    console.log(`Current available seats: ${available}, total seats: ${total}`);
-    
-    // Validate seat counts
-    if (typeof available !== 'number' || typeof total !== 'number' || total <= 0) {
-      throw new BadRequestException('Invalid seat count values');
-    }
-    
-    let newAvailable: number;
-    if (increment) {
-      newAvailable = Math.min(available + 1, total); 
-      console.log(`Incrementing seats, new available: ${newAvailable}`);
+    // Handle different calling patterns
+    if (Array.isArray(arg2)) {
+      // New style: (vehicleId, seatNumbers[], increment?)
+      seatNumbers = arg2;
+      count = seatNumbers.length;
+      increment = typeof arg3 === 'boolean' ? arg3 : false;
     } else {
-      if (available <= 0) {
-        throw new BadRequestException('No seats available');
-      }
-      newAvailable = available - 1;
-      console.log(`Decrementing seats, new available: ${newAvailable}`);
+      // Old style: (vehicleId, increment?, count?)
+      increment = typeof arg2 === 'boolean' ? arg2 : false;
+      count = typeof arg3 === 'number' ? arg3 : 1;
     }
     
-    try {
-      // Force update using updateOne instead of findOneAndUpdate to avoid potential issues
-      const updateResult = await this.vehicleModel.updateOne(
-        { vehicleId },
-        { $set: { availableSeats: newAvailable } }
-      ).exec();
-      
-      if (updateResult.matchedCount === 0) {
-        throw new BadRequestException('Vehicle not found during update');
-      }
-      
-      // Now fetch the updated vehicle to return
-      const updatedVehicle = await this.findOne(vehicleId);
-      if (!updatedVehicle) {
-        throw new BadRequestException('Failed to retrieve updated vehicle');
-      }
-      
-      console.log(`Updated vehicle availableSeats: ${updatedVehicle.availableSeats}`);
-      return updatedVehicle;
-    } catch (error) {
-      console.error(`Error updating vehicle seat count: ${error.message}`);
-      throw new BadRequestException(`Failed to update vehicle seat count: ${error.message}`);
+    console.log(`Parameters resolved: increment=${increment}, count=${count}, seatNumbers=${JSON.stringify(seatNumbers)}`);
+    
+    // Ensure count is a valid number
+    if (isNaN(count) || count <= 0) {
+      console.warn(`Invalid seat count value: ${count}, using default of 1`);
+      count = 1;
     }
+    
+    let retries = 3;
+    while (retries > 0) {
+      // Fetch the vehicle
+      const vehicle = await this.findOne(vehicleId);
+      if (!vehicle) {
+        throw new NotFoundException('Vehicle not found');
+      }
+  
+      // Get current seat counts
+      const available = vehicle.availableSeats;
+      const total = vehicle.seatCount;
+  
+      // Debug logging
+      console.log(`Current available seats: ${available}, total seats: ${total}, operation: ${increment ? 'increment' : 'decrement'} by ${count}`);
+  
+      // Validate seat counts
+      if (typeof available !== 'number' || typeof total !== 'number' || total <= 0) {
+        throw new BadRequestException('Invalid seat count values');
+      }
+  
+      let newAvailable: number;
+      if (increment) {
+        newAvailable = Math.min(available + count, total);
+        console.log(`Incrementing seats by ${count}, new available: ${newAvailable}`);
+      } else {
+        if (available < count) {
+          throw new BadRequestException(`Not enough seats available. Requested: ${count}, Available: ${available}`);
+        }
+        newAvailable = available - count;
+        console.log(`Decrementing seats by ${count}, new available: ${newAvailable}`);
+      }
+  
+      try {
+        // Update the vehicle's availableSeats with optimistic concurrency
+        const updateResult = await this.vehicleModel.updateOne(
+          { vehicleId, availableSeats: available }, // Match the current availableSeats value
+          { $set: { availableSeats: newAvailable } }
+        ).exec();
+  
+        if (updateResult.matchedCount === 0) {
+          retries--;
+          console.warn(`Concurrency conflict detected, retrying (${retries} attempts left)`);
+          if (retries === 0) {
+            throw new BadRequestException('Failed to update vehicle seat count due to concurrency conflict');
+          }
+          continue;
+        }
+  
+        // Fetch the updated vehicle to return
+        const updatedVehicle = await this.findOne(vehicleId);
+        if (!updatedVehicle) {
+          throw new BadRequestException('Failed to retrieve updated vehicle');
+        }
+  
+        console.log(`Successfully updated vehicle availableSeats from ${available} to ${updatedVehicle.availableSeats}`);
+        return updatedVehicle;
+      } catch (error) {
+        console.error(`Error updating seat count: ${error.message}`);
+        retries--;
+        if (retries === 0) {
+          throw new BadRequestException(`Failed to update vehicle seat count: ${error.message}`);
+        }
+      }
+    }
+  
+    throw new BadRequestException('Failed to update vehicle seat count after multiple retries');
   }
 }

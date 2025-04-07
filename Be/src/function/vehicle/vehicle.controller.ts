@@ -22,11 +22,10 @@ export class VehicleController {
   //   return this.vehicleService.findAll();
   // }
 
-  @Get(':id')
-  findOne(@Param('companyId') companyId: string) {
-    return this.vehicleService.findOne(companyId);
+  @Get(':vehicleId')
+  findOne(@Param('vehicleId') vehicleId: string) {
+    return this.vehicleService.findOne(vehicleId);
   }
-
   @Put(':id')
   update(@Param('id') id: string, @Body() updateVehicleDto: UpdateVehicleDto) {
     return this.vehicleService.update(id, updateVehicleDto);

@@ -1,21 +1,28 @@
-import { Prop } from '@nestjs/mongoose';
-import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+// seat/dto/create-seat.dto.ts
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateSeatDto {
-    @IsNotEmpty()
-    @IsString()
-    seatId: string;
-    
   @IsNotEmpty()
-    @IsString()
-    @Prop({required: true, type: String, ref : 'Vehicle' })
-   vehicleId: string;
+  @IsString()
+  seatId: string;
 
-   @IsNotEmpty()
-   @IsString()
-   seatNumber: string;
-    
-   @IsNotEmpty()
-   @IsBoolean()
-   isAvailable: boolean
+  @IsNotEmpty()
+  @IsString()
+  vehicleId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  tripId: string; // Added to match the Seat schema
+
+  @IsNotEmpty()
+  @IsString()
+  seatNumber: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  isAvailable: boolean;
+
+  @IsNotEmpty()
+  @IsNumber()
+  price: number; // Added to match the Seat schema
 }

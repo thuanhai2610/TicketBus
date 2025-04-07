@@ -1,5 +1,5 @@
 import { Prop } from '@nestjs/mongoose';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateTicketDto {
     @IsNotEmpty()
@@ -24,14 +24,15 @@ export class CreateTicketDto {
 
 
   @IsNotEmpty()
-  @IsString()
-  seatNumber: string;
+ 
+  @IsArray({ each: true })
+  seatNumber: string[];
 
   @IsNotEmpty()
   ticketPrice: number;
 
   @IsNotEmpty()
-   @IsEnum(['Paid', 'Ordered',  'Cancelled'])
+   @IsEnum(['Paid', 'Booked',  'Cancelled'])
    status: string;
 
    @IsNotEmpty()
