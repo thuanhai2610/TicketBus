@@ -13,8 +13,7 @@ export class PaymentRepository {
     @InjectModel(Payment.name) private paymentModel: Model<PaymentDocument>,
   ) {}
 
-  async createPayment(data: {
-    paymentId: string;
+  async createPayment(data: {  paymentId: string;
     ticketId: string;
     companyId: string;
     amount: number;

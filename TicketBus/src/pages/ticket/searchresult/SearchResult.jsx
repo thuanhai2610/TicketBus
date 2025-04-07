@@ -134,7 +134,6 @@ const SearchResult = () => {
               busName={`Bus ${trip.vehicleId || 'Unknown'}`}
               routeFrom={trip.departurePoint || 'Unknown'}
               routeTo={trip.destinationPoint || 'Unknown'}
-            //   arrivalTime={trip.arrivalTime ? formatTime(trip.arrivalTime) : 'TBD'}
               departureTime={trip.departureTime ? formatTime(trip.departureTime) : 'TBD'}
               arrivalTime={trip.arrivalTime ? formatTime(trip.arrivalTime) : 'TBD'}
               price={formatPrice(trip.price)}

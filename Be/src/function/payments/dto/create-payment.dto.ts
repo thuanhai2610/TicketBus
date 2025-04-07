@@ -23,6 +23,7 @@ export class CreatePaymentDto {
   @IsNotEmpty()
   @IsString()
   companyId: string;
+  
   @IsNotEmpty()
   @IsEnum(PaymentMethod)
   paymentMethod: PaymentMethod;

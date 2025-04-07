@@ -22,13 +22,13 @@ export class Ticket {
       tripId: string;
   
   
-      @Prop({required: true, type: String, ref : 'Seat' })
-    seatNumber: string;
+      @Prop({required: true, type: [String], ref : 'Seat' })
+    seatNumber: string[];
     
     @Prop({required: true, type: Number, ref : 'Trip' })
     ticketPrice: number;
   
-    @Prop({required: true, type: String, enum: ['Ready', 'Paid', 'Ordered', 'Cancelled'], default: 'Ready' })
+    @Prop({required: true, type: String, enum: ['Ready', 'Paid', 'Booked', 'Cancelled'] })
      status: string;
   
      @Prop({ required: true, type: Date })

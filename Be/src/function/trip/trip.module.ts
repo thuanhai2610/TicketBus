@@ -8,6 +8,7 @@ import {  TripService } from './trip.service';
 import { Company, CompanySchema } from '../companies/schemas/company.schema';
 import { VehicleModule } from '../vehicle/vehicle.module';
 import { DriverModule } from '../driver/driver.module';
+import { SeatModule } from '../seats/seat.module';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { DriverModule } from '../driver/driver.module';
       { name: Company.name, schema: CompanySchema },
     
     ]),
-    VehicleModule, DriverModule
+    VehicleModule, DriverModule, SeatModule
   ],
   controllers: [TripController],
   providers: [ TripRepository, TripService], 

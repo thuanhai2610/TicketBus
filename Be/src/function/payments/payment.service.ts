@@ -9,6 +9,8 @@ import { Model } from 'mongoose';
 import { Ticket, TicketDocument } from '../tickets/schemas/ticket.schema';
 import { Trip, TripDocument } from '../trip/schemas/trip.schema';
 import { PaymentRepository } from './payment.repsitory';
+import { Seat, SeatDocument } from '../seats/schemas/seat.schema';
+import { CreateTicketDto } from '../tickets/dto/create-ticket.dto';
 
 @Injectable()
 export class PaymentService {
@@ -18,6 +20,7 @@ export class PaymentService {
     private readonly vehicleService: VehicleService,
     @InjectModel(Ticket.name) private ticketModel: Model<TicketDocument>,
     @InjectModel(Trip.name) private tripModel: Model<TripDocument>,
+    @InjectModel(Seat.name) private seatModel: Model<SeatDocument>
   ) {}
 
   async createPayment(dto: CreatePaymentDto): Promise<PaymentDocument> {
@@ -26,8 +29,6 @@ export class PaymentService {
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${dto.ticketId} not found`);
     }
-
-    // Tạo paymentId thủ công
     const paymentId = `PAYMENT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     // Tạo thanh toán
@@ -43,24 +44,49 @@ export class PaymentService {
     // Nếu thanh toán hoàn tất, cập nhật trạng thái vé và số ghế trống của xe
     if (dto.paymentStatus === 'completed') {
       // Cập nhật trạng thái vé thành 'paid'
-      await this.ticketModel
-        .findOneAndUpdate(
-          { ticketId: dto.ticketId },
-          { status: 'paid', updatedAt: new Date() },
-          { new: true },
-        )
-        .exec();
-
+      await this.ticketService.updateTicketStatus(dto.ticketId, 'Paid');
+     
       // Lấy thông tin chuyến đi để biết vehicleId
       const trip = await this.tripModel.findOne({ tripId: ticket.tripId }).exec();
       if (!trip) {
         throw new NotFoundException('Trip not found');
       }
-
-      // Giảm số ghế trống của xe
-      await this.vehicleService.updateSeatCount(trip.vehicleId);
-    }
-
+      let seatNumbers: string[] = [];
+    
+      if (typeof ticket.seatNumber === 'string') {
+        // If it's a single seat as string
+        seatNumbers = [ticket.seatNumber];
+        await this.seatModel.findOneAndUpdate(
+          { 
+            tripId: ticket.tripId, 
+            seatNumber: ticket.seatNumber 
+          },
+          { isAvailable: false, updatedAt: new Date() },
+          { new: true }
+        ).exec();
+      } else if (Array.isArray(ticket.seatNumber)) {
+        // If it's an array of seats
+        seatNumbers = ticket.seatNumber;
+        
+        // Update all seats in the array to not available
+        for (const seatNumber of seatNumbers) {
+          await this.seatModel.findOneAndUpdate(
+            { 
+              tripId: ticket.tripId, 
+              seatNumber: seatNumber 
+            },
+            { isAvailable: false, updatedAt: new Date() },
+            { new: true }
+          ).exec();
+        }
+      }
+      
+      console.log(`Processing ticket ${ticket.ticketId} with ${seatNumbers.length} seats: ${seatNumbers.join(', ')}`);
+      console.log(`Decrementing seat count for vehicle ${trip.vehicleId} by ${seatNumbers.length}`);
+      
+      // Giảm số ghế trống của xe - pass the actual seat array
+      await this.vehicleService.updateSeatCount(trip.vehicleId, seatNumbers);
+    } 
     return payment;
   }
 

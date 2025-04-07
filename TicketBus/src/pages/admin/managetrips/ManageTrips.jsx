@@ -408,13 +408,20 @@ const ManageTrips = () => {
         ...newTrip,
         departureTime,
         arrivalTime,
-      };
+      }; console.log('Sending trip data:', tripToSend);
       const response = await axios.post("http://localhost:3001/trip", tripToSend, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
+      if (!response.data) { 
+        setNotification({
+          open: true,
+          message: "Không thể tạo chuyến đi vì tài xế hoặc xe đã được phân công.",
+          severity: "warning",
+        });
+        return;
+      }
       handleCloseCreateTripDialog();
       setNotification({
         open: true,

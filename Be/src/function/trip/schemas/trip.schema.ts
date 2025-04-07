@@ -4,18 +4,18 @@ import { Document } from 'mongoose';
 
 export type TripDocument = Trip & Document;
 
-@Schema({ timestamps: true , collection : 'trip'})
+@Schema({ timestamps: true, collection: 'trip' })
 export class Trip {
-  @Prop({ required: true, type: String})
+  @Prop({ required: true, type: String, index: true, unique: true })
   tripId: string;
 
-  @Prop({required: true, type: String, ref : 'Company'})
+  @Prop({ required: true, type: String, ref: 'Company', index: true })
   companyId: string;
 
-  @Prop({ required: true, type: String, ref: 'Vehicle'}) 
+  @Prop({ required: true, type: String, ref: 'Vehicle',  index: true }) 
   vehicleId: string;
 
-  @Prop({ required: true, type: String, ref: 'Driver' }) 
+  @Prop({ required: true, type: String, ref: 'Driver', index: true }) 
   driverId: string;
 
   @Prop({ required: true })
@@ -39,6 +39,12 @@ export class Trip {
 
 export const TripSchema = SchemaFactory.createForClass(Trip);
 
+// Manually configure indexes after schema creation
+TripSchema.index({ tripId: 1 }, { unique: true });
+TripSchema.index({ companyId: 1 }, { unique: false }); 
+TripSchema.index({ driverId: 1 }, { unique: false });
+TripSchema.index({ vehicleId: 1 }, { unique: false });
+
 TripSchema.pre('save', async function (next) {
   const trip = this as TripDocument;
   const company = await this.model('Company').findOne({companyId: trip.companyId}).exec();
@@ -54,6 +60,26 @@ TripSchema.pre('save', async function (next) {
   }
   if (!driver) {
     const error = new Error(`Driver with ID ${trip.driverId} does not exist`);
+    return next(error);
+  }
+  const existingTrip = await this.model('Trip').findOne({
+    driverId: trip.driverId,
+    status: { $in: ['PENDING', 'IN_PROGRESS'] },
+    _id: { $ne: trip._id } // Exclude current document if it's an update
+  }).exec();
+
+  if (existingTrip) {
+    const error = new Error(`Tài xế ${trip.driverId} đã được phân công cho chuyến đi khác và chưa hoàn thành`);
+    return next(error);
+  }
+  const existingTripWithVehicle = await this.model('Trip').findOne({
+    vehicleId: trip.vehicleId,
+    status: { $in: ['PENDING', 'IN_PROGRESS'] },
+    _id: { $ne: trip._id } // Exclude current document if it's an update
+  }).exec();
+
+  if (existingTripWithVehicle) {
+    const error = new Error(`Phương tiện ${trip.vehicleId} đã được phân công cho chuyến đi khác và chưa hoàn thành`);
     return next(error);
   }
 
