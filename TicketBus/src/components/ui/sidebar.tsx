@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
@@ -267,9 +269,6 @@ const Sidebar = React.forwardRef<
 )
 Sidebar.displayName = "Sidebar"
 
-
-
-
 const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
@@ -482,17 +481,6 @@ const SidebarGroupAction = React.forwardRef<
   )
 })
 SidebarGroupAction.displayName = "SidebarGroupAction"
-
-// export const SidebarItem = ({ icon, label, to }) => {
-//   return (
-//     <Link to={to} className="flex items-center p-2 hover:bg-accent rounded-lg">
-//       {icon}
-//       <span className="ml-3">{label}</span>
-//     </Link>
-//   );
-// };
-
-
 
 const SidebarGroupContent = React.forwardRef<
   HTMLDivElement,
@@ -782,6 +770,4 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
-  
 }
-
