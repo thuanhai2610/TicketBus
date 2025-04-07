@@ -3,6 +3,7 @@ import { TicketService } from './ticket.service';
 import { TripService } from '../trip/trip.service';
 import { SeatService } from '../seats/seat.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
+import { SeatAvailabilityStatus } from '../seats/schemas/seat.schema';
 
 @Controller('tickets')
 export class TicketController {
@@ -36,7 +37,7 @@ export class TicketController {
   
   // New endpoint to get ticket information when a seat is selected
   @Post('get-seat-info')
-  async getSeatInfo(@Body() body: { tripId: string, seatNumber: string }) {
+  async getSeatInfo(@Body() body: { tripId: string, seatNumber: string[] }) {
     if (!body.tripId || !body.seatNumber) {
       throw new BadRequestException('tripId and seatNumber are required');
     }
@@ -47,49 +48,53 @@ export class TicketController {
   
   // New endpoint to place a temporary hold on a seat before payment
   @Post('hold-seat')
-async holdSeat(@Body() body: { tripId: string, seatNumber: string, userId: string }) {
-  if (!body.tripId || !body.seatNumber || !body.userId) {
-    throw new BadRequestException('tripId, seatNumber, and userId are required');
-  }
-
-  try {
-    // Fetch the trip to get companyId and ticketPrice
-    const trip = await this.tripService.findOne(body.tripId);
-    if (!trip) {
-      throw new NotFoundException('Trip not found');
+  async holdSeat(@Body() body: { tripId: string, seatNumber: string[], userId: string }) {
+    if (!body.tripId || !body.seatNumber || !body.userId) {
+      throw new BadRequestException('tripId, seatNumber, and userId are required');
     }
-
-    // Generate a unique ticketId (you can use a UUID library or another method)
-    const ticketId = `TICKET-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const ticketData: CreateTicketDto = {
-      ticketId, 
-      tripId: body.tripId,
-      userId: body.userId,
-      seatNumber: body.seatNumber,
-      companyId: trip.companyId, 
-      ticketPrice: trip.price, 
-      bookedAt: new Date(), 
-      status: 'Ready' 
-    };
-
-    const ticket = await this.ticketsService.bookTicket(ticketData);
-
-    return {
-      message: 'Seat held successfully',
-      ticket: {
-        ticketId: ticket.ticketId,
-        status: ticket.status,
-        ticketPrice: ticket.ticketPrice,
-        seatNumber: ticket.seatNumber
-      },
-      paymentDetails: {
-        amount: ticket.ticketPrice,
+  
+    try {
+      // Fetch the trip to get companyId and ticketPrice
+      const trip = await this.tripService.findOne(body.tripId);
+      if (!trip) {
+        throw new NotFoundException('Trip not found');
       }
-    };
-  } catch (error) {
-    throw error;
+  
+      // Generate a unique ticketId
+      const ticketId = `TICKET-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Calculate total price based on number of seats
+      const totalPrice = trip.price * body.seatNumber.length;
+      
+      const ticketData: CreateTicketDto = {
+        ticketId, 
+        tripId: body.tripId,
+        userId: body.userId,
+        seatNumber: body.seatNumber,
+        companyId: trip.companyId, 
+        ticketPrice: totalPrice,
+        bookedAt: new Date(), 
+        status: 'Booked'  
+      };
+  
+      const ticket = await this.ticketsService.bookTicket(ticketData);
+      return {
+        message: 'Seats booked successfully',
+        ticket: {
+          ticketId: ticket.ticketId,
+          status: ticket.status,
+          ticketPrice: ticket.ticketPrice,
+          seatNumber: ticket.seatNumber
+        },
+        paymentDetails: {
+          amount: ticket.ticketPrice,
+        }
+      };
+    } catch (error) {
+      throw error;
+    }
   }
-}
+  
   
   @Post(':ticketId/update-status')
   async updateTicketStatus(

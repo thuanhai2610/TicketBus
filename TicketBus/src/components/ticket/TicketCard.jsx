@@ -50,7 +50,7 @@ const TicketCard = ({ icon: Icon, busName, routeFrom, routeTo, arrivalTime,depar
                                <div className="flex items-center gap-x-1 bg-neutral-200/50 rounded-full px-1.5 py-0.5">
                                     <MdOutlineChair className='w-4 h-4 text-primary -rotate-90'/>
                                     <p className="text-xs text-neutral-600 font-normal">
-                                        35 seats
+                                    {availableSeats} seats
                                     </p>
                                </div>
                             </div>
@@ -64,7 +64,7 @@ const TicketCard = ({ icon: Icon, busName, routeFrom, routeTo, arrivalTime,depar
 
                        <div className="w-full flex items-center justify-between gap-x-2.5">
                         <h1 className="text-2xl text-neutral-600 font-semibold">
-                            {arrivalTime}
+                            {departureTime}
                         </h1>
 
                         <div className="flex-1 border-dashed border border-neutral-300 relative">
@@ -74,7 +74,7 @@ const TicketCard = ({ icon: Icon, busName, routeFrom, routeTo, arrivalTime,depar
                             </div>
                         
                         <h1 className="text-2xl text-neutral-600 font-semibold">
-                            {departureTime}
+                            {arrivalTime}
                         </h1>
                        </div>
 
@@ -97,7 +97,7 @@ const TicketCard = ({ icon: Icon, busName, routeFrom, routeTo, arrivalTime,depar
             <div className="w-full flex items-center justify-between">
                 {/* price */}
                 <h1 className="text-xl text-neutral-700 font-semibold">
-                    $. {price} <span className="text-sm text-neutral-500 font-normal">
+                   {price} <span className="text-sm text-neutral-500 font-normal">
                         /per seat
                     </span>
                 </h1>

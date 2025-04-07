@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 
 import React, { useEffect, useState } from 'react'
 import { GiSteeringWheel } from 'react-icons/gi'
@@ -7,7 +9,49 @@ import { Link, Links } from 'react-router-dom';
 import ErrorMessage from '../../../../../components/alertmessage/errormsg/ErrorMessage';
 
 const BusSeat = () => {
-
+    const [trips, setTrips] = useState([]);
+      const [tripsLoading, setTripsLoading] = useState(false);
+      const [tripsError, setTripsError] = useState(null);
+    const fetchTrips = async (pageNum) => {
+        setTripsLoading(true);
+        try {
+          const response = await axios.get('http://localhost:3001/trip/all', {
+            params: { page: pageNum, limit },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+          
+          // Handle the case where response.data is an array directly
+          const newTrips = Array.isArray(response.data) ? response.data : response.data?.trips || [];
+          
+          setTrips((prevTrips) => (pageNum === 1 ? newTrips : [...prevTrips, ...newTrips]));
+          setHasMore(newTrips.length === limit); // If we get fewer trips than the limit, there are no more to load
+          
+          // Extract vehicleIds to fetch vehicle data
+          const vehicleIds = newTrips.map(trip => trip.vehicleId).filter(Boolean);
+          if (vehicleIds.length > 0) {
+            fetchVehicles(vehicleIds);
+          }
+        } catch (error) {
+          console.error("Error fetching trips:", error);
+          setTripsError(error.response?.data?.message || 'Failed to fetch trips');
+          setTrips([]); // Reset trips to empty array on error
+        } finally {
+          setTripsLoading(false);
+        }
+      };
+    
+      useEffect(() => {
+        fetchTrips(); // Fetch the first page on mount
+      }, []); 
+    
+      const handleLoadMore = () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchTrips(nextPage);
+      };
+    
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [showError, setShowError] = useState(false);
 
@@ -176,7 +220,7 @@ const BusSeat = () => {
                     <div className="space-y-0.5 w-full">
                         <div className="w-full flex items-center justify-between gap-x-5">
                             <p className="text-sm text-neutral-400 font-normal">
-                                From <span className="text-xs">(Nha Trang)</span>
+                                From <span className="text-xs"></span>
                             </p>
                             <p className="text-sm text-neutral-400 font-normal">
                                 To <span className="text-xs">(Da Nang)</span>
@@ -195,6 +239,7 @@ const BusSeat = () => {
                         </div>
 
                     </div>
+                    
                 </div>
 
                 <div className="w-full space-y-2">
