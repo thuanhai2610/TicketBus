@@ -9,8 +9,7 @@ import ToggleBtn from '../../../components/togglebtn/ToggleBtn';
 import Amenites from './amenites/Amenites';
 
 const Detail = () => {
-
-  //Show the warning message box
+  
   const message =(
       <>
         One individual only can book 10 seats . If you want to book more than 10,
@@ -32,7 +31,7 @@ const Detail = () => {
           
           {/* Warning Message */}
             <WarningAlert  message={message}/>
-          {/* Seat Layout */}
+           
             <BusSeat />
 
         </div>

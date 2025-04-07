@@ -75,19 +75,6 @@ export class SeatService {
   
     return seats;
   }
-  async updateAvailability(seatId: string, isAvailable: boolean): Promise<SeatDocument> {
-    const updatedSeat = await this.seatModel
-      .findOneAndUpdate(
-        { seatId },
-        { $set: { isAvailable } },
-        { new: true }, // Return the updated document
-      )
-      .exec();
-    if (!updatedSeat) {
-      throw new NotFoundException('Seat not found');
-    }
-    return updatedSeat;
-  }
   async updateAvailabilityStatus(seatId: string, status: SeatAvailabilityStatus): Promise<Seat> {
     const seat = await this.seatModel.findOne({ seatId }).exec();
     if (!seat) {
@@ -98,8 +85,8 @@ export class SeatService {
     return seat.save();
   }
   
-  async findByTripId(tripId: string): Promise<Seat[]> {
-    return this.seatModel.find({ tripId }).exec();
+  async findByVehicleId(vehicleId: string): Promise<Seat[]> {
+    return this.seatModel.find({ vehicleId }).exec();
   }
   async checkSeatsAvailability(vehicleId: string, seatNumbers: string[]): Promise<{ 
     available: boolean,

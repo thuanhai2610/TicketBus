@@ -12,11 +12,10 @@ export class Ticket {
       @Prop({required: true, type: String, ref : 'Company' })
       companyId: string;
   
-    
+      @Prop({required: true, type: String})
+      vehicleId: string;
       @Prop({required: true, type: String, ref : 'User' })
-     userId: string;
-  
-  
+     username: string;
    
       @Prop({required: true, type: String, ref : 'Trip' })
       tripId: string;

@@ -64,7 +64,8 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/user/profile" element={<Profile />} />
             <Route path="/update-profile" element={<UpdateProfile />} />
-            <Route path="/bus-tickets/detail" element={<Detail />} />
+            <Route path="/bus-tickets/detail/:vehicleId" element={<Detail />} />
+            {/* <Route path="/bus-tickets/detail" element={<Detail />} /> */}
             <Route path="/bus-tickets/checkout" element={<Checkout />} />
             <Route path="/bus-tickets/payment" element={<Invoice />} />
 

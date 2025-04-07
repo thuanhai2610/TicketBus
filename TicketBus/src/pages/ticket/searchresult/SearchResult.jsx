@@ -4,9 +4,11 @@ import TicketCard from '../../../components/ticket/TicketCard';
 import { FaBus } from 'react-icons/fa';
 import { GrRefresh } from 'react-icons/gr';
 import { Box, CircularProgress, Typography } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const SearchResult = () => {
+  const navigate = useNavigate();
   const [trips, setTrips] = useState([]);
   const [vehicles, setVehicles] = useState({});
   const [tripsLoading, setTripsLoading] = useState(false);
@@ -22,14 +24,11 @@ const SearchResult = () => {
     return `${hours}:${minutes}`;
   };
 
-  const fetchVehicles = async (vehicleIds) => {
+  const fetchVehicles = async (vehicleIds) => { // Đổi tên tham số thành vehicleIds cho rõ ràng
     try {
-      // Remove duplicates from vehicleIds
-      const uniqueVehicleIds = [...new Set(vehicleIds)];
-      
-      // Fetch all vehicles in a single request if possible, or individually if needed
+      const uniqueVehicleIds = [...new Set(vehicleIds)]; // Loại bỏ trùng lặp
       const vehicleData = {};
-      
+  
       for (const vehicleId of uniqueVehicleIds) {
         try {
           const response = await axios.get(`http://localhost:3001/vehicle/${vehicleId}`, {
@@ -37,7 +36,6 @@ const SearchResult = () => {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           });
-          
           if (response.data) {
             vehicleData[vehicleId] = response.data;
           }
@@ -45,8 +43,8 @@ const SearchResult = () => {
           console.error(`Error fetching vehicle ${vehicleId}:`, err);
         }
       }
-      
-      setVehicles(prevVehicles => ({...prevVehicles, ...vehicleData}));
+  
+      setVehicles(prevVehicles => ({ ...prevVehicles, ...vehicleData }));
     } catch (error) {
       console.error("Error fetching vehicles:", error);
     }
@@ -83,8 +81,8 @@ const SearchResult = () => {
   };
 
   useEffect(() => {
-    fetchTrips(1); // Fetch the first page on mount
-  }, []); // Empty dependency array means this runs once on mount
+    fetchTrips(1); 
+  }, []); 
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
@@ -108,7 +106,16 @@ const SearchResult = () => {
     if (!price && price !== 0) return "Contact for price";
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
-
+  const handleBusClick = (vehicleId) => {
+    console.log("Clicked vehicleId:", vehicleId);
+    if (vehicleId && typeof vehicleId === "string" && vehicleId.trim() !== "") {
+      const targetUrl = `/bus-tickets/detail/${vehicleId}`;
+      console.log("Navigating to:", targetUrl);
+      navigate(targetUrl);
+    } else {
+      console.error("vehicleId is undefined, empty, or invalid:", vehicleId);
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 100 }}
@@ -138,6 +145,7 @@ const SearchResult = () => {
               arrivalTime={trip.arrivalTime ? formatTime(trip.arrivalTime) : 'TBD'}
               price={formatPrice(trip.price)}
               availableSeats={getAvailableSeats(trip)}
+              onBusClick={() => handleBusClick(trip.vehicleId)}
               tripData={trip}
             />
           ))}

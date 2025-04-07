@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaUserCircle } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
 
 const UpdateProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -18,37 +19,63 @@ const UpdateProfile = () => {
   const BACKEND_URL = "http://localhost:3001";
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
       try {
-        const queryParams = new URLSearchParams(location.search);
-        const username = queryParams.get("username");
-        if (!username) {
-          throw new Error("Username is required");
-        }
-        const response = await axios.get(
-          `${BACKEND_URL}/user/profile?username=${username}`
-        );
-        const dobDate = response.data.dob ? new Date(response.data.dob) : null;
-        const formattedDob = dobDate && !isNaN(dobDate.getTime())
-          ? `${dobDate.getDate().toString().padStart(2, '0')}/${(dobDate.getMonth() + 1).toString().padStart(2, '0')}/${dobDate.getFullYear()}`
-          : "";
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
 
-        const profileData = {
-          ...response.data,
-          dob: formattedDob
+        // Check if token is expired
+        if (decoded.exp < currentTime) {
+          console.error("Token has expired");
+          handleLogout();
+          return;
+        }
+
+        const fetchProfile = async () => {
+          try {
+            const response = await axios.get(`${BACKEND_URL}/user/profile`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const dobDate = response.data.dob ? new Date(response.data.dob) : null;
+            const formattedDob = dobDate && !isNaN(dobDate.getTime())
+              ? dobDate.toISOString().split('T')[0] // Format as YYYY-MM-DD for input type="date"
+              : "";
+
+            const profileData = {
+              ...response.data,
+              dob: formattedDob,
+            };
+            console.log("Formatted profile data:", profileData);
+            setProfile(profileData);
+            setFormData(profileData);
+            setLoading(false);
+          } catch (error) {
+            console.error("Error fetching profile:", error);
+            if (error.response?.status === 401) {
+              handleLogout();
+            } else {
+              setError("Không tìm thấy người dùng hoặc lỗi server!");
+              setLoading(false);
+            }
+          }
         };
-        console.log("Formatted profile data:", profileData);
-        setProfile(profileData);
-        setFormData(profileData);
-        setLoading(false);
+        fetchProfile();
       } catch (error) {
-        console.error("Error fetching profile:", error);
-        setError("Không tìm thấy người dùng hoặc lỗi server!");
-        setLoading(false);
+        console.error("Invalid token:", error);
+        handleLogout();
       }
-    };
-    fetchProfile();
+    } else {
+      navigate('/login');
+    }
   }, [location]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+    window.location.reload();
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -87,12 +114,18 @@ const UpdateProfile = () => {
 
     setLoading(true);
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No token found. Please log in.");
+      }
+
       const formDataToSend = new FormData();
       formDataToSend.append("firstName", formData.firstName || "");
       formDataToSend.append("lastName", formData.lastName || "");
       formDataToSend.append("email", formData.email || "");
       formDataToSend.append("phone", formData.phone || "");
       if (formData.dob && formData.dob.trim() !== "") {
+        // Backend expects YYYY-MM-DD format, which is already the format from the date input
         formDataToSend.append("dob", formData.dob);
       }
       formDataToSend.append("gender", formData.gender || "");
@@ -106,29 +139,36 @@ const UpdateProfile = () => {
         `${BACKEND_URL}/user/update-profile`,
         formDataToSend,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       setSuccessMsg("Cập nhật thông tin thành công!");
 
       setTimeout(() => {
-        navigate(`/user/profile?username=${formData.username}`, {
+        navigate(`/user/profile`, {
           state: { updated: true },
         });
       }, 1000);
     } catch (error) {
       console.error("Error updating profile:", error);
-      setError(error.response?.data?.message || "Lỗi khi cập nhật thông tin! Vui lòng thử lại.");
+      if (error.response?.status === 401) {
+        handleLogout();
+      } else {
+        setError(error.response?.data?.message || "Lỗi khi cập nhật thông tin! Vui lòng thử lại.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-
   const handleCancel = () => {
-    navigate(`/user/profile?username=${profile?.username}`);
+    navigate(`/user/profile`);
   };
+
   const getImageUrl = (avatarPath) => {
     if (!avatarPath) return null;
 
@@ -136,7 +176,7 @@ const UpdateProfile = () => {
       return avatarPath;
     }
 
-    return `${BACKEND_URL}${avatarPath}`;
+    return avatarPath.startsWith('http') ? avatarPath : `${BACKEND_URL}${avatarPath}`;
   };
 
   if (loading && !profile) {
@@ -181,11 +221,6 @@ const UpdateProfile = () => {
             />
           </label>
           <h3 className="mt-2 text-xl font-semibold text-primary">{profile.username}</h3>
-          {/* <ul className="mt-4 space-y-2 text-primary font-semibold">
-            <li>Thông tin tài khoản</li>
-            <li>Địa chỉ giao hàng</li>
-            <li>Phương thức thanh toán</li>
-          </ul> */}
         </div>
 
         {/* Main Content */}
@@ -303,7 +338,6 @@ const UpdateProfile = () => {
         </div>
       </div>
     </div>
-
   );
 };
 
