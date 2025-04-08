@@ -9,36 +9,40 @@ import { TripService } from '../trip/trip.service';
 import { SeatService } from '../seats/seat.service';
 import { VehicleService } from '../vehicle/vehicle.service';
 import { TicketRepository } from './ticket.repsitory';
-import { SeatAvailabilityStatus } from '../seats/schemas/seat.schema';
+import { Seat, SeatAvailabilityStatus, SeatDocument } from '../seats/schemas/seat.schema';
+import { Trip, TripDocument } from '../trip/schemas/trip.schema';
 
 @Injectable()
 export class TicketService {
   constructor(
     @InjectModel(Ticket.name) private ticketModel: Model<TicketDocument>,
+    @InjectModel(Seat.name) private seatModel: Model<SeatDocument>,
+    @InjectModel(Trip.name) private tripModel: Model<TripDocument>,
+
     private readonly ticketRepository: TicketRepository,
     private tripService: TripService,
     private seatService: SeatService,
     private vehicleService: VehicleService
-  ) { }
+  ) {}
 
-  async bookTicket(createTicketDto: CreateTicketDto,): Promise<Ticket> {
+  async bookTicket(createTicketDto: CreateTicketDto, ): Promise<Ticket> {
     const trip = await this.tripService.findOne(createTicketDto.tripId);
     if (!trip) {
       throw new NotFoundException('Trip not found');
     }
-
+  
     // Ensure seatNumber is always an array
     const seatNumbers = createTicketDto.seatNumber;
     if (!seatNumbers || seatNumbers.length === 0) {
       throw new BadRequestException('At least one seat number must be provided');
     }
-
+  
     // Check availability for all seats
     const seats = await this.seatService.findByVehicleAndSeatNumbers(trip.vehicleId, seatNumbers);
     if (!seats || seats.length !== seatNumbers.length) {
       throw new NotFoundException('One or more seats not found for this vehicle');
     }
-
+  
     // Check if all seats are available
     const unavailableSeats = seats.filter(
       seat => seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE
@@ -48,14 +52,14 @@ export class TicketService {
         `Seats ${unavailableSeats.map(seat => seat.seatNumber).join(', ')} are not available`
       );
     }
-
+  
     // Initialize ticketStatus with a default value
     let ticketStatus: string = 'Ready'; // Default status
-
+  
     // Calculate the exact number of seats being booked for seat count update
     const seatCount = seatNumbers.length;
     console.log(`Booking ${seatCount} seats: ${seatNumbers.join(', ')}`);
-
+  
     if (createTicketDto.status === 'Paid') {
       // If payment is already completed
       ticketStatus = 'Paid';
@@ -82,7 +86,7 @@ export class TicketService {
         console.log(`Set seat ${seat.seatNumber} status to ${SeatAvailabilityStatus.AVAILABLE} (Ready status)`);
       }
     }
-
+  
     // Create the ticket
     const ticket = new this.ticketModel({
       ...createTicketDto,
@@ -90,7 +94,7 @@ export class TicketService {
       status: ticketStatus,
       bookedAt: new Date(),
     });
-
+  
     // Save the ticket
     return ticket.save();
   }
@@ -100,13 +104,13 @@ export class TicketService {
     if (!ticket) {
       throw new NotFoundException('Ticket not found');
     }
-
+  
     const oldStatus = ticket.status;
     ticket.status = newStatus;
-
+  
     // Save the status change first to ensure it's recorded
     await ticket.save();
-
+  
     try {
       // Handle seat and vehicle updates based on status change
       const trip = await this.tripService.findOne(ticket.tripId);
@@ -114,18 +118,18 @@ export class TicketService {
         console.error(`Trip not found or missing vehicleId for ticket ${ticketId}`);
         return ticket; // Early return to avoid further processing
       }
-
+  
       const seatNumbers = Array.isArray(ticket.seatNumber) ? ticket.seatNumber : [ticket.seatNumber];
       const seatCount = seatNumbers.length;
       console.log(`Processing ticket ${ticketId} with ${seatCount} seats: ${seatNumbers.join(', ')}`);
-
+  
       const seats = await this.seatService.findByVehicleAndSeatNumbers(trip.vehicleId, seatNumbers);
       if (!seats || seats.length !== seatNumbers.length) {
         console.warn(`One or more seats not found for vehicle ${trip.vehicleId}`);
       }
-
+  
       if (oldStatus === 'Booked' && newStatus === 'Paid') {
-        console.log(`Decrementing seat count for vehicle ${trip.vehicleId} by ${seatCount}`);
+        console.log(`Decrementing seat count for vehicle ${trip.vehicleId} by ${seatCount}`);  
         if (seats) {
           for (const seat of seats) {
             try {
@@ -138,7 +142,7 @@ export class TicketService {
         }
       } else if (oldStatus === 'Booked' && newStatus === 'Paid') {
         // No changes needed as seats are already SELECTED from holdSeat
-      } else if ((oldStatus === 'Ordered' || oldStatus === 'Paid' || oldStatus === 'Booked') && newStatus === 'Cancelled') {
+      } else if (( oldStatus === 'Paid' || oldStatus === 'Booked') && newStatus === 'Cancelled') {
         // When cancelling a ticket, free up all seats
         if (seats) {
           for (const seat of seats) {
@@ -150,7 +154,7 @@ export class TicketService {
             }
           }
         }
-
+  
         // If it was paid, increase the available count for all seats
         if (oldStatus === 'Paid') {
           console.log(`Incrementing seat count for vehicle ${trip.vehicleId} by ${seatCount}`);
@@ -161,16 +165,16 @@ export class TicketService {
       console.error(`Error processing ticket status change: ${error.message}`);
       // The ticket status is already saved, so we don't throw an error here
     }
-
+  
     return ticket;
   }
   // Get ticket status
-  async getTicketStatus(ticketId: string): Promise<string> {
+  async getTicketById(ticketId: string): Promise<Ticket> {
     const ticket = await this.ticketModel.findOne({ ticketId }).exec();
     if (!ticket) {
       throw new NotFoundException('Ticket not found');
     }
-    return ticket.status;
+    return ticket;
   }
 
   // New method to get ticket information by seat and trip
@@ -179,23 +183,23 @@ export class TicketService {
     if (!trip) {
       throw new NotFoundException('Trip not found');
     }
-
+    
     // Check if we're dealing with multiple seats or a single seat
     if (Array.isArray(seatNumber) && seatNumber.length > 1) {
       // Multiple seats - handle as an array
       const seats = await this.seatService.findByVehicleAndSeatNumbers(trip.vehicleId, seatNumber);
-
+      
       // Check if all seats are available
       const unavailableSeats = seats.filter(
         seat => seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE
       );
-
+      
       if (unavailableSeats.length > 0) {
         throw new BadRequestException(
           `Seats ${unavailableSeats.map(seat => seat.seatNumber).join(', ')} are not available`
         );
       }
-
+      
       return {
         tripInfo: {
           tripId: trip.tripId,
@@ -215,11 +219,11 @@ export class TicketService {
       // Single seat - handle as before but updated for the new enum
       const singleSeatNumber = Array.isArray(seatNumber) ? seatNumber[0] : seatNumber;
       const seat = await this.seatService.findByVehicleAndSeatNumber(trip.vehicleId, [singleSeatNumber]);
-
+      
       if (seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE) {
         throw new BadRequestException(`Seat ${seat.seatNumber} is not available (Status: ${seat.availabilityStatus})`);
       }
-
+      
       return {
         tripInfo: {
           tripId: trip.tripId,
@@ -237,12 +241,12 @@ export class TicketService {
       };
     }
   }
-
+  
   // Find tickets by user ID
   async findByUserId(userId: string): Promise<Ticket[]> {
     return this.ticketModel.find({ userId }).exec();
   }
-
+  
   // Find tickets by trip ID
   async findByTripId(tripId: string): Promise<Ticket[]> {
     return this.ticketModel.find({ tripId }).exec();
@@ -255,16 +259,46 @@ export class TicketService {
     return ticket;
   }
   async updateTicket(ticketId: string, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
-    // Tìm vé dựa trên ticketId
+    // Find the ticket based on ticketId
     const ticket = await this.ticketModel.findOne({ ticketId }).exec();
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
     }
 
-    // Cập nhật các trường từ updateTicketDto
-    Object.assign(ticket, updateTicketDto);
+    // If the status is being updated to "Cancelled", update seats and vehicle
+    if (updateTicketDto.status === 'Cancelled') {
+      const trip = await this.tripModel.findOne({ tripId: ticket.tripId }).exec();
+      if (!trip) {
+        throw new NotFoundException(`Trip with ID ${ticket.tripId} not found`);
+      }
 
-    // Lưu vé đã cập nhật
+      let seatNumbers: string[] = [];
+      if (typeof ticket.seatNumber === 'string') {
+        seatNumbers = [ticket.seatNumber];
+      } else if (Array.isArray(ticket.seatNumber)) {
+        seatNumbers = ticket.seatNumber;
+      }
+
+      // Update seats to "Available"
+      for (const seatNumber of seatNumbers) {
+        await this.seatModel
+          .findOneAndUpdate(
+            { tripId: ticket.tripId, seatNumber: seatNumber },
+            { availabilityStatus: 'Available', updatedAt: new Date() },
+            { new: true }
+          )
+          .exec();
+      }
+
+      // Increment vehicle seat count
+      await this.vehicleService.increaseSeatCount(trip.vehicleId, seatNumbers.length);
+    }
+
+    // Update the ticket with the fields from updateTicketDto
+    Object.assign(ticket, updateTicketDto);
+    // ticket.updatedAt = new Date(); // Ensure updatedAt is set
+
+    // Save the updated ticket
     return ticket.save();
   }
 }

@@ -1,17 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { CreateSeatDto } from './dto/create-seat.dto';
-import {
-  Seat,
-  SeatAvailabilityStatus,
-  SeatDocument,
-} from './schemas/seat.schema';
+import { Seat, SeatAvailabilityStatus, SeatDocument } from './schemas/seat.schema';
 import { Vehicle, VehicleDocument } from '../vehicle/schemas/vehicle.schema';
 
 @Injectable()
@@ -23,22 +15,16 @@ export class SeatService {
 
   async create(createSeatDto: CreateSeatDto): Promise<Seat> {
     // Check if vehicleId exists in Vehicle collection
-    const vehicle = await this.vehicleModel
-      .findOne({ vehicleId: createSeatDto.vehicleId })
-      .exec();
+    const vehicle = await this.vehicleModel.findOne({ vehicleId: createSeatDto.vehicleId }).exec();
     if (!vehicle) {
-      throw new BadRequestException(
-        `Vehicle with ID ${createSeatDto.vehicleId} does not exist`,
-      );
+      throw new BadRequestException(`Vehicle with ID ${createSeatDto.vehicleId} does not exist`);
     }
 
     // Optional: Check if seatNumber already exists for this vehicle
-    const existingSeat = await this.seatModel
-      .findOne({
-        vehicleId: createSeatDto.vehicleId,
-        seatNumber: createSeatDto.seatNumber,
-      })
-      .exec();
+    const existingSeat = await this.seatModel.findOne({
+      vehicleId: createSeatDto.vehicleId,
+      seatNumber: createSeatDto.seatNumber,
+    }).exec();
     if (existingSeat) {
       throw new BadRequestException(
         `Seat number ${createSeatDto.seatNumber} already exists for vehicle ${createSeatDto.vehicleId}`,
@@ -46,9 +32,7 @@ export class SeatService {
     }
 
     // Optional: Check if adding this seat exceeds vehicle's seatCount
-    const seatCount = await this.seatModel
-      .countDocuments({ vehicleId: createSeatDto.vehicleId })
-      .exec();
+    const seatCount = await this.seatModel.countDocuments({ vehicleId: createSeatDto.vehicleId }).exec();
     if (seatCount >= vehicle.seatCount) {
       throw new BadRequestException(
         `Cannot add more seats. Vehicle ${createSeatDto.vehicleId} has reached its seat capacity of ${vehicle.seatCount}`,
@@ -67,62 +51,46 @@ export class SeatService {
     return seat;
   }
 
-  async findByVehicleAndSeatNumber(
-    vehicleId: string,
-    seatNumber: string[],
-  ): Promise<Seat> {
+  async findByVehicleAndSeatNumber(vehicleId: string, seatNumber: string[]): Promise<Seat> {
     const seat = await this.seatModel.findOne({ vehicleId, seatNumber }).exec();
     if (!seat) {
       throw new NotFoundException('Seat not found for this vehicle');
     }
     return seat;
   }
-  async findByVehicleAndSeatNumbers(
-    vehicleId: string,
-    seatNumbers: string[],
-  ): Promise<Seat[]> {
+  async findByVehicleAndSeatNumbers(vehicleId: string, seatNumbers: string[]): Promise<Seat[]> {
     const seats = await this.seatModel
       .find({
         vehicleId,
         seatNumber: { $in: seatNumbers }, // Find seats where seatNumber is in the provided array
       })
       .exec();
-
+  
     // Ensure all requested seats are found
-    const foundSeatNumbers = seats.map((seat) => seat.seatNumber);
-    const missingSeats = seatNumbers.filter(
-      (num) => !foundSeatNumbers.includes(num),
-    );
+    const foundSeatNumbers = seats.map(seat => seat.seatNumber);
+    const missingSeats = seatNumbers.filter(num => !foundSeatNumbers.includes(num));
     if (missingSeats.length > 0) {
-      throw new NotFoundException(
-        `Seats ${missingSeats.join(', ')} not found for vehicle ${vehicleId}`,
-      );
+      throw new NotFoundException(`Seats ${missingSeats.join(', ')} not found for vehicle ${vehicleId}`);
     }
-
+  
     return seats;
   }
-  async updateAvailabilityStatus(
-    seatId: string,
-    status: SeatAvailabilityStatus,
-  ): Promise<Seat> {
+  async updateAvailabilityStatus(seatId: string, status: SeatAvailabilityStatus): Promise<Seat> {
     const seat = await this.seatModel.findOne({ seatId }).exec();
     if (!seat) {
       throw new NotFoundException(`Seat with ID ${seatId} not found`);
     }
-
+    
     seat.availabilityStatus = status;
     return seat.save();
   }
-
+  
   async findByVehicleId(vehicleId: string): Promise<Seat[]> {
     return this.seatModel.find({ vehicleId }).exec();
   }
-  async checkSeatsAvailability(
-    vehicleId: string,
-    seatNumbers: string[],
-  ): Promise<{
-    available: boolean;
-    unavailableSeats: string[];
+  async checkSeatsAvailability(vehicleId: string, seatNumbers: string[]): Promise<{ 
+    available: boolean,
+    unavailableSeats: string[] 
   }> {
     const seats = await this.seatModel
       .find({
@@ -130,26 +98,20 @@ export class SeatService {
         seatNumber: { $in: seatNumbers },
       })
       .exec();
-
+    
     if (seats.length !== seatNumbers.length) {
-      const foundSeatNumbers = seats.map((seat) => seat.seatNumber);
-      const missingSeats = seatNumbers.filter(
-        (num) => !foundSeatNumbers.includes(num),
-      );
-      throw new NotFoundException(
-        `Seats ${missingSeats.join(', ')} not found for vehicle ${vehicleId}`,
-      );
+      const foundSeatNumbers = seats.map(seat => seat.seatNumber);
+      const missingSeats = seatNumbers.filter(num => !foundSeatNumbers.includes(num));
+      throw new NotFoundException(`Seats ${missingSeats.join(', ')} not found for vehicle ${vehicleId}`);
     }
-
+    
     const unavailableSeats = seats
-      .filter(
-        (seat) => seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE,
-      )
-      .map((seat) => seat.seatNumber);
-
+      .filter(seat => seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE)
+      .map(seat => seat.seatNumber);
+    
     return {
       available: unavailableSeats.length === 0,
-      unavailableSeats,
+      unavailableSeats
     };
   }
 }
