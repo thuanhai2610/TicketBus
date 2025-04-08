@@ -80,12 +80,6 @@ export class UsersService {
                 throw new NotFoundException('User not found');
             }
         }
-        async getUserById(userId: string) {
-            return {
-                username: 'user1',
-                email: 'user1@example.com',
-            };
-        }
         async updateProfile(userData: any) {
             const user = await this.userModel.findOne({ username: userData.username });
           

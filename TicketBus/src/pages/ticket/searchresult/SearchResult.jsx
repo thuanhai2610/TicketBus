@@ -5,9 +5,11 @@ import TicketCard from '../../../components/ticket/TicketCard';
 import { FaBus } from 'react-icons/fa';
 import { GrRefresh } from 'react-icons/gr';
 import { Box, CircularProgress, Typography } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const SearchResult = () => {
+  const navigate = useNavigate();
   const [trips, setTrips] = useState([]);
   const [vehicles, setVehicles] = useState({});
   const [tripsLoading, setTripsLoading] = useState(false);
@@ -23,14 +25,11 @@ const SearchResult = () => {
     return `${hours}:${minutes}`;
   };
 
-  const fetchVehicles = async (vehicleIds) => {
+  const fetchVehicles = async (vehicleIds) => { // Đổi tên tham số thành vehicleIds cho rõ ràng
     try {
-      // Remove duplicates from vehicleIds
-      const uniqueVehicleIds = [...new Set(vehicleIds)];
-      
-      // Fetch all vehicles in a single request if possible, or individually if needed
+      const uniqueVehicleIds = [...new Set(vehicleIds)]; // Loại bỏ trùng lặp
       const vehicleData = {};
-      
+
       for (const vehicleId of uniqueVehicleIds) {
         try {
           const response = await axios.get(`http://localhost:3001/vehicle/${vehicleId}`, {
@@ -38,7 +37,6 @@ const SearchResult = () => {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           });
-          
           if (response.data) {
             vehicleData[vehicleId] = response.data;
           }
@@ -46,8 +44,8 @@ const SearchResult = () => {
           console.error(`Error fetching vehicle ${vehicleId}:`, err);
         }
       }
-      
-      setVehicles(prevVehicles => ({...prevVehicles, ...vehicleData}));
+
+      setVehicles(prevVehicles => ({ ...prevVehicles, ...vehicleData }));
     } catch (error) {
       console.error("Error fetching vehicles:", error);
     }
@@ -62,13 +60,13 @@ const SearchResult = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      
+
       // Handle the case where response.data is an array directly
       const newTrips = Array.isArray(response.data) ? response.data : response.data?.trips || [];
-      
+
       setTrips((prevTrips) => (pageNum === 1 ? newTrips : [...prevTrips, ...newTrips]));
       setHasMore(newTrips.length === limit); // If we get fewer trips than the limit, there are no more to load
-      
+
       // Extract vehicleIds to fetch vehicle data
       const vehicleIds = newTrips.map(trip => trip.vehicleId).filter(Boolean);
       if (vehicleIds.length > 0) {
@@ -84,8 +82,8 @@ const SearchResult = () => {
   };
 
   useEffect(() => {
-    fetchTrips(1); // Fetch the first page on mount
-  }, []); // Empty dependency array means this runs once on mount
+    fetchTrips(1);
+  }, []);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
@@ -95,12 +93,12 @@ const SearchResult = () => {
 
   const getAvailableSeats = (trip) => {
     if (!trip || !trip.vehicleId) return 'N/A';
-    
+
     const vehicle = vehicles[trip.vehicleId];
     if (vehicle && vehicle.availableSeats !== undefined) {
       return vehicle.availableSeats;
     }
-    
+
     return `N/A (Vehicle ID: ${trip.vehicleId || 'Unknown'})`;
   };
 
@@ -109,7 +107,16 @@ const SearchResult = () => {
     if (!price && price !== 0) return "Contact for price";
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
-
+  const handleBusClick = (vehicleId) => {
+    console.log("Clicked vehicleId:", vehicleId);
+    if (vehicleId && typeof vehicleId === "string" && vehicleId.trim() !== "") {
+      const targetUrl = `/bus-tickets/detail/${vehicleId}`;
+      console.log("Navigating to:", targetUrl);
+      navigate(targetUrl);
+    } else {
+      console.error("vehicleId is undefined, empty, or invalid:", vehicleId);
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 100 }}
@@ -118,7 +125,7 @@ const SearchResult = () => {
       transition={{ duration: 1, ease: 'easeInOut' }}
       className="w-full col-span-3 space-y-8 pt-6"
     >
-      {tripsLoading && page === 1 ? ( 
+      {tripsLoading && page === 1 ? (
         <Box display="flex" justifyContent="center" my={2}>
           <CircularProgress />
         </Box>
@@ -126,11 +133,11 @@ const SearchResult = () => {
         <Typography color="error" variant="body1">
           {tripsError}
         </Typography>
-      ) : trips && trips.length > 0 ? ( 
+      ) : trips && trips.length > 0 ? (
         <div className="space-y-4">
           {trips.map((trip, index) => (
             <TicketCard
-              key={trip._id || trip.tripId || index} 
+              key={trip._id || trip.tripId || index}
               icon={FaBus}
               busName={`Bus ${trip.vehicleId || 'Unknown'}`}
               routeFrom={trip.departurePoint || 'Unknown'}
@@ -139,6 +146,7 @@ const SearchResult = () => {
               arrivalTime={trip.arrivalTime ? formatTime(trip.arrivalTime) : 'TBD'}
               price={formatPrice(trip.price)}
               availableSeats={getAvailableSeats(trip)}
+              onBusClick={() => handleBusClick(trip.vehicleId)}
               tripData={trip}
             />
           ))}

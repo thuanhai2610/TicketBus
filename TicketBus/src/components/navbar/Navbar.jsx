@@ -4,12 +4,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import Logo from "../../assets/logo.png";
+import { MdOutlineLogout } from "react-icons/md";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
+    DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+
 import {
     Sheet,
     SheetContent,
@@ -42,7 +45,7 @@ const Navbar = () => {
 
                 const fetchUserData = async () => {
                     try {
-                        const response = await axios.get(`${API_BASE_URL}/user/profile?username=${decoded.username}`, {
+                        const response = await axios.get(`${API_BASE_URL}/user/profile`, {
                             headers: { Authorization: `Bearer ${token}` },
                         });
                         setFirstName(response.data.firstName || '');
@@ -84,7 +87,7 @@ const Navbar = () => {
     };
 
     const handleGoToProfile = () => {
-        navigate(`/user/profile?username=${username}`);
+        navigate(`/user/profile`);
     };
 
     useEffect(() => {
@@ -119,10 +122,10 @@ const Navbar = () => {
     return (
         <nav className={`w-full h-[10ch] fixed top-0 left-0 lg:px-24 md:px-16 sm:px-7 px-4 backdrop:blur-lg transition-transform duration-300 z-50 
             ${isVisible ? "translate-y-0" : "-translate-y-full"} 
-            ${scrollPosition > 50 ? "bg-neutral-100 shadow-sm shadow-black dark:bg-neutral-800 dark:text-white" : "bg-neutral-100/10 dark:bg-neutral-900 dark:text-white"}`}>
+            ${scrollPosition > 50 ? "bg-neutral-100 shadow-sm shadow-black dark:bg-primary dark:text-white" : "bg-neutral-100/10 dark:bg-neutral-800 dark:text-white"}`}>
             <div className="w-full h-full flex items-center justify-between">
                 {/* Logo Section */}
-                <Link to="/" className='flex items-center text-4xl text-primary font-bold'>
+                <Link to="/" className='flex items-center text-4xl text-primary font-bold dark:text-primaryblue'>
                     <img src={Logo} alt="Logo" className="h-12 w-12 mr-2" />
                     Ticket<span className='text-neutral-800 dark:text-neutral-300'>Bus</span>
                 </Link>
@@ -163,7 +166,7 @@ const Navbar = () => {
                 </div>
 
                 {/* User Actions & Dark Mode Toggle */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-4">
                     {isLoggedIn ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger className="flex items-center space-x-3 cursor-pointer">
@@ -185,16 +188,50 @@ const Navbar = () => {
                                 ) : (
                                     <FaUserCircle className="w-10 h-10 text-gray-500 dark:text-white" />
                                 )}
-                            </DropdownMenuTrigger>
-                            <span className="text-black dark:text-white font-medium">
+                                  <span className="text-black dark:text-white font-medium">
                                 {firstName} {lastName}
                             </span>
-                            <DropdownMenuContent className="bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-lg p-2">
-                                <DropdownMenuItem>{username}</DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleGoToProfile}>Thông tin cá nhân</DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleLogout}>Đăng xuất</DropdownMenuItem>
+                            </DropdownMenuTrigger>
+
+                          
+
+                            <DropdownMenuContent className="bg-slate-200 dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-lg p-2 w-40 ">
+                 
+                                <DropdownMenuItem disabled className="opacity-100 font-semibold cursor-default">
+                                    {username}
+                                </DropdownMenuItem>
+
+                
+                                <DropdownMenuSeparator className="my-2 border-t border-gray-300 dark:border-gray-600" />
+
+                                <DropdownMenuItem
+                                    onClick={handleGoToProfile}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                >
+                                    <span className="text-xs">👤</span> Tài Khoản
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => navigate('/user/profile/history')}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                >
+                                    <span className="text-xs">🔄</span> Lịch sử mua vé
+                                </DropdownMenuItem>
+
+                          
+                                <DropdownMenuSeparator className="my-2 border-t border-gray-300 dark:border-gray-600" />
+
+                          
+                                <DropdownMenuItem
+                                    onClick={handleLogout}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-red-600 dark:text-red-400"
+                                >
+                                     <MdOutlineLogout  className="h-6 w-6" />
+                                    Đăng xuất
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
+
+
                     ) : (
                         <>
                             <Link to="/login" className="text-neutral-950 text-base font-normal hover:text-primaryblue transition duration-300 dark:text-neutral-300">

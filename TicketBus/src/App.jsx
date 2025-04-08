@@ -23,6 +23,8 @@ import UpdateProfile from "./pages/profile/UpdateProfile";
 import Detail from "./pages/ticket/detail/Detail";
 import Checkout from "./pages/ticket/checkout/Checkout";
 import Invoice from "./pages/ticket/invoice/Invoice";
+import TicketHistory from "./pages/profile/TicketHistory";
+
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
@@ -50,7 +52,7 @@ function App() {
       <div className={darkMode ? "dark" : ""}>
         {/* Chỉ hiển thị Navbar nếu không phải trang admin */}
         {!isAdminRoute && <Navbar toggleDarkMode={toggleDarkMode} darkMode={darkMode} />}
-        
+
         <main className="w-full flex flex-col bg-neutral-50 dark:bg-gray-900 text-black dark:text-white min-h-screen">
           <Routes>
             {/* Client Routes */}
@@ -62,18 +64,32 @@ function App() {
             <Route path="/verify-otp" element={<VerifyOtp />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/user/profile" element={<Profile />} />
-            <Route path="/update-profile" element={<UpdateProfile />} />
-            <Route path="/bus-tickets/detail" element={<Detail />} />
+
+
+
+
+            <Route path="/user/profile" element={<Profile />}>
+              <Route path="" element={<div />} /> {/* Thông tin mặc định */}
+              <Route path="edit" element={<UpdateProfile />} />
+              <Route path="history" element={<TicketHistory />} />
+  
+            </Route>
+
+
+
+
+
+            <Route path="/bus-tickets/detail/:vehicleId" element={<Detail />} />
+            {/* <Route path="/bus-tickets/detail" element={<Detail />} /> */}
             <Route path="/bus-tickets/checkout" element={<Checkout />} />
             <Route path="/bus-tickets/payment" element={<Invoice />} />
 
             {/* Admin Routes */}
             <Route path="/admin/*" element={
-                        <ProtectedRoute requiredRole="admin">
-                            <AdminLayout />
-                        </ProtectedRoute>
-                    }>
+              <ProtectedRoute requiredRole="admin">
+                <AdminLayout />
+              </ProtectedRoute>
+            }>
               <Route index element={<AdminPage />} />
               <Route path="manage-trips" element={<ManageTrips />} />
               <Route path="manage-tickets" element={<ManageTickets />} />

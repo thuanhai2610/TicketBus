@@ -1,4 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, Query } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prettier/prettier */
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, Query, BadRequestException } from '@nestjs/common';
 import { CreateSeatDto } from './dto/create-seat.dto';
 import { UpdateSeatDto } from './dto/update-seat.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -19,10 +21,21 @@ export class SeatController {
   }
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('admin', 'user')
-  async findByTripId(@Query('tripId') tripId: string) {
-    return this.seatsService.findByTripId(tripId);
+  @Roles('admin', 'user')
+  async getSeats(@Query('vehicleId') vehicleId: string) {
+    if (!vehicleId) {
+      throw new BadRequestException('vehicleId is required');
+    }
+  
+    const seats = await this.seatsService.findByVehicleId(vehicleId);
+    return seats.map(seat => ({
+      seatNumber: seat.seatNumber,
+      availabilityStatus: seat.availabilityStatus, // e.g., "Available" or "Booked"
+      price: seat.price,
+      vehicleId: seat.vehicleId,
+    }));
   }
+
   @Get(':seatId')
   @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('admin')
