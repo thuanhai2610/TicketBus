@@ -134,15 +134,16 @@ const BusSeat = () => {
     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
     return `${hours}:${minutes}`;
   };
-
+  
   const departureTime = tripInfo?.departureTime ? formatTime(tripInfo.departureTime) : 'Unknown Time';
   const arrivalTime = tripInfo?.arrivalTime ? formatTime(tripInfo.arrivalTime) : 'Unknown Time';
 
-  const fetchTripInfo = async (vehicleId) => {
+const fetchTripInfo = async (vehicleId) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(`http://localhost:3001/trip/all`, {
-        params: { vehicleId, page: 1, limit: 10 },
+        params: { vehicleId, page: 1, limit: 10 }, 
+
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -220,6 +221,7 @@ const BusSeat = () => {
       }
 
       const payload = {
+
         tripId: tripId,
         seatNumber: selectedSeats,
         username: username,
@@ -485,7 +487,9 @@ const BusSeat = () => {
               <h1 className="text-sm text-neutral-600 font-normal">
                 {tripInfo?.departurePoint || 'Unknown Departure'}{' '}
                 <span className="font-medium">
-                  {departureTime}
+
+                {departureTime}
+
                   {/* ({tripInfo?.departureTime ? new Date(tripInfo.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown Time'}) */}
                 </span>
               </h1>
@@ -493,7 +497,9 @@ const BusSeat = () => {
               <h1 className="text-sm text-neutral-600 font-normal">
                 {tripInfo?.destinationPoint || 'Unknown Destination'}{' '}
                 <span className="font-medium">
-                  {arrivalTime}
+
+                {arrivalTime}
+
                   {/* ({tripInfo?.arrivalTime ? new Date(tripInfo.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown Time'}) */}
                 </span>
               </h1>

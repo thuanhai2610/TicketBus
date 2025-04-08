@@ -23,7 +23,11 @@ import UpdateProfile from "./pages/profile/UpdateProfile";
 import Detail from "./pages/ticket/detail/Detail";
 import Checkout from "./pages/ticket/checkout/Checkout";
 import Invoice from "./pages/ticket/invoice/Invoice";
+
+import Employees from "./pages/admin/employee/Employee";
+
 import TicketHistory from "./pages/profile/TicketHistory";
+
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -94,6 +98,8 @@ function App() {
               <Route path="manage-trips" element={<ManageTrips />} />
               <Route path="manage-tickets" element={<ManageTickets />} />
               <Route path="manage-customers" element={<ManageCustomers />} />
+              <Route path="manage-employees" element={<Employees />} />
+
               <Route path="settings" element={<Settings />} />
               <Route path="revenue" element={<RevenueChart />} />
             </Route>

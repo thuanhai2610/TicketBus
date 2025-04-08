@@ -22,10 +22,10 @@ export class Driver {
 export const DriverSchema = SchemaFactory.createForClass(Driver);
 
 DriverSchema.pre('save', async function (next) {
-  const driver = this as DriverDocument;
-  const company = await this.model('Company').findOne({companyId: driver.companyId}).exec();
-  if (!company) {
-    const error = new Error(`Company with ID ${driver.companyId} does not exist`);
+  const drivers = this as DriverDocument;
+  const driver= await this.model('Driver').findOne({driverId: drivers.driverId}).exec();
+  if (!driver) {
+    const error = new Error(`Company with ID ${drivers.driverId} does not exist`);
     return next(error);
   }
 

@@ -8,8 +8,39 @@ import BusImg from '../../../../assets/bus.png'
 import QrCode from '../../../../assets/qrcode.jpg'
 import { FaPhone } from 'react-icons/fa'
 
-const PassengerInvoice = () => {
+const PassengerInvoice = ({
+    ticketId,
+    totalPrice,
+    passengerName,
+    totalSeats,
+    totalPassengers,
+    pickupStation,
+    departurePoint,
+    destinationPoint,
+    departureTime,
+    arrivalTime,
+    vehicleId,
+bookedAt,
+lisencePlate}
+
+
+) => {
+    const formatTime = (dateString) => {
+        const date = new Date(dateString);
+        let hours = date.getUTCHours();
+        const minutes = date.getUTCMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12; // chuyển 0 thành 12
+        const paddedMinutes = String(minutes).padStart(2, '0');
+        return `${hours}:${paddedMinutes} ${ampm}`;
+      };
+      const formatDateVerbose = (isoString) => {
+        if (!isoString) return '';
+        const date = new Date(isoString);
+        return `Ngày ${date.getDate().toString().padStart(2, '0')} tháng ${date.getMonth() + 1} năm ${date.getFullYear()}`;
+      };
     return (
+
         <div className='w-full col-span-4 rounded-3xl relative '>
             {/* top bus detail */}
             <div className="w-full flex items-center justify-between bg-primary px-6 py-3 rounded-tl-3xl">
@@ -22,7 +53,7 @@ const PassengerInvoice = () => {
 
                 <div className="flex items-center gap-x-2">
                     <p className="text-xl text-neutral-50 font-bold">
-                        <span className="text-lg">(Bus No.)</span> 79D1-72778
+                        <span className="text-lg">(Bus No.)</span>  { lisencePlate}
                     </p>
                 </div>
             </div>
@@ -32,13 +63,11 @@ const PassengerInvoice = () => {
                     {/* seat and date */}
                     <div className="w-full flex items-center justify-between border-dashed border-b-2 border-neutral-200 pb-3">
                         <p className="text-base text-neutral-500 font-normal">
-                            Bill No.: 888
+                            Bill No.: {ticketId}
                         </p>
+                       
                         <p className="text-base text-neutral-500 font-normal">
-                            500.000VND <span className="text-xs">/seat</span>
-                        </p>
-                        <p className="text-base text-neutral-500 font-normal">
-                            Date : 31-05-2025
+                            Date : {bookedAt ? formatDateVerbose(bookedAt) : ''}
                         </p>
                     </div>
 
@@ -48,22 +77,22 @@ const PassengerInvoice = () => {
                         <div className="space-y-1.5">
                             <p className="text-base text-neutral-600 font-normal">
                                 Name of passenger : <span className="font-medium">
-                                    NhismdKhoaHaiz
+                                {passengerName}
                                 </span>
                             </p>
                             <p className="text-base text-neutral-600 font-normal">
                                 Total Seat No. : <span className="font-medium">
-                                    A9,A5,B4,B10
+                                   {totalSeats}
                                 </span>
                             </p>
                             <p className="text-base text-neutral-600 font-normal">
                                 Total No. of Passenger : <span className="font-medium">
-                                    04 Only
+                                    {totalPassengers}
                                 </span>
                             </p>
                             <p className="text-base text-neutral-600 font-normal">
                                 Pickup Stations : <span className="font-medium">
-                                    Nhism dKhoa thHai
+                                {pickupStation}
                                 </span>
                             </p>
                         </div>
@@ -75,7 +104,7 @@ const PassengerInvoice = () => {
                                 </p>
 
                                 <h1 className="text-xl text-neutral-600 font-bold">
-                                    500.000 VND
+                                    {totalPrice}
                                 </h1>
                             </div>
 
@@ -85,11 +114,7 @@ const PassengerInvoice = () => {
                                 <FaCircleCheck size={16} />
                                 <span>Bill Paid</span>
                             </div>
-                            {/* Pending */}
-                            {/* <div className="w-fit px-3 py-1 rounded-full bg-red-500/5 border border-red-600 text-red-600 text-sm font-medium flex items-center justify-center gap-2">
-                        <IoCloseCircle size={16}/>
-                        <span>Pending</span>
-                    </div> */}
+                        
                         </div>
                     </div>
 
@@ -97,15 +122,15 @@ const PassengerInvoice = () => {
                     {/* route detail */}
                     <div className="w-full flex items-center justify-between border-dashed border-t-2 border-neutral-200 pt-3">
                         <p className="text-base text-neutral-600 font-normal">
-                            Nha Trang
+                            {departurePoint}
                             <span className="text-neutral-400 px-2">-------</span>
-                            Da Nang
+                            {destinationPoint}
                         </p>
                         <p className="text-base text-neutral-600 font-normal">
-                            Departure  at 09:05 AM
+                            Departure  at { departureTime ? formatTime(departureTime) : 'Unknown Time'}
                         </p>
                         <p className="text-base text-neutral-600 font-normal">
-                            Arrive  at 04:10 PM
+                            Arrive  at {arrivalTime ? formatTime(arrivalTime) : 'Unknown Time'}
                         </p>
 
                     </div>
