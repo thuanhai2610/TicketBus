@@ -46,12 +46,12 @@ const Hero = () => {
     return (
         <motion.div
             ref={heroRef}
-            className='w-full flex-1 h-screen bg-[url("./assets/bg1.jpg")] bg-cover bg-no-repeat bg-top relative flex items-center justify-center'
+            className='w-full flex-1 min-h-screen bg-[url("./assets/bg1.jpg")] bg-cover bg-no-repeat bg-top relative flex items-center justify-center'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.85, ease: "easeInOut" }}
         >
-            <RootLayout className="absolute top-72 left-10  h-auto py-8 px-10 flex items-start justify-start text-start flex-col gap-6">
+            <RootLayout className="absolute top-72 left-10 h-auto py-8 px-4 sm:px-6 md:px-8 flex items-start justify-start text-start flex-col gap-6">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentSlide}
@@ -59,18 +59,18 @@ const Hero = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -100 }}
                         transition={{ duration: 0.5, ease: "easeInOut" }}
-                        className="space-y-4 w-[40%]"
+                        className="w-full sm:w-[90%] md:w-3/4 lg:w-2/5 space-y-4"
                     >
-                        <motion.h1 className="text-4xl text-primaryblue font-bold uppercase tracking-wide w-full text-wrap">
+                        <motion.h1 className="text-3xl sm:text-4xl text-primaryblue font-bold uppercase tracking-wide w-full break-words">
                             {slides[currentSlide].title}
                         </motion.h1>
 
-                        <motion.p className="text-lg text-gray-400 max-w-full">
+                        <motion.p className="text-base sm:text-lg text-gray-400">
                             {slides[currentSlide].description}
                         </motion.p>
 
                         <motion.button
-                            className="mt-4 px-6 py-3 bg-primary text-white text-lg font-semibold rounded-lg shadow-md shadow-slate-100 hover:bg-primaryblue hover:text-neutral-700 transition"
+                            className="mt-4 px-6 py-3 bg-primary text-white text-base sm:text-lg font-semibold rounded-lg shadow-md shadow-slate-100 hover:bg-primaryblue hover:text-neutral-700 transition"
                         >
                             {slides[currentSlide].buttonText}
                         </motion.button>
@@ -89,6 +89,7 @@ const Hero = () => {
                 </div>
             </RootLayout>
         </motion.div>
+
     );
 };
 

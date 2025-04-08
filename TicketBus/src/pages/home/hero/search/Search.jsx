@@ -39,11 +39,12 @@ const Search = () => {
             animate={{ opacity: 1, y: -200 }}
             exit={{ opacity: 0, y: 800 }}
             transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="w-[65%] bg-white shadow-md rounded-lg p-5 flex flex-col items-center justify-center h-80 mx-auto"
+            className="w-full max-w-6xl mx-auto bg-white shadow-md rounded-lg p-5 flex flex-col items-center justify-center space-y-6"
         >
-            <div className="flex items-center gap-8 justify-between relative">
-                <div className="flex flex-1 gap-4 relative">
-                    <div className="flex-1 border border-gray-300 bg-white text-gray-700 px-4 py-3 rounded-lg flex items-center relative">
+            {/* Search form */}
+            <div className="flex flex-col lg:flex-row items-stretch gap-4 w-full">
+                <div className="flex flex-col sm:flex-row flex-1 gap-4 relative">
+                    <div className="flex-1 border border-gray-300 bg-white text-gray-700 px-4 py-3 rounded-lg flex items-center">
                         <FaMapMarkerAlt className="text-gray-400 mr-2" />
                         <input
                             type="text"
@@ -59,7 +60,7 @@ const Search = () => {
                         />
                     </div>
 
-                    <div className="flex-1 border border-gray-300 bg-white text-gray-700 px-4 py-3 rounded-lg flex items-center relative">
+                    <div className="flex-1 border border-gray-300 bg-white text-gray-700 px-4 py-3 rounded-lg flex items-center">
                         <FaMapMarkerAlt className="text-gray-400 mr-2" />
                         <input
                             type="text"
@@ -75,14 +76,19 @@ const Search = () => {
                         />
                     </div>
 
+                    {/* Đổi chiều */}
                     <button className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary p-2 rounded-full shadow-md z-10">
                         <TbArrowsExchange className="text-white w-5 h-5" />
                     </button>
                 </div>
 
+                {/* Date Picker */}
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" className="flex h-12 w-56 items-center border border-gray-300 bg-white text-gray-700 px-4 py-3 rounded-lg relative">
+                        <Button
+                            variant="outline"
+                            className="h-12 w-full sm:w-56 border border-gray-300 bg-white text-gray-700 px-4 py-3 rounded-lg flex items-center"
+                        >
                             <BsCalendar2Date className="text-gray-400 mr-2" />
                             {date ? format(date, "PPP") : "Chọn ngày"}
                         </Button>
@@ -94,33 +100,37 @@ const Search = () => {
                     >
                         <Calendar mode="single" selected={date} onSelect={setDate} />
                     </PopoverContent>
-
-
-
                 </Popover>
 
-                <button className="bg-primary hover:bg-primary text-white px-6 py-3 rounded-lg flex items-center gap-2 font-semibold shadow-md">
+                {/* Submit Button */}
+                <button className="bg-primary hover:bg-primary text-white px-6 py-3 rounded-lg flex items-center gap-2 font-semibold shadow-md whitespace-nowrap">
                     <FaSearch /> Tìm chuyến
                 </button>
             </div>
 
             {/* Hướng dẫn đặt xe */}
-            <div className='mt-6 text-center'>
-                <h2 className='text-lg font-semibold text-gray-800'>DỄ DÀNG ĐẶT XE TRÊN WEBSITE</h2>
-                <div className='flex justify-center items-center gap-6 mt-4'>
+            <div className="mt-6 text-center w-full">
+                <h2 className="text-lg font-semibold text-gray-800">DỄ DÀNG ĐẶT XE TRÊN WEBSITE</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-4">
                     {[FaMapMarkedAlt, FaBus, FaTicketAlt, FaWallet].map((Icon, index) => (
-                        <div key={index} className='flex flex-col items-center text-center'>
-                            <div className='w-14 h-14 border-2 border-dashed border-primary rounded-full flex items-center justify-center'>
-                                <Icon className='text-primary text-3xl' />
+                        <div key={index} className="flex flex-col items-center text-center">
+                            <div className="w-14 h-14 border-2 border-dashed border-primary rounded-full flex items-center justify-center">
+                                <Icon className="text-primary text-3xl" />
                             </div>
-                            <p className='mt-2 text-2xl text-gray-600 w-54'>
-                                {["Chọn thông tin hành trình và ấn Tìm chuyến", "Chọn chuyến, chỗ ngồi phù hợp và điền thông tin", "Giữ chỗ và nhận mã", "Thanh toán và lên xe"][index]}
+                            <p className="mt-2 text-base text-gray-600">
+                                {[
+                                    "Chọn thông tin hành trình và ấn Tìm chuyến",
+                                    "Chọn chuyến, chỗ ngồi phù hợp và điền thông tin",
+                                    "Giữ chỗ và nhận mã",
+                                    "Thanh toán và lên xe",
+                                ][index]}
                             </p>
                         </div>
                     ))}
                 </div>
             </div>
         </motion.div>
+
     );
 };
 

@@ -1,80 +1,72 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link, Outlet } from "react-router-dom";
 import axios from "axios";
 import { FaUserCircle } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
+import Logo from "../../assets/logo.png";
 
 const Profile = () => {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [avatarError, setAvatarError] = useState(false);
+
     const location = useLocation();
     const navigate = useNavigate();
-
     const BACKEND_URL = "http://localhost:3001";
+
+    const isMainProfilePage = location.pathname === "/user/profile";
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                const currentTime = Date.now() / 1000;
+        if (!token) return navigate("/login");
 
-                // Check if token is expired
-                if (decoded.exp < currentTime) {
-                    console.error("Token has expired");
-                    handleLogout();
-                    return;
-                }
+        try {
+            const decoded = jwtDecode(token);
+            const currentTime = Date.now() / 1000;
 
-                const fetchProfile = async () => {
-                    try {
-                        const response = await axios.get(`${BACKEND_URL}/user/profile`, {
-                            headers: { Authorization: `Bearer ${token}` },
-                        });
-
-                        const avatar = response.data.avatar
-                            ? response.data.avatar.startsWith('http')
-                                ? response.data.avatar
-                                : `${BACKEND_URL}${response.data.avatar}`
-                            : null;
-
-                        const dobDate = response.data.dob ? new Date(response.data.dob) : null;
-                        const formattedDob = dobDate && !isNaN(dobDate.getTime())
-                            ? `${dobDate.getDate().toString().padStart(2, '0')}/${(dobDate.getMonth() + 1).toString().padStart(2, '0')}/${dobDate.getFullYear()}`
-                            : "Chưa cập nhật";
-
-                        setProfile({
-                            ...response.data,
-                            avatar,
-                            dob: formattedDob,
-                        });
-
-                        setLoading(false);
-                    } catch (err) {
-                        console.error("Error fetching profile:", err);
-                        if (err.response?.status === 401) {
-                            handleLogout();
-                        } else {
-                            setError("Không tìm thấy người dùng hoặc lỗi server!");
-                            setLoading(false);
-                        }
-                    }
-                };
-
-                fetchProfile();
-
-                // Clear the updated state if it exists
-                if (location.state?.updated) {
-                    window.history.replaceState({}, document.title);
-                }
-            } catch (error) {
-                console.error("Invalid token:", error);
+            if (decoded.exp < currentTime) {
                 handleLogout();
+                return;
             }
-        } else {
-            navigate('/login');
+
+            const fetchProfile = async () => {
+                try {
+                    const response = await axios.get(`${BACKEND_URL}/user/profile`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+
+                    const avatar = response.data.avatar
+                        ? response.data.avatar.startsWith("http")
+                            ? response.data.avatar
+                            : `${BACKEND_URL}${response.data.avatar}`
+                        : null;
+
+                    const dobDate = response.data.dob ? new Date(response.data.dob) : null;
+                    const formattedDob = dobDate && !isNaN(dobDate.getTime())
+                        ? `${dobDate.getDate().toString().padStart(2, "0")}/${(dobDate.getMonth() + 1).toString().padStart(2, "0")}/${dobDate.getFullYear()}`
+                        : "Chưa cập nhật";
+
+                    setProfile({
+                        ...response.data,
+                        avatar,
+                        dob: formattedDob,
+                    });
+                    setLoading(false);
+                } catch (err) {
+                    if (err.response?.status === 401) handleLogout();
+                    else setError("Không tìm thấy người dùng hoặc lỗi server!");
+                    setLoading(false);
+                }
+            };
+
+            fetchProfile();
+            if (location.state?.updated) {
+                window.history.replaceState({}, document.title);
+            }
+        } catch {
+            handleLogout();
         }
     }, [location]);
 
@@ -84,84 +76,105 @@ const Profile = () => {
         window.location.reload();
     };
 
-    const handleEditProfile = () => {
-        if (profile?.username) {
-            navigate(`/update-profile?username=${profile.username}`);
-        }
-    };
-
-    const handleAvatarError = () => {
-        setAvatarError(true);
-    };
+    const handleAvatarError = () => setAvatarError(true);
 
     if (loading) {
-        return <div className="text-center mt-20 text-blue-600 text-lg">Đang tải...</div>;
+        return <div className="text-center mt-20 text-primary text-lg dark:text-white">Đang tải...</div>;
     }
 
     if (error || !profile) {
-        return <div className="text-center mt-20 text-red-600 text-lg">{error || "Không tìm thấy thông tin người dùng"}</div>;
+        return <div className="text-center mt-20 text-red-600 text-lg dark:text-red-400">{error || "Không tìm thấy thông tin người dùng"}</div>;
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-primaryblue p-4">
-            <div className="flex flex-col lg:flex-row w-full max-w-6xl">
+        <div className="flex items-center justify-center min-h-screen px-4 bg-gray-50 dark:bg-gray-900">
+            <div className="w-[1200px] h-[600px] bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 flex overflow-hidden">
+
                 {/* Sidebar */}
-                <div className="lg:w-1/3 bg-white rounded-2xl shadow-lg p-6 mb-6 lg:mb-0 text-center flex flex-col items-center justify-center">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary mb-4">
-                        {profile.avatar && !avatarError ? (
-                            <img
-                                src={profile.avatar}
-                                alt="Avatar"
-                                className="w-full h-full object-cover"
-                                onError={handleAvatarError}
-                            />
-                        ) : (
-                            <FaUserCircle className="w-full h-full text-gray-400" />
-                        )}
+                <div className="w-1/4 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4 flex flex-col justify-between">
+                    <div>
+                        <div className="mb-8 flex justify-center">
+                            <Link to="/" className='flex items-center text-4xl text-primary font-bold dark:text-primaryblue'>
+                                <img src={Logo} alt="Logo" className="h-12 w-12 mr-2" />
+                                Ticket<span className='text-neutral-950 dark:text-neutral-300'>Bus</span>
+                            </Link>
+                        </div>
+                        <div className="w-full flex flex-col gap-3">
+                            <Link to="/user/profile" className={`flex items-center gap-2 px-4 py-2 rounded ${isMainProfilePage ? 'bg-orange-100 text-orange-600 font-semibold' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200'}`}>
+                                <span className="text-xl">👤</span> Thông tin tài khoản
+                            </Link>
+                            <Link to="/user/profile/history" className={`flex items-center gap-2 px-4 py-2 rounded ${location.pathname.includes("history") ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200'}`}>
+                                <span className="text-xl">🔄</span> Lịch sử mua vé
+                            </Link>
+                        </div>
                     </div>
-                    <h3 className="text-xl font-semibold text-primary mb-1">{profile.username}</h3>
-                    <p className="text-sm text-gray-500">Thông tin tài khoản</p>
+                    {/* Logout button at bottom */}
+                    <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-red-400 rounded">
+                        <span className="text-xl">🚪</span> Đăng xuất
+                    </button>
                 </div>
 
                 {/* Main Content */}
-                <div className="lg:w-2/3 bg-white rounded-2xl shadow-lg p-6 lg:ml-6">
-                    <h2 className="text-2xl font-bold text-primary mb-6">Thông tin cá nhân</h2>
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <InputField label="Họ" value={profile.firstName} />
-                            <InputField label="Tên" value={profile.lastName} />
-                        </div>
-                        <InputField label="Email" value={profile.email} />
-                        <InputField label="Số điện thoại" value={profile.phone} />
-                        <InputField label="Ngày sinh" value={profile.dob} />
-                        <InputField label="Giới tính" value={profile.gender} />
+                {/* Main Content */}
+                <div className="w-3/4 p-6 overflow-y-auto flex flex-col h-full">
+                    {isMainProfilePage ? (
+                        <>
+                            {/* Heading OUTSIDE content block */}
+                            <h2 className="text-2xl font-bold text-primary dark:text-white mb-1">Thông tin tài khoản</h2>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
 
-                        <div className="mt-6 text-center">
-                            <button
-                                onClick={handleEditProfile}
-                                className="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg shadow transition duration-200 text-center justify-center"
-                            >
-                                Chỉnh sửa thông tin
-                            </button>
-                        </div>
-                    </div>
+                            {/* Centered content */}
+                            <div className="flex justify-center items-center flex-1">
+                                <div className="flex gap-8 items-start">
+                                    {/* Avatar Block */}
+                                    <div className="flex flex-col items-center w-56">
+                                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary">
+                                            {profile.avatar && !avatarError ? (
+                                                <img src={profile.avatar} alt="Avatar" className="w-full h-full object-cover" onError={handleAvatarError} />
+                                            ) : (
+                                                <FaUserCircle className="w-full h-full text-gray-400 dark:text-gray-500" />
+                                            )}
+                                        </div>
+                                        <button className="mt-4 px-4 py-2 border rounded-full text-sm text-gray-700 dark:text-gray-200">Chọn ảnh</button>
+                                        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">Dung lượng file tối đa 1 MB<br />Định dạng: .JPEG, .PNG</p>
+                                    </div>
+
+                                    {/* Info Block */}
+                                    <div className="flex flex-col justify-center gap-4 text-sm space-y-4">
+                                        <InfoRow label="Họ và tên" value={`${profile.firstName || ""} ${profile.lastName || ""}`} />
+                                        <InfoRow label="Số điện thoại" value={profile.phone} />
+                                        <InfoRow label="Giới tính" value={profile.gender || "Chưa cập nhật"} />
+                                        <InfoRow label="Email" value={profile.email} />
+                                        <InfoRow label="Ngày sinh" value={profile.dob} />
+
+                                        <div className="pt-2">
+                                            <button onClick={() => navigate("edit")} className="bg-primary hover:bg-primaryblue hover:text-neutral-950 text-white px-6 py-2 rounded-full transition">
+                                                Chỉnh sửa thông tin
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <Outlet />
+                    )}
                 </div>
+
             </div>
         </div>
     );
+
 };
 
-// Reusable Input Field Component
-const InputField = ({ label, value }) => (
-    <div>
-        <label className="block text-gray-600 mb-1 font-medium">{label}:</label>
-        <input
-            type="text"
-            value={value || "Chưa cập nhật"}
-            disabled
-            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-700"
-        />
+const InfoRow = ({ label, value }) => (
+    <div className="flex items-start">
+        <div className="w-32 font-medium text-gray-600 dark:text-gray-300">{label}</div>
+        <div className="mx-1">:</div>
+        <div className="flex-1 text-gray-800 dark:text-white">{value || "Chưa cập nhật"}</div>
     </div>
 );
+
+
 
 export default Profile;

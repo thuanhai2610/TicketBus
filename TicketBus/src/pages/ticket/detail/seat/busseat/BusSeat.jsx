@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { GiSteeringWheel } from 'react-icons/gi';
 import { MdOutlineChair } from 'react-icons/md';
@@ -142,14 +143,15 @@ const fetchTripInfo = async (vehicleId) => {
       const token = localStorage.getItem("token");
       const response = await axios.get(`http://localhost:3001/trip/all`, {
         params: { vehicleId, page: 1, limit: 10 }, 
+
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       const trips = Array.isArray(response.data) ? response.data : response.data?.trips || [];
-      
+
       // Lọc chuyến theo vehicleId
       const matchingTrip = trips.find((trip) => trip.vehicleId === vehicleId);
-  
+
       if (matchingTrip) {
         setTripId(matchingTrip.tripId);
         setTripInfo({
@@ -191,7 +193,7 @@ const fetchTripInfo = async (vehicleId) => {
 
   // Gọi fetchSeats và fetchTripInfo khi vehicleId thay đổi
   useEffect(() => {
-    console.log("vehicleId from useParams:", vehicleId); 
+    console.log("vehicleId from useParams:", vehicleId);
     if (vehicleId) {
       fetchUsername();
       fetchSeats(vehicleId);
@@ -293,7 +295,7 @@ const fetchTripInfo = async (vehicleId) => {
     const seat = seatData.find((seat) => seat.id === seatId);
     // Không cho phép chọn ghế đã "Booked" hoặc "Selected"
     if (!seat || seat.status === 'Booked' || seat.status === 'Selected') return;
-  
+
     setSelectedSeats((prevSelectedSeats) => {
       if (prevSelectedSeats.includes(seatId)) {
         return prevSelectedSeats.filter((seat) => seat !== seatId);
@@ -485,7 +487,9 @@ const fetchTripInfo = async (vehicleId) => {
               <h1 className="text-sm text-neutral-600 font-normal">
                 {tripInfo?.departurePoint || 'Unknown Departure'}{' '}
                 <span className="font-medium">
+
                 {departureTime}
+
                   {/* ({tripInfo?.departureTime ? new Date(tripInfo.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown Time'}) */}
                 </span>
               </h1>
@@ -493,7 +497,9 @@ const fetchTripInfo = async (vehicleId) => {
               <h1 className="text-sm text-neutral-600 font-normal">
                 {tripInfo?.destinationPoint || 'Unknown Destination'}{' '}
                 <span className="font-medium">
+
                 {arrivalTime}
+
                   {/* ({tripInfo?.arrivalTime ? new Date(tripInfo.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown Time'}) */}
                 </span>
               </h1>

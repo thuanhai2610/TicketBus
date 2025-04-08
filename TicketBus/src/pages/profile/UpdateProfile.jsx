@@ -5,6 +5,16 @@ import axios from "axios";
 import { FaUserCircle } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+
 const UpdateProfile = () => {
   const [profile, setProfile] = useState(null);
   const [formData, setFormData] = useState({});
@@ -15,7 +25,6 @@ const UpdateProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Backend URL constant
   const BACKEND_URL = "http://localhost:3001";
 
   useEffect(() => {
@@ -25,7 +34,6 @@ const UpdateProfile = () => {
         const decoded = jwtDecode(token);
         const currentTime = Date.now() / 1000;
 
-        // Check if token is expired
         if (decoded.exp < currentTime) {
           console.error("Token has expired");
           handleLogout();
@@ -40,14 +48,13 @@ const UpdateProfile = () => {
 
             const dobDate = response.data.dob ? new Date(response.data.dob) : null;
             const formattedDob = dobDate && !isNaN(dobDate.getTime())
-              ? dobDate.toISOString().split('T')[0] // Format as YYYY-MM-DD for input type="date"
+              ? dobDate.toISOString().split('T')[0]
               : "";
 
             const profileData = {
               ...response.data,
               dob: formattedDob,
             };
-            console.log("Formatted profile data:", profileData);
             setProfile(profileData);
             setFormData(profileData);
             setLoading(false);
@@ -86,17 +93,16 @@ const UpdateProfile = () => {
     const file = event.target.files[0];
 
     if (file) {
-      // Kiểm tra nếu file có phải là ảnh không
       if (!file.type.startsWith("image/")) {
         setError("Vui lòng chọn một file ảnh hợp lệ!");
         return;
       }
 
-      setSelectedFile(file); // Lưu file vào state để gửi lên server
+      setSelectedFile(file);
 
       const reader = new FileReader();
       reader.onload = () => {
-        setProfile((prev) => ({ ...prev, avatar: reader.result })); // Hiển thị ảnh trước khi tải lên
+        setProfile((prev) => ({ ...prev, avatar: reader.result }));
       };
       reader.readAsDataURL(file);
     }
@@ -115,17 +121,14 @@ const UpdateProfile = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("No token found. Please log in.");
-      }
+      if (!token) throw new Error("No token found. Please log in.");
 
       const formDataToSend = new FormData();
       formDataToSend.append("firstName", formData.firstName || "");
       formDataToSend.append("lastName", formData.lastName || "");
       formDataToSend.append("email", formData.email || "");
       formDataToSend.append("phone", formData.phone || "");
-      if (formData.dob && formData.dob.trim() !== "") {
-        // Backend expects YYYY-MM-DD format, which is already the format from the date input
+      if (formData.dob?.trim()) {
         formDataToSend.append("dob", formData.dob);
       }
       formDataToSend.append("gender", formData.gender || "");
@@ -149,9 +152,7 @@ const UpdateProfile = () => {
       setSuccessMsg("Cập nhật thông tin thành công!");
 
       setTimeout(() => {
-        navigate(`/user/profile`, {
-          state: { updated: true },
-        });
+        window.location.reload();
       }, 1000);
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -165,18 +166,11 @@ const UpdateProfile = () => {
     }
   };
 
-  const handleCancel = () => {
-    navigate(`/user/profile`);
-  };
-
   const getImageUrl = (avatarPath) => {
     if (!avatarPath) return null;
-
-    if (avatarPath.startsWith('data:image/')) {
-      return avatarPath;
-    }
-
-    return avatarPath.startsWith('http') ? avatarPath : `${BACKEND_URL}${avatarPath}`;
+    return avatarPath.startsWith('data:image/') || avatarPath.startsWith('http')
+      ? avatarPath
+      : `${BACKEND_URL}${avatarPath}`;
   };
 
   if (loading && !profile) {
@@ -188,155 +182,157 @@ const UpdateProfile = () => {
   }
 
   if (!profile) {
-    return (
-      <div className="text-center text-red-500">
-        Không tìm thấy thông tin người dùng
-      </div>
-    );
+    return <div className="text-center text-red-500">Không tìm thấy thông tin người dùng</div>;
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-primaryblue p-4">
-      <div className="flex flex-col lg:flex-row w-full max-w-6xl">
-        {/* Sidebar */}
-        <div className="lg:w-1/3 bg-white rounded-2xl shadow-lg p-6 mb-6 lg:mb-0 text-center flex flex-col items-center justify-center">
-          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary mb-4">
-            {profile.avatar ? (
-              <img
-                src={getImageUrl(profile.avatar)}
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <FaUserCircle className="w-full h-full text-gray-400" />
-            )}
+    <div className="p-2">
+      <h2 className="text-xl font-semibold mb-2">Thông tin tài khoản</h2>
+      <p className="text-sm text-gray-500 mb-4 dark:text-neutral-300">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-4 dark:bg-transparent">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+          {/* Avatar section */}
+          <div className="flex flex-col items-center w-60">
+            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
+              {profile.avatar ? (
+                <img
+                  src={getImageUrl(profile.avatar)}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <FaUserCircle className="w-full h-full text-gray-300" />
+              )}
+            </div>
+            <label className="mt-3 cursor-pointer bg-gray-100 px-4 py-1 rounded-full hover:bg-gray-200 dark:bg-transparent dark:hover:bg-primaryblue border dark:border-neutral-500 dark:hover:text-neutral-950 ">
+              Chọn ảnh
+              <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+            </label>
+            <p className="text-xs text-gray-400 mt-1 text-center">
+              Dung lượng file tối đa 1 MB<br />
+              Định dạng:.JPEG, .PNG
+            </p>
           </div>
-          <label className="mt-4 bg-primary text-white px-4 py-2 rounded-md cursor-pointer hover:bg-primary-dark">
-            Cập nhật ảnh
-            <input
-              type="file"
-              className="hidden"
-              onChange={handleImageChange}
-              accept="image/*"
-            />
-          </label>
-          <h3 className="mt-2 text-xl font-semibold text-primary">{profile.username}</h3>
-        </div>
 
-        {/* Main Content */}
-        <div className="lg:w-2/3 bg-white rounded-2xl shadow-lg p-6 lg:ml-6">
-          <h2 className="text-2xl font-bold text-primary mb-6">Cập nhật thông tin cá nhân</h2>
-
-          {successMsg && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-              {successMsg}
-            </div>
-          )}
-
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
-            </div>
-          )}
-
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Form fields */}
+          <div className="w-96 space-y-2 ">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
               <div>
-                <label className="block text-gray-700">Họ:</label>
+                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1  dark:text-neutral-50 ">
+                  Họ
+                </label>
                 <input
                   type="text"
+                  id="firstName"
                   name="firstName"
                   value={formData.firstName || ""}
                   onChange={handleInputChange}
-                  placeholder="Nhập họ"
-                  className="w-full p-2 border rounded-md"
+                  className="border rounded px-3 py-2 w-full  dark:text-neutral-50 dark:bg-transparent dark:border-neutral-800"
                   required
                 />
               </div>
+
               <div>
-                <label className="block text-gray-700">Tên:</label>
+                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                  Tên
+                </label>
                 <input
                   type="text"
+                  id="lastName"
                   name="lastName"
                   value={formData.lastName || ""}
                   onChange={handleInputChange}
-                  placeholder="Nhập tên"
-                  className="w-full p-2 border rounded-md"
+                  className="border rounded px-3 py-2 w-full  dark:text-neutral-50 dark:bg-transparent dark:border-neutral-800"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-gray-700">Email:</label>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                Số điện thoại
+              </label>
+              <input
+                type="text"
+                id="phone"
+                name="phone"
+                value={formData.phone || ""}
+                onChange={handleInputChange}
+                className="border rounded px-3 py-2 w-full  dark:text-neutral-50 dark:bg-transparent dark:border-neutral-800"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
               <input
                 type="email"
+                id="email"
                 name="email"
                 value={formData.email || ""}
                 onChange={handleInputChange}
-                placeholder="Nhập email"
-                className="w-full p-2 border rounded-md"
+                className="border rounded px-3 py-2 w-full  dark:text-neutral-50 dark:bg-transparent dark:border-neutral-800"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-gray-700">Số điện thoại:</label>
-              <input
-                type="text"
-                name="phone"
-                value={formData.phone || ""}
-                onChange={handleInputChange}
-                placeholder="Nhập số điện thoại"
-                className="w-full p-2 border rounded-md"
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700">Ngày sinh:</label>
+              <label htmlFor="dob" className="block text-sm font-medium text-gray-700 mb-1">
+                Ngày sinh
+              </label>
               <input
                 type="date"
+                id="dob"
                 name="dob"
                 value={formData.dob || ""}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded-md"
+                className="border rounded px-3 py-2 w-full  dark:text-neutral-50 dark:bg-transparent dark:border-neutral-800"
               />
             </div>
 
+
             <div>
-              <label className="block text-gray-700">Giới tính:</label>
+              <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+                Giới tính
+              </label>
               <select
+                id="gender"
                 name="gender"
                 value={formData.gender || ""}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded-md"
+                className="border rounded px-3 py-2 w-full  dark:text-neutral-50 dark:bg-transparent dark:border-neutral-800"
               >
-                <option value="">Chọn giới tính</option>
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-                <option value="Khác">Khác</option>
+                <option value="Nam" className="dark:bg-primary">Nam</option>
+                <option value="Nữ" className="dark:bg-primary">Nữ</option>
+                <option value="Khác" className="dark:bg-primary">Khác</option>
               </select>
             </div>
-
-            <div className="mt-6 text-center">
-              <button
-                type="submit"
-                className="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg shadow transition duration-200 text-center justify-center"
-                disabled={loading}
-              >
-                {loading ? "Đang cập nhật..." : "Cập nhật thông tin"}
-              </button>
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="bg-gray-500 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 ml-4"
-              >
-                Hủy
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
-      </div>
+
+        {/* Submit button and messages */}
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="bg-primary text-white px-6 py-2 rounded-full hover:bg-primaryblue dark:hover:text-neutral-950 hover:text-neutral-950"
+            disabled={loading}
+          >
+            {loading ? "Đang cập nhật..." : "Cập nhật"}
+          </button>
+        </div>
+
+        {successMsg && (
+          <div className="text-green-600 text-sm mt-2">{successMsg}</div>
+        )}
+
+        {error && (
+          <div className="text-red-600 text-sm mt-2">{error}</div>
+        )}
+      </form>
+
+
     </div>
   );
 };
