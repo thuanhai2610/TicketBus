@@ -74,9 +74,9 @@ const ManageCustomers = () => {
 
       {!loading && !error && (
         <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse border border-gray-300">
+          <table className="min-w-full border-collapse border border-gray-300 ">
             <thead>
-              <tr className="bg-gray-100">
+              <tr className="bg-gray-700 hover:bg-primary">
                 <th className="border border-gray-300 px-4 py-2">Avatar</th>
                 <th className="border border-gray-300 px-4 py-2">Username</th>
                 <th className="border border-gray-300 px-4 py-2">Phone</th>
@@ -91,7 +91,7 @@ const ManageCustomers = () => {
             <tbody>
               {users.length > 0 ? (
                 users.map((user, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
+                  <tr key={index} className="hover:bg-gray-500">
                     <td className="border border-gray-300 px-4 py-2 text-center">
                       {user.avatarUrl ? (
                         <div className="flex justify-center">

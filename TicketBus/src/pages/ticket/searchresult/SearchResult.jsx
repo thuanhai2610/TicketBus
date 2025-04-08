@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import TicketCard from '../../../components/ticket/TicketCard';
@@ -28,7 +29,7 @@ const SearchResult = () => {
     try {
       const uniqueVehicleIds = [...new Set(vehicleIds)]; // Loại bỏ trùng lặp
       const vehicleData = {};
-  
+
       for (const vehicleId of uniqueVehicleIds) {
         try {
           const response = await axios.get(`http://localhost:3001/vehicle/${vehicleId}`, {
@@ -43,7 +44,7 @@ const SearchResult = () => {
           console.error(`Error fetching vehicle ${vehicleId}:`, err);
         }
       }
-  
+
       setVehicles(prevVehicles => ({ ...prevVehicles, ...vehicleData }));
     } catch (error) {
       console.error("Error fetching vehicles:", error);
@@ -59,13 +60,13 @@ const SearchResult = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      
+
       // Handle the case where response.data is an array directly
       const newTrips = Array.isArray(response.data) ? response.data : response.data?.trips || [];
-      
+
       setTrips((prevTrips) => (pageNum === 1 ? newTrips : [...prevTrips, ...newTrips]));
       setHasMore(newTrips.length === limit); // If we get fewer trips than the limit, there are no more to load
-      
+
       // Extract vehicleIds to fetch vehicle data
       const vehicleIds = newTrips.map(trip => trip.vehicleId).filter(Boolean);
       if (vehicleIds.length > 0) {
@@ -81,8 +82,8 @@ const SearchResult = () => {
   };
 
   useEffect(() => {
-    fetchTrips(1); 
-  }, []); 
+    fetchTrips(1);
+  }, []);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
@@ -92,12 +93,12 @@ const SearchResult = () => {
 
   const getAvailableSeats = (trip) => {
     if (!trip || !trip.vehicleId) return 'N/A';
-    
+
     const vehicle = vehicles[trip.vehicleId];
     if (vehicle && vehicle.availableSeats !== undefined) {
       return vehicle.availableSeats;
     }
-    
+
     return `N/A (Vehicle ID: ${trip.vehicleId || 'Unknown'})`;
   };
 
@@ -124,7 +125,7 @@ const SearchResult = () => {
       transition={{ duration: 1, ease: 'easeInOut' }}
       className="w-full col-span-3 space-y-8 pt-6"
     >
-      {tripsLoading && page === 1 ? ( 
+      {tripsLoading && page === 1 ? (
         <Box display="flex" justifyContent="center" my={2}>
           <CircularProgress />
         </Box>
@@ -132,11 +133,11 @@ const SearchResult = () => {
         <Typography color="error" variant="body1">
           {tripsError}
         </Typography>
-      ) : trips && trips.length > 0 ? ( 
+      ) : trips && trips.length > 0 ? (
         <div className="space-y-4">
           {trips.map((trip, index) => (
             <TicketCard
-              key={trip._id || trip.tripId || index} 
+              key={trip._id || trip.tripId || index}
               icon={FaBus}
               busName={`Bus ${trip.vehicleId || 'Unknown'}`}
               routeFrom={trip.departurePoint || 'Unknown'}

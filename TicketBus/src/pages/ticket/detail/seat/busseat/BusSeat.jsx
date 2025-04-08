@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { GiSteeringWheel } from 'react-icons/gi';
 import { MdOutlineChair } from 'react-icons/md';
@@ -127,25 +128,33 @@ const BusSeat = () => {
       setSeatsLoading(false);
     }
   };
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
 
-  // Fetch trip info để hiển thị Your Destination
-  // Lấy thông tin chuyến dựa trên vehicleId
-const fetchTripInfo = async (vehicleId) => {
+  const departureTime = tripInfo?.departureTime ? formatTime(tripInfo.departureTime) : 'Unknown Time';
+  const arrivalTime = tripInfo?.arrivalTime ? formatTime(tripInfo.arrivalTime) : 'Unknown Time';
+
+  const fetchTripInfo = async (vehicleId) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(`http://localhost:3001/trip/all`, {
-        params: { vehicleId, page: 1, limit: 10 }, // Tăng limit để lấy nhiều chuyến nếu cần
+        params: { vehicleId, page: 1, limit: 10 },
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       const trips = Array.isArray(response.data) ? response.data : response.data?.trips || [];
-      
+
       // Lọc chuyến theo vehicleId
       const matchingTrip = trips.find((trip) => trip.vehicleId === vehicleId);
-  
+
       if (matchingTrip) {
         setTripId(matchingTrip.tripId);
         setTripInfo({
+          companyId: matchingTrip.companyId || null,
           tripId: matchingTrip.tripId,
           departurePoint: matchingTrip.departurePoint || 'Unknown Departure',
           destinationPoint: matchingTrip.destinationPoint || 'Unknown Destination',
@@ -156,6 +165,7 @@ const fetchTripInfo = async (vehicleId) => {
       } else {
         setTripError("No trip found for this vehicle.");
         setTripInfo({
+          companyId: null,
           departurePoint: 'Unknown Departure',
           destinationPoint: 'Unknown Destination',
           departureTime: null,
@@ -169,6 +179,7 @@ const fetchTripInfo = async (vehicleId) => {
       else {
         setTripError(error.response?.data?.message || 'Failed to fetch trip info.');
         setTripInfo({
+          companyId: null,
           departurePoint: 'Unknown Departure',
           destinationPoint: 'Unknown Destination',
           departureTime: null,
@@ -181,7 +192,7 @@ const fetchTripInfo = async (vehicleId) => {
 
   // Gọi fetchSeats và fetchTripInfo khi vehicleId thay đổi
   useEffect(() => {
-    console.log("vehicleId from useParams:", vehicleId); 
+    console.log("vehicleId from useParams:", vehicleId);
     if (vehicleId) {
       fetchUsername();
       fetchSeats(vehicleId);
@@ -229,8 +240,7 @@ const fetchTripInfo = async (vehicleId) => {
       );
 
       console.log("Hold seats response:", response.data);
-
-      // Update seat status to Booked locally
+      const ticketId = response.data.ticket.ticketId;
       setSeatData((prevSeatData) =>
         prevSeatData.map((seat) =>
           selectedSeats.includes(seat.id)
@@ -242,6 +252,7 @@ const fetchTripInfo = async (vehicleId) => {
       // Navigate to checkout
       navigate('/bus-tickets/checkout', {
         state: {
+          ticketId: ticketId,
           selectedSeats,
           tripId,
           tripInfo,
@@ -282,7 +293,7 @@ const fetchTripInfo = async (vehicleId) => {
     const seat = seatData.find((seat) => seat.id === seatId);
     // Không cho phép chọn ghế đã "Booked" hoặc "Selected"
     if (!seat || seat.status === 'Booked' || seat.status === 'Selected') return;
-  
+
     setSelectedSeats((prevSelectedSeats) => {
       if (prevSelectedSeats.includes(seatId)) {
         return prevSelectedSeats.filter((seat) => seat !== seatId);
@@ -474,14 +485,16 @@ const fetchTripInfo = async (vehicleId) => {
               <h1 className="text-sm text-neutral-600 font-normal">
                 {tripInfo?.departurePoint || 'Unknown Departure'}{' '}
                 <span className="font-medium">
-                  ({tripInfo?.departureTime ? new Date(tripInfo.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown Time'})
+                  {departureTime}
+                  {/* ({tripInfo?.departureTime ? new Date(tripInfo.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown Time'}) */}
                 </span>
               </h1>
               <div className="flex-1 border-dashed border border-neutral-300" />
               <h1 className="text-sm text-neutral-600 font-normal">
                 {tripInfo?.destinationPoint || 'Unknown Destination'}{' '}
                 <span className="font-medium">
-                  ({tripInfo?.arrivalTime ? new Date(tripInfo.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown Time'})
+                  {arrivalTime}
+                  {/* ({tripInfo?.arrivalTime ? new Date(tripInfo.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown Time'}) */}
                 </span>
               </h1>
             </div>
