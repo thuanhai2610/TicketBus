@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 export type TicketDocument = Ticket & Document;
 
 @Schema({ timestamps: true , collection: 'ticket'})
-export class Ticket {
+export class Ticket extends Document{
   @Prop({required: true, type: String})
       ticketId: string;
       
@@ -27,11 +27,23 @@ export class Ticket {
     @Prop({required: true, type: Number, ref : 'Trip' })
     ticketPrice: number;
   
-    @Prop({required: true, type: String, enum: ['Ready', 'Paid', 'Booked', 'Cancelled'] })
+    @Prop({required: true, type: String, enum: ['Paid', 'Booked', 'Cancelled'] })
      status: string;
   
      @Prop({ required: true, type: Date })
      bookedAt: Date;
+
+     @Prop()
+  fullName?: string;
+
+  @Prop()
+  email?: string;
+
+  @Prop()
+  phone?: string;
+
+  @Prop()
+  address?: string;
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);

@@ -28,8 +28,9 @@ export class CreatePaymentDto {
   @IsEnum(PaymentMethod)
   paymentMethod: PaymentMethod;
 
-  @IsNotEmpty()
   @IsEnum(PaymentStatus)
   paymentStatus: PaymentStatus;
+
+  
 }
 

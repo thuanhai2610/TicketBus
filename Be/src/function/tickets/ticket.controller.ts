@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Param, NotFoundException, BadRequestException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, NotFoundException, BadRequestException, Query, Put } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { TripService } from '../trip/trip.service';
 import { SeatService } from '../seats/seat.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { SeatAvailabilityStatus } from '../seats/schemas/seat.schema';
+import { UpdateTicketDto } from './dto/update-ticket.dto';
 
 @Controller('tickets')
 export class TicketController {
@@ -30,9 +31,9 @@ export class TicketController {
     }
   }
 
-  @Get(':ticketId/status')
-  async getTicketStatus(@Param('ticketId') ticketId: string) {
-    return this.ticketsService.getTicketStatus(ticketId);
+  @Get(':ticketId')
+  async getTicketById(@Param('ticketId') ticketId: string) {
+    return this.ticketsService.getTicketById(ticketId);
   }
   
   // New endpoint to get ticket information when a seat is selected
@@ -47,7 +48,7 @@ export class TicketController {
   }
   
   // New endpoint to place a temporary hold on a seat before payment
-  @Post('hold-seat')
+  
   @Post('hold-seat')
 async holdSeat(@Body() body: { tripId: string, seatNumber: string[], username: string, vehicleId: string }) {
   if (!body.tripId || !body.seatNumber || !body.username || !body.vehicleId) {
@@ -102,10 +103,6 @@ async holdSeat(@Body() body: { tripId: string, seatNumber: string[], username: s
 
     // Book the ticket
     const ticket = await this.ticketsService.bookTicket(ticketData);
-
-    // Update seat availability for the specific vehicleId
-    // await this.seatService.updateAvailabilityStatus(body.vehicleId, body.seatNumber, 'Booked');
-
     return {
       message: 'Seats booked successfully',
       ticket: {
@@ -152,4 +149,22 @@ async holdSeat(@Body() body: { tripId: string, seatNumber: string[], username: s
   async getTicketsByTrip(@Param('tripId') tripId: string) {
     return this.ticketsService.findByTripId(tripId);
   }
+  @Put(':ticketId')
+async updateTicket(
+  @Param('ticketId') ticketId: string,
+  @Body() updateTicketDto: UpdateTicketDto,
+) {
+  try {
+    const updatedTicket = await this.ticketsService.updateTicket(ticketId, updateTicketDto);
+    return {
+      message: 'Ticket updated successfully',
+      ticket: updatedTicket,
+    };
+  } catch (error) {
+    if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      throw error;
+    }
+    throw new BadRequestException('Failed to update ticket');
+  }
+}
 }

@@ -6,7 +6,7 @@ import { TicketDocument } from 'src/function/tickets/schemas/ticket.schema';
 export type PaymentDocument = Payment & Document;
 
 @Schema({ timestamps: true, collection: 'payments' })
-export class Payment {
+export class Payment extends Document {
   @Prop({ required: true, type: String })
   paymentId: string;
 
@@ -19,14 +19,16 @@ export class Payment {
   @Prop({ required: true, type: Number })
   amount: number;
 
-  @Prop({ required: true, enum: ['cash', 'credit_card', 'bank_transfer'] })
+  @Prop({ required: true, enum: ['cash', 'bank_transfer'] })
   paymentMethod: string;
 
-  @Prop({ required: true, enum: ['pending', 'completed', 'failed'] })
+  @Prop({  enum: ['pending', 'completed', 'failed'] })
   paymentStatus: string;
 
   @Prop({ required: true, type: Date, default: Date.now })
   paymentTime: Date;
+
+  
 }
 
 export const PaymentSchema = SchemaFactory.createForClass(Payment);

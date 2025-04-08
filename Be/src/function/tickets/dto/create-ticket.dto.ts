@@ -1,5 +1,5 @@
 import { Prop } from '@nestjs/mongoose';
-import { IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateTicketDto {
     @IsNotEmpty()
@@ -41,4 +41,19 @@ export class CreateTicketDto {
    @IsNotEmpty()
    @IsString()
    bookedAt: Date;
+   @IsOptional()
+  @IsString()
+  fullName?: string;
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
 }

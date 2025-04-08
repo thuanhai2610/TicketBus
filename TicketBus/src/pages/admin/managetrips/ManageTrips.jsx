@@ -341,7 +341,7 @@ const ManageTrips = () => {
       setNotification({
         open: true,
         message: "Công ty đã được cập nhật thành công",
-좌: "success",
+   좌: "success",
       });
       fetchCompanies();
     } catch (error) {

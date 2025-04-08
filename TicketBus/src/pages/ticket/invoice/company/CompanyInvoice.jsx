@@ -1,7 +1,34 @@
 import React from 'react'
 import { FaPhone } from 'react-icons/fa'
 
-const CompanyInvoice = () => {
+const CompanyInvoice = ( {totalPrice,
+    passengerName,
+    totalSeats,
+    totalPassengers,
+    pickupStation,
+    departurePoint,
+    destinationPoint,
+    departureTime,
+    arrivalTime,
+    vehicleId,
+    bookedAt,
+ticketId}) => { 
+        const formatTime = (dateString) => {
+        const date = new Date(dateString);
+        let hours = date.getUTCHours();
+        const minutes = date.getUTCMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12; // chuyển 0 thành 12
+        const paddedMinutes = String(minutes).padStart(2, '0');
+        return `${hours}:${paddedMinutes} ${ampm}`;
+      };
+
+      const formatDateVerbose = (isoString) => {
+        if (!isoString) return '';
+        const date = new Date(isoString);
+        return `Ngày ${date.getDate().toString().padStart(2, '0')} tháng ${date.getMonth() + 1} năm ${date.getFullYear()}`;
+      };
+      
   return (
     <div className='w-full col-span-1 border-dashed border-l-2 relative'>
         <div className="w-full bg-primary px-4 py-5 rounded-tr-3xl">
@@ -11,31 +38,31 @@ const CompanyInvoice = () => {
         </div>
         <div className="w-full px-4 py-7 space-y-2">
             <p className="text-sm text-neutral-600 font-normal">
-                Bill No. : 888
+                Bill No. : {ticketId}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Date : 31-05-2025
+                Date : {bookedAt ? formatDateVerbose(bookedAt) : ''}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Name : NhismdKhoaHaiz
+                Name : {passengerName}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                From : Nha Trang <span className="text-xs">(buspark)</span>
+                From : {departurePoint} <span className="text-xs"></span>
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                To : Da Nang <span className="text-xs">(buspark)</span>
+                To : {destinationPoint} <span className="text-xs"></span>
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Dept. Time : 04:10 AM
+                Dept. Time : { departureTime ? formatTime(departureTime) : 'Unknown Time'}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Seat No.: A9,A5,B4,B10
+                Seat No.: {totalSeats}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Total Passenger: 04 Only
+                Total Passenger: {totalPassengers}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Total Price: 500.000 VND
+                Total Price: {totalPrice}
             </p>
         </div>
       

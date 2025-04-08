@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaTicketAlt, FaBus, FaUsers, FaMoneyBillWave } from "react-icons/fa";
 import {
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-
+import axios from "axios";
 // Sample data for the chart (similar to the one in the image)
 const chartData = [
   { date: "Jun 1", visitors: 4000 },
@@ -45,8 +45,8 @@ const chartData = [
 
 const AdminPage = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("day");
-
-  // Simulate the revenue data based on the selected period
+  const [trips, setTrips] = useState([]);
+  const [seatCounts, setSeatCounts] = useState({});
   const getRevenueData = () => {
     switch (selectedPeriod) {
       case "day":
@@ -59,7 +59,55 @@ const AdminPage = () => {
         return "$0";
     }
   };
-
+  useEffect(() => {
+    const fetchTrips = async () => {
+      try {
+        const token = localStorage.getItem('token');
+  
+        // Fetch all trips
+        const tripRes = await axios.get('http://localhost:3001/trip/all', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        // Enrich trips with seat data from vehicle
+        const enrichedTrips = await Promise.all(
+          tripRes.data.map(async (trip) => {
+            try {
+              const vehicleRes = await axios.get(
+                `http://localhost:3001/vehicle/${trip.vehicleId}`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+  
+              return {
+                ...trip,
+                seatCount: vehicleRes.data.seatCount,
+                availableSeats: vehicleRes.data.availableSeats,
+              };
+            } catch (vehicleErr) {
+              console.warn(`Không thể lấy thông tin vehicle cho trip ${trip.tripId}`, vehicleErr);
+              return {
+                ...trip,
+                seatCount: '/',
+                availableSeats: '/',
+              };
+            }
+          })
+        );
+  
+        // Cập nhật state
+        setTrips(enrichedTrips);
+      } catch (err) {
+        console.error('Lỗi fetch trip hoặc vehicle:', err);
+      }
+    };
+  
+    fetchTrips();
+  }, []);
+  
   return (
     <div className="p-6 bg-gray-900 text-white max-h-screen overflow-y-auto">
       <h2 className="text-2xl font-semibold mb-6">Bảng điều khiển</h2>
@@ -175,46 +223,35 @@ const AdminPage = () => {
               <CardTitle className="text-lg">Chuyến xe gần đây</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-gray-700">
-                    <TableHead className="text-gray-400">Mã Chuyến</TableHead>
-                    <TableHead className="text-gray-400">Tuyến</TableHead>
-                    <TableHead className="text-gray-400">Số ghế</TableHead>
-                    <TableHead className="text-gray-400">Giá vé</TableHead>
-                    <TableHead className="text-gray-400">Trạng thái</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow className="border-gray-700">
-                    <TableCell>
-                      <Link to="/admin/trip/*" className="text-blue-500 underline">BX1234</Link>
-                    </TableCell>
-                    <TableCell>Hà Nội - Sài Gòn</TableCell>
-                    <TableCell>45/50</TableCell>
-                    <TableCell>$25</TableCell>
-                    <TableCell className="text-green-500">Đang chạy</TableCell>
-                  </TableRow>
-                  <TableRow className="border-gray-700">
-                    <TableCell>
-                      <Link to="/admin/trip/*" className="text-blue-500 underline">BX5678</Link>
-                    </TableCell>
-                    <TableCell>Đà Nẵng - Hà Nội</TableCell>
-                    <TableCell>30/40</TableCell>
-                    <TableCell>$20</TableCell>
-                    <TableCell className="text-red-500">Hủy chuyến</TableCell>
-                  </TableRow>
-                  <TableRow className="border-gray-700">
-                    <TableCell>
-                      <Link to="/admin/trip/*" className="text-blue-500 underline">BX91011</Link>
-                    </TableCell>
-                    <TableCell>Hải Phòng - Vinh</TableCell>
-                    <TableCell>38/45</TableCell>
-                    <TableCell>$15</TableCell>
-                    <TableCell className="text-green-500">Đang chạy</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
+            <Table>
+  <TableHeader>
+    <TableRow className="border-gray-700">
+      <TableHead className="text-gray-400">Mã Chuyến</TableHead>
+      <TableHead className="text-gray-400">Tuyến</TableHead>
+      <TableHead className="text-gray-400">Số ghế</TableHead>
+      <TableHead className="text-gray-400">Giá vé</TableHead>
+      <TableHead className="text-gray-400">Trạng thái</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {trips.map((trip) => (
+      <TableRow key={trip.tripId} className="border-gray-700">
+        <TableCell>
+          <Link to={`/admin/trip/${trip.tripId}`} className="text-blue-500 underline">
+            { `${trip.tripId}`}
+          </Link>
+        </TableCell>
+        <TableCell>{trip.departurePoint} - {trip.destinationPoint}</TableCell>
+        <TableCell>{trip.availableSeats}/{trip.seatCount}</TableCell>
+        <TableCell>{trip.price?.toLocaleString('vi-VN')}đ</TableCell>
+        <TableCell className={trip.status === 'Đang chạy' ? 'text-red-500' : 'text-green-500'}>
+          {trip.status}
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>
+
             </CardContent>
           </Card>
         </TabsContent>

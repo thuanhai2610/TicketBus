@@ -10,30 +10,30 @@ import { DriverService } from './driver.service';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('admin')
 export class DriverController {
-  constructor(private readonly companiesService: DriverService) {}
+  constructor(private readonly driversService: DriverService) {}
 
   @Post()
   create(@Body() createDriverDto: CreateDriverDto) {
-    return this.companiesService.create(createDriverDto);
+    return this.driversService.create(createDriverDto);
   }
 
-  @Get()
+  @Get('all')
   findAll() {
-    return this.companiesService.findAll();
+    return this.driversService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.companiesService.findOne(id);
+  @Get(':driverId')
+  findOne(@Param('driverId') driverId: string) {
+    return this.driversService.findOne(driverId);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateDriverDto: UpdateDriverDto) {
-    return this.companiesService.update(id, updateDriverDto);
+  @Put(':driverId')
+  update(@Param('driverId') driverId: string, @Body() updateDriverDto: UpdateDriverDto) {
+    return this.driversService.update(driverId, updateDriverDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.companiesService.remove(id);
+  @Delete(':driverId')
+  remove(@Param('driverId') driverId: string) {
+    return this.driversService.remove(driverId);
   }
 }

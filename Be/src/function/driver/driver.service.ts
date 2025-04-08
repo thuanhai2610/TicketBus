@@ -4,19 +4,19 @@ import { UpdateDriverDto } from './dto/update-driver.dto';
 import { Driver, DriverDocument } from './schemas/driver.schema';
 import { DriverRepository } from './driver.repsitory';
 import { Model } from 'mongoose';
-import { Company, CompanyDocument } from '../companies/schemas/company.schema';
+
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class DriverService {
   constructor(@InjectModel(Driver.name) private driverModel: Model<DriverDocument>,
-    @InjectModel(Company.name) private companyModel: Model<CompanyDocument>,private readonly driverRepository: DriverRepository) {}
+    private readonly driverRepository: DriverRepository) {}
 
    async create(createDriverDto: CreateDriverDto): Promise<Driver> {
    
-     const company = await this.companyModel.findOne({companyId: createDriverDto.companyId}).exec();
-     if (!company) {
-       throw new BadRequestException(`Company with ID ${createDriverDto.companyId} does not exist`);
+     const driver = await this.driverModel.findOne({driverId: createDriverDto.driverId}).exec();
+     if (!driver) {
+       throw new BadRequestException(`DriverId with ID ${createDriverDto.driverId} does not exist`);
      }
  
      const createdDriver = new this.driverModel(createDriverDto);
@@ -27,15 +27,15 @@ export class DriverService {
     return this.driverRepository.findAll();
   }
 
-  findOne(id: string): Promise<Driver> {
-    return this.driverRepository.findOne(id);
+  findOne(driverId: string): Promise<Driver> {
+    return this.driverRepository.findOne(driverId);
   }
 
-  update(id: string, updateDriverDto: UpdateDriverDto): Promise<Driver> {
-    return this.driverRepository.update(id, updateDriverDto);
+  update(driverId: string, updateDriverDto: UpdateDriverDto): Promise<Driver> {
+    return this.driverRepository.update(driverId, updateDriverDto);
   }
 
-  remove(id: string): Promise<Driver> {
-    return this.driverRepository.remove(id);
+  remove(driverId: string): Promise<Driver> {
+    return this.driverRepository.remove(driverId);
   }
 }

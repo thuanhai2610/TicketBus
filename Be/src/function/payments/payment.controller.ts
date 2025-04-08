@@ -8,8 +8,6 @@ import { PaymentService } from './payment.service';
 import { Payment, PaymentDocument } from './schemas/payment.schema';
 
 @Controller('payments')
-// @UseGuards(JwtAuthGuard, RolesGuard)
-// @Roles('admin')
 export class PaymentController {
   constructor(private readonly paymentsService: PaymentService) {}
 
@@ -30,12 +28,12 @@ export class PaymentController {
   ): Promise<PaymentDocument[]> {
     return this.paymentsService.getPaymentsByTicketId(ticketId);
   }
-
-  @Patch(':paymentId/status')
-  async updatePaymentStatus(
-    @Param('paymentId') paymentId: string,
-    @Body() dto: UpdatePaymentDto,
-  ): Promise<PaymentDocument | null > {
-    return this.paymentsService.updatePaymentStatus(paymentId, dto.paymentStatus);
+  @Put(':ticketId')
+  @HttpCode(HttpStatus.OK)
+  async updatePayment(
+    @Param('ticketId') ticketId: string,
+    @Body() updatePaymentDto: UpdatePaymentDto,
+  ): Promise<PaymentDocument | null> {
+    return this.paymentsService.updatePaymentStatusByTicketId(ticketId, updatePaymentDto.paymentStatus);
   }
 }

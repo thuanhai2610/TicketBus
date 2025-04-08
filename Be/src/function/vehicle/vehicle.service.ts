@@ -158,4 +158,20 @@ export class VehicleService {
   
     throw new BadRequestException('Failed to update vehicle seat count after multiple retries');
   }
+  async increaseSeatCount(vehicleId: string, seatCount: number): Promise<void> {
+    const vehicle = await this.vehicleModel.findOne({ vehicleId }).exec();
+    if (!vehicle) {
+      throw new NotFoundException(`Vehicle with ID ${vehicleId} not found`);
+    }
+
+    const newAvailableSeats = vehicle.availableSeats + seatCount;
+
+    await this.vehicleModel
+      .findOneAndUpdate(
+        { vehicleId },
+        { availableSeats: newAvailableSeats, updatedAt: new Date() },
+        { new: true }
+      )
+      .exec();
+  }
 }
