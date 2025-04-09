@@ -19,6 +19,7 @@ export class PaymentService {
     @InjectModel(Ticket.name) private ticketModel: Model<TicketDocument>,
     @InjectModel(Trip.name) private tripModel: Model<TripDocument>,
     @InjectModel(Seat.name) private seatModel: Model<SeatDocument>,
+    @InjectModel(Payment.name) private paymentModel: Model<PaymentDocument>,
   ) {}
 
   async createPayment(dto: CreatePaymentDto): Promise<PaymentDocument> {
@@ -267,5 +268,9 @@ export class PaymentService {
     }
   
     return this.paymentRepository.updatePaymentStatus(payment.paymentId, paymentStatus);
+  }
+
+  async findAll(): Promise<Payment[]> {
+    return this.paymentModel.find().exec();
   }
 }

@@ -98,7 +98,6 @@ export class TicketService {
     // Save the ticket
     return ticket.save();
   }
-  // Update ticket status
   async updateTicketStatus(ticketId: string, newStatus: string): Promise<Ticket> {
     const ticket = await this.ticketModel.findOne({ ticketId }).exec();
     if (!ticket) {
@@ -168,7 +167,6 @@ export class TicketService {
   
     return ticket;
   }
-  // Get ticket status
   async getTicketById(ticketId: string): Promise<Ticket> {
     const ticket = await this.ticketModel.findOne({ ticketId }).exec();
     if (!ticket) {
@@ -177,77 +175,67 @@ export class TicketService {
     return ticket;
   }
 
-  // New method to get ticket information by seat and trip
-  async getTicketInfoBySeat(tripId: string, seatNumber: string[]): Promise<object> {
-    const trip = await this.tripService.findOne(tripId);
-    if (!trip) {
-      throw new NotFoundException('Trip not found');
-    }
-    
-    // Check if we're dealing with multiple seats or a single seat
-    if (Array.isArray(seatNumber) && seatNumber.length > 1) {
-      // Multiple seats - handle as an array
-      const seats = await this.seatService.findByVehicleAndSeatNumbers(trip.vehicleId, seatNumber);
+  // async getTicketInfoBySeat(tripId: string, seatNumber: string[]): Promise<object> {
+  //   const trip = await this.tripService.findOne(tripId);
+  //   if (!trip) {
+  //     throw new NotFoundException('Trip not found');
+  //   }
+  //   if (Array.isArray(seatNumber) && seatNumber.length > 1) {
+  //     const seats = await this.seatService.findByVehicleAndSeatNumbers(trip.vehicleId, seatNumber);
+  //     const unavailableSeats = seats.filter(
+  //       seat => seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE
+  //     );
       
-      // Check if all seats are available
-      const unavailableSeats = seats.filter(
-        seat => seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE
-      );
+  //     if (unavailableSeats.length > 0) {
+  //       throw new BadRequestException(
+  //         `Seats ${unavailableSeats.map(seat => seat.seatNumber).join(', ')} are not available`
+  //       );
+  //     }
       
-      if (unavailableSeats.length > 0) {
-        throw new BadRequestException(
-          `Seats ${unavailableSeats.map(seat => seat.seatNumber).join(', ')} are not available`
-        );
-      }
+  //     return {
+  //       tripInfo: {
+  //         tripId: trip.tripId,
+  //         departurePoint: trip.departurePoint,
+  //         destinationPoint: trip.destinationPoint,
+  //         departureTime: trip.departureTime,
+  //         arrivalTime: trip.arrivalTime,
+  //       },
+  //       seatsInfo: seats.map(seat => ({
+  //         seatId: seat.seatId,
+  //         seatNumber: seat.seatNumber,
+  //         availabilityStatus: seat.availabilityStatus
+  //       })),
+  //       ticketPrice: trip.price * seats.length
+  //     };
+  //   } else {
+  //     const singleSeatNumber = Array.isArray(seatNumber) ? seatNumber[0] : seatNumber;
+  //     const seat = await this.seatService.findByVehicleAndSeatNumber(trip.vehicleId, [singleSeatNumber]);
       
-      return {
-        tripInfo: {
-          tripId: trip.tripId,
-          departurePoint: trip.departurePoint,
-          destinationPoint: trip.destinationPoint,
-          departureTime: trip.departureTime,
-          arrivalTime: trip.arrivalTime,
-        },
-        seatsInfo: seats.map(seat => ({
-          seatId: seat.seatId,
-          seatNumber: seat.seatNumber,
-          availabilityStatus: seat.availabilityStatus
-        })),
-        ticketPrice: trip.price * seats.length
-      };
-    } else {
-      // Single seat - handle as before but updated for the new enum
-      const singleSeatNumber = Array.isArray(seatNumber) ? seatNumber[0] : seatNumber;
-      const seat = await this.seatService.findByVehicleAndSeatNumber(trip.vehicleId, [singleSeatNumber]);
+  //     if (seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE) {
+  //       throw new BadRequestException(`Seat ${seat.seatNumber} is not available (Status: ${seat.availabilityStatus})`);
+  //     }
       
-      if (seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE) {
-        throw new BadRequestException(`Seat ${seat.seatNumber} is not available (Status: ${seat.availabilityStatus})`);
-      }
-      
-      return {
-        tripInfo: {
-          tripId: trip.tripId,
-          departurePoint: trip.departurePoint,
-          destinationPoint: trip.destinationPoint,
-          departureTime: trip.departureTime,
-          arrivalTime: trip.arrivalTime,
-        },
-        seatInfo: {
-          seatId: seat.seatId,
-          seatNumber: seat.seatNumber,
-          availabilityStatus: seat.availabilityStatus
-        },
-        ticketPrice: trip.price
-      };
-    }
-  }
-  
-  // Find tickets by user ID
+  //     return {
+  //       tripInfo: {
+  //         tripId: trip.tripId,
+  //         departurePoint: trip.departurePoint,
+  //         destinationPoint: trip.destinationPoint,
+  //         departureTime: trip.departureTime,
+  //         arrivalTime: trip.arrivalTime,
+  //       },
+  //       seatInfo: {
+  //         seatId: seat.seatId,
+  //         seatNumber: seat.seatNumber,
+  //         availabilityStatus: seat.availabilityStatus
+  //       },
+  //       ticketPrice: trip.price
+  //     };
+  //   }
+  // }
   async findByUserId(userId: string): Promise<Ticket[]> {
     return this.ticketModel.find({ userId }).exec();
   }
   
-  // Find tickets by trip ID
   async findByTripId(tripId: string): Promise<Ticket[]> {
     return this.ticketModel.find({ tripId }).exec();
   }
@@ -259,7 +247,6 @@ export class TicketService {
     return ticket;
   }
   async updateTicket(ticketId: string, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
-    // Find the ticket based on ticketId
     const ticket = await this.ticketModel.findOne({ ticketId }).exec();
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${ticketId} not found`);

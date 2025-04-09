@@ -45,7 +45,7 @@ import { PaymentModule } from './function/payments/payment.module';
           strict: true,
         }
        }
-    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule, PaymentModule
+    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule, PaymentModule, 
   ],
 
   controllers: [AppController],

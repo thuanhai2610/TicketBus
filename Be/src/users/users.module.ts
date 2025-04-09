@@ -7,6 +7,7 @@ import { join } from "path";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { UsersRepository } from "./user.repository";
 
+
 @Module({
 imports: [MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'uploads'),

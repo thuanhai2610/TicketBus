@@ -25,9 +25,9 @@ const SearchResult = () => {
     return `${hours}:${minutes}`;
   };
 
-  const fetchVehicles = async (vehicleIds) => { // Đổi tên tham số thành vehicleIds cho rõ ràng
+  const fetchVehicles = async (vehicleIds) => { 
     try {
-      const uniqueVehicleIds = [...new Set(vehicleIds)]; // Loại bỏ trùng lặp
+      const uniqueVehicleIds = [...new Set(vehicleIds)]; 
       const vehicleData = {};
 
       for (const vehicleId of uniqueVehicleIds) {
@@ -60,14 +60,10 @@ const SearchResult = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
-      // Handle the case where response.data is an array directly
       const newTrips = Array.isArray(response.data) ? response.data : response.data?.trips || [];
 
       setTrips((prevTrips) => (pageNum === 1 ? newTrips : [...prevTrips, ...newTrips]));
-      setHasMore(newTrips.length === limit); // If we get fewer trips than the limit, there are no more to load
-
-      // Extract vehicleIds to fetch vehicle data
+      setHasMore(newTrips.length === limit); 
       const vehicleIds = newTrips.map(trip => trip.vehicleId).filter(Boolean);
       if (vehicleIds.length > 0) {
         fetchVehicles(vehicleIds);
@@ -75,7 +71,7 @@ const SearchResult = () => {
     } catch (error) {
       console.error("Error fetching trips:", error);
       setTripsError(error.response?.data?.message || 'Failed to fetch trips');
-      setTrips([]); // Reset trips to empty array on error
+      setTrips([]); 
     } finally {
       setTripsLoading(false);
     }
@@ -102,7 +98,6 @@ const SearchResult = () => {
     return `N/A (Vehicle ID: ${trip.vehicleId || 'Unknown'})`;
   };
 
-  // Format price with currency
   const formatPrice = (price) => {
     if (!price && price !== 0) return "Contact for price";
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);

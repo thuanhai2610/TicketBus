@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Employees = () => {
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,10 +28,16 @@ const Employees = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3001/drivers", formData, {
+      const response = await axios.post("http://localhost:3001/drivers", formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setMessage("Tài xế đã được thêm thành công!");
+      if (response.data === null || response.data.success === false) {
+        toast.warning(response.data?.message || "DriverId đã tồn tại!");
+        return;
+      }
+  
+      toast.success("Tài xế đã được thêm thành công!");
+  
       setFormData({
         driverName: "",
         phone: "",
@@ -41,10 +48,13 @@ const Employees = () => {
       setShowForm(false);
       fetchDrivers();
     } catch (error) {
-      console.error("Lỗi khi thêm tài xế:", error);
-      setMessage("Đã xảy ra lỗi khi thêm tài xế.");
-    }
+      if (error.response?.status === 400) {
+        toast.warning(error.response?.data?.message || "Dữ liệu không hợp lệ");
+      } else {
+        toast.error("Đã xảy ra lỗi khi thêm tài xế.");
+      } }
   };
+  
 
   const fetchDrivers = async () => {
     try {

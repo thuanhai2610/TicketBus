@@ -127,7 +127,7 @@ export class UserController {
     };
   }
 
-  // Update the authenticated user's avatar
+
   @UseGuards(JwtAuthGuard)
   @Post('update-avatar')
   async updateAvatar(@Request() req, @Body() data: { username: string; avatar: string }) {
@@ -151,7 +151,6 @@ export class UserController {
     };
   }
 
-  // Get all users (admin only)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get('all')
@@ -170,5 +169,13 @@ export class UserController {
         role: user.role || 'N/A',
         avatar: user.avatar || 'N/A',
       }));
+  }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Get('total')
+  async getTotalUsers() {
+    const users = await this.userService.findAll();
+    const nonAdminUsers = users.filter((user) => user.role !== 'admin');
+    return { totalUsers: nonAdminUsers.length };
   }
 }

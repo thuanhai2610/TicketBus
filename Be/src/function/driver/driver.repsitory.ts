@@ -5,25 +5,15 @@ import { Model } from 'mongoose';
 import { CreateDriverDto } from './dto/create-driver.dto';
 import { UpdateDriverDto } from './dto/update-driver.dto';
 import { Driver, DriverDocument } from './schemas/driver.schema';
+import { Company, CompanyDocument } from '../companies/schemas/company.schema';
 
 
 @Injectable()
 export class DriverRepository {
   constructor(
     @InjectModel(Driver.name) private driverModel: Model<DriverDocument>,
+
   ) {}
-
-   async create(createDriverDto: CreateDriverDto): Promise<Driver> {
-     
-       const driver = await this.driverModel.findOne({driverId: createDriverDto.driverId}).exec();
-       if (!driver) {
-         throw new BadRequestException(`DriverId with ID ${createDriverDto.driverId} does not exist`);
-       }
-   
-       const createdDriver = new this.driverModel(createDriverDto);
-       return createdDriver.save();
-     }
-
   async findAll(): Promise<Driver[]> {
     return this.driverModel.find().exec();
   }

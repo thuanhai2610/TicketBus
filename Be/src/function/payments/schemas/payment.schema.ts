@@ -28,7 +28,7 @@ export class Payment extends Document {
   @Prop({ required: true, type: Date, default: Date.now })
   paymentTime: Date;
 
-  
+  cretedAt: Date;
 }
 
 export const PaymentSchema = SchemaFactory.createForClass(Payment);

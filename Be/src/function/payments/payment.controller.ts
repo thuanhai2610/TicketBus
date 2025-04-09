@@ -17,10 +17,10 @@ export class PaymentController {
     return this.paymentsService.createPayment(dto);
   }
 
-  @Get(':paymentId')
-  async getPaymentById(@Param('paymentId') paymentId: string): Promise<PaymentDocument> {
-    return this.paymentsService.getPaymentById(paymentId);
-  }
+  // @Get(':paymentId')
+  // async getPaymentById(@Param('paymentId') paymentId: string): Promise<PaymentDocument> {
+  //   return this.paymentsService.getPaymentById(paymentId);
+  // }
 
   @Get('ticket/:ticketId')
   async getPaymentsByTicketId(
@@ -35,5 +35,21 @@ export class PaymentController {
     @Body() updatePaymentDto: UpdatePaymentDto,
   ): Promise<PaymentDocument | null> {
     return this.paymentsService.updatePaymentStatusByTicketId(ticketId, updatePaymentDto.paymentStatus);
+  }
+  @Get('all')
+  async getAllPayments() {
+    return this.paymentsService.findAll();
+  }
+  @Get('revenues')
+  async getAllPaymentsRevenue() {
+    return this.paymentsService.findAll();
+  }
+  @Get('revenues/total')
+  async getTotalRevenue() {
+    const payments = await this.paymentsService.findAll();
+    const completedPayments = payments.filter(p => p.paymentStatus === 'completed');
+    const total = completedPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+    const totalTickets = completedPayments.length;
+    return { total, totalTickets };
   }
 }

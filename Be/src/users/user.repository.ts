@@ -11,7 +11,7 @@ export class UsersRepository {
   ) {}
 
 
-@Roles('admin')
+  @Roles('admin')
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
   }

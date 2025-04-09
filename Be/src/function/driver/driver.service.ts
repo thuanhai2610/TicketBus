@@ -6,22 +6,28 @@ import { DriverRepository } from './driver.repsitory';
 import { Model } from 'mongoose';
 
 import { InjectModel } from '@nestjs/mongoose';
+import { Company, CompanyDocument } from '../companies/schemas/company.schema';
 
 @Injectable()
 export class DriverService {
   constructor(@InjectModel(Driver.name) private driverModel: Model<DriverDocument>,
+      @InjectModel(Company.name) private companyModel: Model<CompanyDocument>,
+  
     private readonly driverRepository: DriverRepository) {}
 
-   async create(createDriverDto: CreateDriverDto): Promise<Driver> {
-   
-     const driver = await this.driverModel.findOne({driverId: createDriverDto.driverId}).exec();
-     if (!driver) {
-       throw new BadRequestException(`DriverId with ID ${createDriverDto.driverId} does not exist`);
-     }
- 
-     const createdDriver = new this.driverModel(createDriverDto);
-     return createdDriver.save();
-   }
+    async create(createDriverDto: CreateDriverDto): Promise<Driver> {
+      const driver = await this.driverModel.findOne({ driverId: createDriverDto.driverId }).exec();
+    
+      if (driver) {
+        throw new BadRequestException(`Driver Id ${createDriverDto.driverId} đã tồn tại`);
+      }
+      const company = await this.companyModel.findOne({ companyId: createDriverDto.companyId }).exec();
+      if (!company) {
+        throw new BadRequestException(`Company with ID ${createDriverDto.companyId} không tồn tại`);
+      }
+      const createdDriver = new this.driverModel(createDriverDto);
+      return createdDriver.save();
+    }
 
   findAll(): Promise<Driver[]> {
     return this.driverRepository.findAll();
