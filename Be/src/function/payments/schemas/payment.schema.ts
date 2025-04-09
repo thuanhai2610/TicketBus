@@ -19,7 +19,7 @@ export class Payment extends Document {
   @Prop({ required: true, type: Number })
   amount: number;
 
-  @Prop({ required: true, enum: ['cash', 'bank_transfer'] })
+  @Prop({ required: true, enum: ['cash', 'vn_pay'] })
   paymentMethod: string;
 
   @Prop({  enum: ['pending', 'completed', 'failed'] })

@@ -192,7 +192,6 @@ const fetchTripInfo = async (vehicleId) => {
     }
   };
 
-  // Gọi fetchSeats và fetchTripInfo khi vehicleId thay đổi
   useEffect(() => {
     console.log("vehicleId from useParams:", vehicleId);
     if (vehicleId) {
@@ -276,8 +275,6 @@ const fetchTripInfo = async (vehicleId) => {
       throw error;
     }
   };
-
-  // Handle proceed to checkout click
   const handleProceedToCheckout = async () => {
     if (selectedSeats.length === 0) {
       setErrorMessage("Please select at least one seat to proceed.");

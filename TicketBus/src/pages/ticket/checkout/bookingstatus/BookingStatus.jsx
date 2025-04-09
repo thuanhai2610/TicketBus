@@ -31,39 +31,49 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
   const handlePayment = async () => {
     setError(null);
     setIsLoading(true);
-
+  
+    // Validate inputs
     if (!ticketId) {
       setError('Ticket ID is missing. Please book seats first.');
       setIsLoading(false);
       return;
     }
-
+  
     if (!paymentMethod) {
       setError('Please select a payment method.');
       setIsLoading(false);
       return;
     }
-
+  
     if (!passengerInfo.fullName || !passengerInfo.email || !passengerInfo.phone || !passengerInfo.address) {
       setError('Vui Lòng! Điền đầy đủ thông tin trước khi thanh toán');
       setIsLoading(false);
       return;
     }
-
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found. Please log in.');
       }
-
+  
       const tripId = tripInfo?.tripId;
       const companyId = tripInfo?.companyId;
-
+  
       if (!tripId || !companyId) {
         throw new Error('Trip ID or Company ID is missing in trip information.');
       }
+  
+      // Update ticket with passenger info before creating payment
+      const updateTicketData = {
+        email: passengerInfo.email,
+        phone: passengerInfo.phone,
+        fullName: passengerInfo.fullName,
+        address: passengerInfo.address,
+        status: 'pending', // Set to Pending initially
+      };
+  
 
-      // Step 1: Create a payment with status "pending"
       const paymentData = {
         ticketId: ticketId,
         tripId: tripId,
@@ -71,11 +81,11 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         amount: totalPrice,
         paymentMethod: paymentMethod,
         paymentStatus: 'pending',
-
       };
-
+  
       console.log("Sending payment data:", paymentData);
-
+  
+      // Create payment
       const paymentResponse = await fetch('http://localhost:3001/payments', {
         method: 'POST',
         headers: {
@@ -84,70 +94,69 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         },
         body: JSON.stringify(paymentData),
       });
-
+  
       if (!paymentResponse.ok) {
         const errorData = await paymentResponse.json();
         throw new Error(errorData.message || 'Failed to create payment');
       }
-
+  
       const paymentResult = await paymentResponse.json();
       console.log('Payment created:', paymentResult);
       setPaymentId(paymentResult.paymentId);
-
-      // Step 2: Update payment status to "completed"
-      const updatePaymentResponse = await axios.put(
-        `http://localhost:3001/payments/${ticketId}`,
-        { paymentStatus: 'completed' },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+      if (paymentMethod === 'vn_pay') {
+        if (paymentResult.paymentUrl) {
+          window.location.href = paymentResult.paymentUrl; 
+        } else {
+          throw new Error('Payment URL not provided by the server.');
         }
-      );
-
-      console.log('Payment status updated to completed:', updatePaymentResponse.data);
-
-      // Step 3: Update ticket with passenger information and status "Paid"
-      const updateTicketData = {
-        email: passengerInfo.email,
-        phone: passengerInfo.phone,
-        fullName: passengerInfo.fullName,
-        address: passengerInfo.address,
-        status: 'Paid',
-      };
-
-      const updateResponse = await axios.put(
-        `http://localhost:3001/tickets/${ticketId}`,
-        updateTicketData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log('Ticket updated with passenger info and status "Paid":', updateResponse.data);
-
-      setSuccess(true);
-      setError(null);
-
-      // Redirect to payment confirmation page
-      setTimeout(() => {
-        navigate('/bus-tickets/payment', {
-          state: {
-            ticketId: ticketId,
-            tripInfo: tripInfo,
-            selectedSeats: selectedSeats,
-            totalPrice: totalPrice,
-            passengerInfo: passengerInfo,
-            vehicleId: vehicleId,
-            lisencePlate: vehicle?.lisencePlate,
-          },
-        });
-        setIsRedirecting(false); // Reset redirecting state after navigation
-      }, 3000);
+      } else if (paymentMethod === 'cash') {
+     
+        const updatePaymentResponse = await axios.put(
+          `http://localhost:3001/payments/${ticketId}`,
+          { paymentStatus: 'completed' },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        console.log('Payment status updated to completed:', updatePaymentResponse.data);
+  
+        // Update ticket status to Paid
+        const updateTicketStatusResponse = await axios.put(
+          `http://localhost:3001/tickets/${ticketId}`,
+          { status: 'Paid' },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        console.log('Ticket status updated to Paid:', updateTicketStatusResponse.data);
+  
+        // Set success and navigate to confirmation page
+        setSuccess(true);
+        setError(null);
+  
+        setTimeout(() => {
+          navigate('/bus-tickets/payment', {
+            state: {
+              ticketId: ticketId,
+              tripInfo: tripInfo,
+              selectedSeats: selectedSeats,
+              totalPrice: totalPrice,
+              passengerInfo: passengerInfo,
+              vehicleId: vehicleId,
+              lisencePlate: vehicle?.lisencePlate,
+            },
+          });
+          setIsRedirecting(false); // Reset redirecting state after navigation
+        }, 3000);
+      }
     } catch (error) {
       console.error('Error during payment or ticket update:', error);
       if (error.response) {
@@ -349,7 +358,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
               badgeColor: 'bg-blue-500 text-white  dark:text-neutral-50 ',
             },
             {
-              value: 'bank_transfer',
+              value: 'vn_pay',
               label: '  ví điện tử VNPay',
               badge: 'VNPay',
               badgeColor: 'bg-blue-100 text-blue-800',

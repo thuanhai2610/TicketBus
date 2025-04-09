@@ -3,7 +3,7 @@ import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 enum PaymentMethod {
   CASH = 'cash',
-  BANK_TRANSFER = 'bank_transfer',
+  BANK_TRANSFER = 'vn_pay',
 }
 
 export enum PaymentStatus {
@@ -32,5 +32,6 @@ export class CreatePaymentDto {
   paymentStatus: PaymentStatus;
 
   cretedAt: Date;
+  paymentUrl?: string;
 }
 

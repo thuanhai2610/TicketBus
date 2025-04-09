@@ -19,6 +19,7 @@ export class PaymentRepository {
     amount: number;
     paymentMethod: string;
     paymentStatus: string;
+    paymentUrl
   }): Promise<PaymentDocument> {
     const payment = new this.paymentModel({
       ...data,
