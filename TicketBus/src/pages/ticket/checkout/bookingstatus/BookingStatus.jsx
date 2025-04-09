@@ -1,7 +1,9 @@
+/* eslint-disable no-unused-vars */
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRightLong } from 'react-icons/fa6';
+
 
 const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passengerInfo, ticketId }) => {
   const [error, setError] = useState(null);
@@ -10,8 +12,8 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
   const [paymentId, setPaymentId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-    const [vehicle, setVehicleId] = useState(null); 
-    const [fetchError, setFetchError] = useState(null); 
+  const [vehicle, setVehicleId] = useState(null);
+  const [fetchError, setFetchError] = useState(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
   // Calculate total price based on selectedSeats and seatData
   const totalPrice = selectedSeats?.reduce((total, seatId) => {
@@ -43,7 +45,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
     }
 
     if (!passengerInfo.fullName || !passengerInfo.email || !passengerInfo.phone || !passengerInfo.address) {
-      setError('Please fill in all passenger information.');
+      setError('Vui Lòng! Điền đầy đủ thông tin trước khi thanh toán');
       setIsLoading(false);
       return;
     }
@@ -69,7 +71,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         amount: totalPrice,
         paymentMethod: paymentMethod,
         paymentStatus: 'pending',
-        
+
       };
 
       console.log("Sending payment data:", paymentData);
@@ -135,7 +137,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
       setTimeout(() => {
         navigate('/bus-tickets/payment', {
           state: {
-           ticketId: ticketId,
+            ticketId: ticketId,
             tripInfo: tripInfo,
             selectedSeats: selectedSeats,
             totalPrice: totalPrice,
@@ -171,7 +173,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
     setError(null);
     setIsLoading(true);
 
-    const confirmCancel = window.confirm('Are you sure you want to cancel your booking? This action cannot be undone.');
+    const confirmCancel = window.confirm('Bạn có chắc chắn muốn hủy đặt phòng của mình không? Hành động này không thể hoàn tác.');
     if (!confirmCancel) {
       setIsLoading(false);
       return;
@@ -220,7 +222,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         } else if (error.response.status === 401) {
           setError('Unauthorized. Please log in again.');
         } else {
-          setError(error   (error.response.data.message || 'An error occurred. Please try again.'));
+          setError(error(error.response.data.message || 'An error occurred. Please try again.'));
         }
       } else {
         setError(error.message || 'An error occurred. Please try again.');
@@ -229,7 +231,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
       setIsLoading(false);
     }
   };
-useEffect(() => {
+  useEffect(() => {
     const fetchVehicleId = async () => {
       if (!vehicleId) {
         setFetchError('VehicleId ID is missing. Unable to fetch VehicleId details.');
@@ -263,39 +265,39 @@ useEffect(() => {
   const arrivalTime = tripInfo?.arrivalTime ? formatTime(tripInfo.arrivalTime) : 'Unknown Time';
 
   return (
-    <div className="w-full col-span-3 sticky top-20 space-y-7">
-      <div className="w-full bg-neutral-50 rounded-xl py-4 px-6 border border-neutral-200 shadow-sm space-y-5">
-        <h1 className="text-lg text-neutral-700 font-bold text-center border-b border-neutral-200 pb-4">
-          Your Ticket Report Status
+    <div className="w-full col-span-3 sticky top-20 space-y-7 ">
+      <div className="w-full bg-neutral-50 rounded-xl py-4 px-6 border border-neutral-200 shadow-sm space-y-5 dark:bg-transparent">
+        <h1 className="text-lg text-neutral-700 font-bold text-center border-b border-neutral-200 pb-4 uppercase  dark:text-neutral-50">
+          Trạng thái vé
         </h1>
         <div className="space-y-5">
           <div className="space-y-2 w-full">
-            <h1 className="text-base text-neutral-700 font-medium">Your Destination</h1>
+            <h1 className="text-base text-neutral-700 font-medium uppercase  dark:text-neutral-50">Thông tin đặt chỗ</h1>
             <div className="space-y-0.5 w-full">
               <div className="w-full flex items-center justify-between gap-x-5">
-                <p className="text-sm text-neutral-400 font-normal">From</p>
-                <p className="text-sm text-neutral-400 font-normal">To</p>
+                <p className="text-sm text-neutral-400 font-normal dark:text-neutral-300">Điểm đi</p>
+                <p className="text-sm text-neutral-400 font-normal dark:text-neutral-300">Điểm đến</p>
               </div>
               <div className="w-full flex items-center justify-between gap-x-4">
-                <h1 className="text-sm text-neutral-600 font-normal">
+                <h1 className="text-sm text-neutral-600 font-normal  dark:text-neutral-50">
                   {tripInfo?.departurePoint || 'Unknown Departure'}{' '}
-                  <span className="font-medium">{departureTime}</span>
+                  <span className="font-medium text-red-500">{departureTime}</span>
                 </h1>
                 <div className="flex-1 border-dashed border border-neutral-300" />
-                <h1 className="text-sm text-neutral-600 font-normal">
+                <h1 className="text-sm text-neutral-600 font-normal  dark:text-neutral-50">
                   {tripInfo?.destinationPoint || 'Unknown Destination'}{' '}
-                  <span className="font-medium">{arrivalTime}</span>
+                  <span className="font-medium text-red-500">{arrivalTime}</span>
                 </h1>
               </div>
               <div className="w-full flex items-center justify-between gap-x-4 !mt-1.5">
-                <h1 className="text-sm text-neutral-600 font-normal">Bus No.:</h1>
-                <h1 className="text-sm text-neutral-600 font-normal">{vehicle?.lisencePlate || 'Unknown Bus'}</h1>
+                <h1 className="text-sm text-neutral-600 font-normal  dark:text-neutral-50">Biển số xe:</h1>
+                <h1 className="text-sm text-neutral-600 font-normal  dark:text-neutral-50">{vehicle?.lisencePlate || 'Unknown Bus'}</h1>
               </div>
             </div>
           </div>
           <div className="space-y-2 w-full">
-            <h1 className="text-base text-neutral-700 font-medium">Your Seats</h1>
-            <div className="w-full flex items-center gap-x-3">
+            <h1 className="text-base text-neutral-700 font-medium  dark:text-neutral-50">Chỗ đặt</h1>
+            <div className="w-full flex items-center gap-x-3 ">
               {selectedSeats && selectedSeats.length > 0 ? (
                 selectedSeats.map((seatId) => (
                   <div
@@ -306,18 +308,17 @@ useEffect(() => {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-neutral-500 font-normal">No seats selected</p>
+                <p className="text-sm text-neutral-500 font-normal  dark:text-neutral-300">Không có chỗ đặt</p>
               )}
             </div>
           </div>
           <div className="space-y-2 w-full">
-            <h1 className="text-base text-neutral-700 font-medium">Total Fare Price</h1>
             <div className="flex items-center justify-between gap-x-4">
               <div className="flex gap-y-0.5 flex-col">
-                <h3 className="text-base text-neutral-500 font-medium">Total Price:</h3>
-                <span className="text-xs text-neutral-500 font-normal">(Including all taxes)</span>
+                <h1 className="text-base text-neutral-800 font-bold  dark:text-neutral-50">Total Price:</h1>
+                <span className="text-xs text-neutral-500 font-normal dark:text-neutral-300">(Bao gồm VAT)</span>
               </div>
-              <p className="text-base text-neutral-600 font-semibold">
+              <p className="text-base text-neutral-600 font-semibold  dark:text-neutral-50">
                 VND {totalPrice.toLocaleString()}
               </p>
             </div>
@@ -333,59 +334,68 @@ useEffect(() => {
 
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-          Payment successful! Your ticket has been updated.
+          Thanh toán thành công! Vé của bạn đã được cập nhật.
         </div>
       )}
 
       <div className="space-y-4">
-        <h2 className="text-base text-neutral-700 font-medium">Payment Method</h2>
-        <div className="space-y-2">
-          <div className="flex items-center gap-x-2 p-2 border rounded-lg">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="cash"
-              checked={paymentMethod === 'cash'}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-4 h-4"
-            />
-            <div className="h-6 w-20 bg-blue-500 text-white flex items-center justify-center rounded text-sm">Cash</div>
-            <span className="text-sm text-neutral-600">Pay with cash</span>
-          </div>
-          <div className="flex items-center gap-x-2 p-2 border rounded-lg">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="bank_transfer"
-              checked={paymentMethod === 'bank_transfer'}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-4 h-4"
-            />
-            <div className="h-6 w-20 bg-blue-100 text-blue-800 flex items-center justify-center rounded text-sm">Bank Transfer</div>
-            <span className="text-sm text-neutral-600">Pay via bank transfer</span>
-          </div>
+        <h2 className="text-base text-neutral-700 font-medium uppercase  dark:text-neutral-50">Phương thức thanh toán</h2>
+        <div className="flex gap-x-4 ">
+          {[
+            {
+              value: 'cash',
+              label: 'Thanh toán  tiền mặt',
+              badge: 'Cash',
+              badgeColor: 'bg-blue-500 text-white  dark:text-neutral-50 ',
+            },
+            {
+              value: 'bank_transfer',
+              label: '  ví điện tử VNPay',
+              badge: 'VNPay',
+              badgeColor: 'bg-blue-100 text-blue-800',
+            },
+          ].map((method) => (
+            <label
+              key={method.value}
+              className={`flex items-center gap-x-2 p-2 border rounded-lg cursor-pointer transition w-full max-w-xs ${paymentMethod === method.value ? 'bg-primaryblue dark:bg-primary/50 border-blue-700 text-neutral-800' : 'hover:bg-primaryblue/50'
+                }`}
+            >
+              <input
+                type="radio"
+                name="paymentMethod"
+                value={method.value}
+                checked={paymentMethod === method.value}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="w-4 h-4"
+              />
+              <div className={`h-6 w-20 ${method.badgeColor} flex items-center justify-center rounded text-sm `}>
+                {method.badge}
+              </div>
+              <span className="text-sm text-neutral-600 uppercase  dark:text-neutral-50 ">{method.label}</span>
+            </label>
+          ))}
         </div>
       </div>
+
+
 
       <div className="w-full px-1.5 flex gap-4">
         <button
           onClick={handlePayment}
           disabled={isLoading}
-          className={`w-full bg-primary hover:bg-primary/90 text-neutral-50 font-normal py-2.5 flex items-center justify-center uppercase rounded-lg transition gap-x-2 ${
-           ( isLoading  || isRedirecting) ?'opacity-50 cursor-not-allowed' : ''
-          }`}
+          className={`w-full bg-primary hover:bg-primary/90 text-neutral-50 font-normal py-2.5 flex items-center justify-center uppercase rounded-lg transition gap-x-2 ${(isLoading || isRedirecting) ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
         >
-          {isLoading ? 'Processing...' : 'PROCEED TO PAYMENT'}
+          {isLoading ? 'Processing...' : 'THANH TOÁN'}
           <FaArrowRightLong />
         </button>
         <button
           onClick={handleCancel}
           disabled={isLoading}
-          className={`w-full bg-red-500 hover:bg-red-600 text-neutral-50 font-normal py-2.5 flex items-center justify-center uppercase rounded-lg transition ${
-            isLoading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
+          className={`w-full bg-red-500 hover:bg-red-600 text-neutral-50 font-normal py-2.5 flex items-center justify-center uppercase rounded-lg transition ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
         >
-          {isLoading ? 'Processing...' : 'CANCEL BOOKING'}
+          {isLoading ? 'Processing...' : 'HỦY ĐẶT CHỖ'}
         </button>
       </div>
     </div>

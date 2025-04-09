@@ -15,7 +15,7 @@ export class DriverService {
    async create(createDriverDto: CreateDriverDto): Promise<Driver> {
    
      const driver = await this.driverModel.findOne({driverId: createDriverDto.driverId}).exec();
-     if (!driver) {
+     if (driver) {
        throw new BadRequestException(`DriverId with ID ${createDriverDto.driverId} does not exist`);
      }
  
