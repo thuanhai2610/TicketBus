@@ -60,4 +60,10 @@ export class TripController {
       console.log('Trips returned from service:', trips);
       return trips;
     }
+    @Get('total')
+    async getTotalTrip() {
+      const trips = await this.tripService.findAll();
+      const totalTrips = trips.length;
+      return { totalTrips };
+    }
 }

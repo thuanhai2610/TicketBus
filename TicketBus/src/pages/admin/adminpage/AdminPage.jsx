@@ -22,56 +22,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import axios from "axios";
-// Sample data for the chart (similar to the one in the image)
-const chartData = [
-  { date: "Jun 1", visitors: 4000 },
-  { date: "Jun 3", visitors: 3000 },
-  { date: "Jun 5", visitors: 5000 },
-  { date: "Jun 7", visitors: 2000 },
-  { date: "Jun 9", visitors: 6000 },
-  { date: "Jun 11", visitors: 4000 },
-  { date: "Jun 13", visitors: 7000 },
-  { date: "Jun 15", visitors: 3000 },
-  { date: "Jun 17", visitors: 8000 },
-  { date: "Jun 19", visitors: 5000 },
-  { date: "Jun 21", visitors: 6000 },
-  { date: "Jun 23", visitors: 4000 },
-  { date: "Jun 25", visitors: 7000 },
-  { date: "Jun 27", visitors: 5000 },
-  { date: "Jun 30", visitors: 6000 },
-];
+import RevenueChart from "../RevenueChart"; 
 
 const AdminPage = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState("day");
+
   const [trips, setTrips] = useState([]);
-  const [seatCounts, setSeatCounts] = useState({});
-  const getRevenueData = () => {
-    switch (selectedPeriod) {
-      case "day":
-        return "$1,200";
-      case "month":
-        return "$23,450";
-      case "year":
-        return "$280,500";
-      default:
-        return "$0";
-    }
-  };
+  const [revenue, setRevenue] = useState({ total: 0, totalTickets: 0 });
+  const [totalTrips, setTotalTrips] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
   useEffect(() => {
     const fetchTrips = async () => {
       try {
-        const token = localStorage.getItem('token');
-  
-        // Fetch all trips
-        const tripRes = await axios.get('http://localhost:3001/trip/all', {
+        const token = localStorage.getItem("token");
+
+        const tripRes = await axios.get("http://localhost:3001/trip/all", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-  
-        // Enrich trips with seat data from vehicle
+        
         const enrichedTrips = await Promise.all(
           tripRes.data.map(async (trip) => {
             try {
@@ -81,39 +51,86 @@ const AdminPage = () => {
                   headers: { Authorization: `Bearer ${token}` },
                 }
               );
-  
+
               return {
                 ...trip,
                 seatCount: vehicleRes.data.seatCount,
                 availableSeats: vehicleRes.data.availableSeats,
               };
             } catch (vehicleErr) {
-              console.warn(`Không thể lấy thông tin vehicle cho trip ${trip.tripId}`, vehicleErr);
+              console.warn(
+                `Không thể lấy thông tin vehicle cho trip ${trip.tripId}`,
+                vehicleErr
+              );
               return {
                 ...trip,
-                seatCount: '/',
-                availableSeats: '/',
+                seatCount: "/",
+                availableSeats: "/",
               };
             }
           })
         );
+        const totalTripRes = await axios.get("http://localhost:3001/trip/total", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
   
-        // Cập nhật state
+        // Set totalTrips từ API
+        setTotalTrips(totalTripRes.data.totalTrips);
         setTrips(enrichedTrips);
       } catch (err) {
-        console.error('Lỗi fetch trip hoặc vehicle:', err);
+        console.error("Lỗi fetch trip hoặc vehicle:", err);
+      }
+    };
+   
+    fetchTrips();
+  }, []);
+  useEffect(() => {
+    const fetchRevenue = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:3001/payments/revenues/total", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setRevenue({
+          total: res.data.total,
+          totalTickets: res.data.totalTickets
+        });
+   
+      } catch (error) {
+        console.error("Lỗi khi lấy doanh thu:", error);
+      }
+    };
+   
+    fetchRevenue();
+  }, []);
+  useEffect(() => {
+    const fetchTotalUsers = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:3001/user/total", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        setTotalUsers(res.data.totalUsers);
+      } catch (error) {
+        console.error("Lỗi khi lấy tổng số người dùng:", error);
       }
     };
   
-    fetchTrips();
+    fetchTotalUsers();
   }, []);
-  
   return (
     <div className="p-6 bg-gray-900 text-white max-h-screen overflow-y-auto">
       <h2 className="text-2xl font-semibold mb-6">Bảng điều khiển</h2>
 
       {/* Dashboard Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6 max-h-screen overflow-y-auto">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <Link to="/admin/manage-tickets">
           <Card className="bg-gray-800 border-gray-700 hover:bg-gray-700 transition">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
@@ -123,7 +140,7 @@ const AdminPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1,230</div>
+              <div className="text-2xl font-bold">{revenue.totalTickets}</div>
             </CardContent>
           </Card>
         </Link>
@@ -136,8 +153,7 @@ const AdminPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{getRevenueData()}</div>
-      
+              <div className="text-2xl font-bold">{revenue.total.toLocaleString("vi-VN")}đ</div>
             </CardContent>
           </Card>
         </Link>
@@ -150,8 +166,7 @@ const AdminPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">320</div>
- 
+              <div className="text-2xl font-bold">{totalTrips}</div>
             </CardContent>
           </Card>
         </Link>
@@ -164,55 +179,18 @@ const AdminPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">890</div>
-    
+              <div className="text-2xl font-bold">{totalUsers}</div>
             </CardContent>
           </Card>
         </Link>
       </div>
 
-      {/* Revenue Button Controls */}
+      {/* Revenue Chart Section (using RevenueChart component) */}
       <Card className="bg-gray-800 border-gray-700 mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg">Doanh thu theo thời gian</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex space-x-2 mb-4 overflow-x-auto text-primary">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelectedPeriod("day")}
-            >
-              Doanh thu ngày
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelectedPeriod("month")}
-            >
-              Doanh thu tháng
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelectedPeriod("year")}
-            >
-              Doanh thu năm
-            </Button>
-          </div>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="date" stroke="#9CA3AF" />
-              <YAxis stroke="#9CA3AF" />
-              <Tooltip contentStyle={{ backgroundColor: "#1F2937", border: "none", color: "#fff" }} />
-              <Area type="monotone" dataKey="visitors" stackId="1" stroke="#3B82F6" fill="#1E40AF" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </CardContent>
+        <RevenueChart chartHeight={200} /> {/* Smaller height */}
       </Card>
 
-      {/* Tabs for Past Performance, Key Personnel, Focus Documents */}
+      {/* Tabs for Past Performance */}
       <Tabs defaultValue="past-performance" className="mb-6">
         <TabsList className="bg-gray-800 border-gray-700">
           <TabsTrigger value="past-performance">Tuyến đi</TabsTrigger>
@@ -223,35 +201,49 @@ const AdminPage = () => {
               <CardTitle className="text-lg">Chuyến xe gần đây</CardTitle>
             </CardHeader>
             <CardContent>
-            <Table>
-  <TableHeader>
-    <TableRow className="border-gray-700">
-      <TableHead className="text-gray-400">Mã Chuyến</TableHead>
-      <TableHead className="text-gray-400">Tuyến</TableHead>
-      <TableHead className="text-gray-400">Số ghế</TableHead>
-      <TableHead className="text-gray-400">Giá vé</TableHead>
-      <TableHead className="text-gray-400">Trạng thái</TableHead>
-    </TableRow>
-  </TableHeader>
-  <TableBody>
-    {trips.map((trip) => (
-      <TableRow key={trip.tripId} className="border-gray-700">
-        <TableCell>
-          <Link to={`/admin/trip/${trip.tripId}`} className="text-blue-500 underline">
-            { `${trip.tripId}`}
-          </Link>
-        </TableCell>
-        <TableCell>{trip.departurePoint} - {trip.destinationPoint}</TableCell>
-        <TableCell>{trip.availableSeats}/{trip.seatCount}</TableCell>
-        <TableCell>{trip.price?.toLocaleString('vi-VN')}đ</TableCell>
-        <TableCell className={trip.status === 'Đang chạy' ? 'text-red-500' : 'text-green-500'}>
-          {trip.status}
-        </TableCell>
-      </TableRow>
-    ))}
-  </TableBody>
-</Table>
-
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-gray-700">
+                    <TableHead className="text-gray-400">Mã Chuyến</TableHead>
+                    <TableHead className="text-gray-400">Tuyến</TableHead>
+                    <TableHead className="text-gray-400">Số ghế</TableHead>
+                    <TableHead className="text-gray-400">Giá vé</TableHead>
+                    <TableHead className="text-gray-400">Trạng thái</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {trips.map((trip) => (
+                    <TableRow key={trip.tripId} className="border-gray-700">
+                      <TableCell>
+                        <Link
+                          to={`/admin/trip/${trip.tripId}`}
+                          className="text-blue-500 underline"
+                        >
+                          {`${trip.tripId}`}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        {trip.departurePoint} - {trip.destinationPoint}
+                      </TableCell>
+                      <TableCell>
+                        {trip.availableSeats}/{trip.seatCount}
+                      </TableCell>
+                      <TableCell>
+                        {trip.price?.toLocaleString("vi-VN")}đ
+                      </TableCell>
+                      <TableCell
+                        className={
+                          trip.status === "Đang chạy"
+                            ? "text-red-500"
+                            : "text-green-500"
+                        }
+                      >
+                        {trip.status}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </TabsContent>

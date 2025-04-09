@@ -23,9 +23,9 @@ import UpdateProfile from "./pages/profile/UpdateProfile";
 import Detail from "./pages/ticket/detail/Detail";
 import Checkout from "./pages/ticket/checkout/Checkout";
 import Invoice from "./pages/ticket/invoice/Invoice";
-
+import { ToastContainer, toast } from 'react-toastify';
 import Employees from "./pages/admin/employee/Employee";
-
+import 'react-toastify/dist/ReactToastify.css';
 import TicketHistory from "./pages/profile/TicketHistory";
 
 
@@ -99,7 +99,7 @@ function App() {
               <Route path="manage-tickets" element={<ManageTickets />} />
               <Route path="manage-customers" element={<ManageCustomers />} />
               <Route path="manage-employees" element={<Employees />} />
-
+           
               <Route path="settings" element={<Settings />} />
               <Route path="revenue" element={<RevenueChart />} />
             </Route>
@@ -107,6 +107,7 @@ function App() {
         </main>
 
         <Footer />
+        <ToastContainer position="top-right" autoClose={3000} />
       </div>
     </Router>
   );

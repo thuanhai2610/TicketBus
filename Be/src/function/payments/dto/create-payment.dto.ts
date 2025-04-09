@@ -31,6 +31,6 @@ export class CreatePaymentDto {
   @IsEnum(PaymentStatus)
   paymentStatus: PaymentStatus;
 
-  
+  cretedAt: Date;
 }
 

@@ -14,40 +14,20 @@ export class TicketController {
     private readonly seatService: SeatService
   ) {}
 
-  @Post('book')
-  async bookTicket(@Body() createTicketDto: CreateTicketDto) {
-    try {
-      // Use the existing bookTicket service method
-      const ticket = await this.ticketsService.bookTicket(createTicketDto);
-      return {
-        message: 'Ticket booked successfully',
-        ticket
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new BadRequestException('Failed to book ticket');
-    }
-  }
-
   @Get(':ticketId')
   async getTicketById(@Param('ticketId') ticketId: string) {
     return this.ticketsService.getTicketById(ticketId);
   }
   
-  // New endpoint to get ticket information when a seat is selected
-  @Post('get-seat-info')
-  async getSeatInfo(@Body() body: { tripId: string, seatNumber: string[] }) {
-    if (!body.tripId || !body.seatNumber) {
-      throw new BadRequestException('tripId and seatNumber are required');
-    }
+  // @Post('get-seat-info')
+  // async getSeatInfo(@Body() body: { tripId: string, seatNumber: string[] }) {
+  //   if (!body.tripId || !body.seatNumber) {
+  //     throw new BadRequestException('tripId and seatNumber are required');
+  //   }
     
-    // Use the new service method to get ticket info by seat
-    return this.ticketsService.getTicketInfoBySeat(body.tripId, body.seatNumber);
-  }
-  
-  // New endpoint to place a temporary hold on a seat before payment
+  //   // Use the new service method to get ticket info by seat
+  //   return this.ticketsService.getTicketInfoBySeat(body.tripId, body.seatNumber);
+  // }
   
   @Post('hold-seat')
 async holdSeat(@Body() body: { tripId: string, seatNumber: string[], username: string, vehicleId: string }) {
@@ -56,24 +36,17 @@ async holdSeat(@Body() body: { tripId: string, seatNumber: string[], username: s
   }
 
   try {
-    // Fetch the trip to get companyId, ticketPrice, and vehicleId
     const trip = await this.tripService.findOne(body.tripId);
     if (!trip) {
       throw new NotFoundException('Trip not found');
     }
-
-    // Verify that the trip belongs to the specified vehicleId
     if (trip.vehicleId !== body.vehicleId) {
       throw new BadRequestException('Trip does not belong to the specified vehicle');
     }
-
-    // Fetch seats for the specific vehicleId to check availability
     const seats = await this.seatService.findByVehicleId(body.vehicleId);
     if (!seats || seats.length === 0) {
       throw new NotFoundException('No seats found for this vehicle');
     }
-
-    // Check if the requested seats are available
     const unavailableSeats = body.seatNumber.filter(seatNumber => {
       const seat = seats.find(s => s.seatNumber === seatNumber);
       return !seat || seat.availabilityStatus === 'Booked';
@@ -82,11 +55,8 @@ async holdSeat(@Body() body: { tripId: string, seatNumber: string[], username: s
     if (unavailableSeats.length > 0) {
       throw new BadRequestException(`Seats ${unavailableSeats.join(', ')} are already taken for this vehicle`);
     }
-
-    // Generate a unique ticketId
     const ticketId = `TICKET-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    // Calculate total price based on number of seats
     const totalPrice = trip.price * body.seatNumber.length;
     
     const ticketData: CreateTicketDto = {
@@ -137,14 +107,6 @@ async holdSeat(@Body() body: { tripId: string, seatNumber: string[], username: s
     
     return this.ticketsService.updateTicketStatus(ticketId, body.status);
   }
-  
-  // Get tickets by user ID
-  @Get('user/:userId')
-  async getTicketsByUser(@Param('userId') userId: string) {
-    return this.ticketsService.findByUserId(userId);
-  }
-  
-  // Get tickets by trip ID
   @Get('trip/:tripId')
   async getTicketsByTrip(@Param('tripId') tripId: string) {
     return this.ticketsService.findByTripId(tripId);

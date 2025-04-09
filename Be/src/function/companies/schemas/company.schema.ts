@@ -18,3 +18,4 @@ export class Company {
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
+
