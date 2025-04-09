@@ -3,9 +3,9 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import Hero from './hero/Hero'
-import Services from './services/Services'
-import TopSearch from './topsearch/TopSearch'
 import Search from './hero/search/Search'
+import Offer from '../offer/Offer'
+import Blog from '../blog/Blog'
 
 const SectionWrapper = ({ children }) => {
   const { ref, inView } = useInView({
@@ -40,12 +40,12 @@ const Home = () => {
 
       {/* Services */}
       <SectionWrapper>
-        <Services />
+        <Offer />
       </SectionWrapper>
 
       {/* Top Search */}
       <SectionWrapper>
-        <TopSearch />
+        <Blog />
       </SectionWrapper>
     </div>
   )
