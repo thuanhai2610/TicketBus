@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -51,5 +51,14 @@ export class PaymentController {
     const total = completedPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
     const totalTickets = completedPayments.length;
     return { total, totalTickets };
+  }
+  @Get('vnpay/return')
+  async handleVnpayReturn(@Query() query: any) {
+    const result = await this.paymentsService.handleVnpayReturn(query);
+    if (result.status === 'success') {
+      return { message: 'Payment successful', paymentId: result.paymentId };
+    } else {
+      return { message: 'Payment failed', code: result.message };
+    }
   }
 }
