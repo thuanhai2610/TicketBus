@@ -29,6 +29,7 @@ export class DriverService {
       return createdDriver.save();
     }
 
+
   findAll(): Promise<Driver[]> {
     return this.driverRepository.findAll();
   }

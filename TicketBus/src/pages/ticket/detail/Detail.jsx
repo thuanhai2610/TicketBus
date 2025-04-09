@@ -12,8 +12,8 @@ const Detail = () => {
   
   const message =(
       <>
-        One individual only can book 10 seats . If you want to book more than 10,
-        Please <Link to={"/support-teams"} className='text-yellow-700 font-medium'>Contact our support team.</Link>
+        Mỗi khách hàng chỉ có thể đặt 10 chỗ ngồi. Nếu bạn muốn đặt nhiều hơn 10 chỗ,
+        Vui lòng! liên hệ với<Link to={"/support-teams"} className='text-yellow-700 font-medium'> nhóm hỗ trợ của chúng tôi.</Link>
       </>
   );
   return (
@@ -38,7 +38,7 @@ const Detail = () => {
         {/* Bus Detail */}
           <div className="w-full flex items-center justify-center flex-col gap-8 text-center">
               {/* description about the bus */}
-                <p className="text-base text-neutral-500 font-normal text-justify">
+                <p className="text-base text-neutral-500 font-normal text-justify  dark:text-neutral-300">
                   This is just a sample text for the demo purpose
                   Lorem ipsum dolor sit amet consectetur, adipisicing elit.
                    Quo quis optio id illo animi? Vel quod laborum illo tempora placeat omnis eius, minima,
@@ -49,7 +49,7 @@ const Detail = () => {
                    impedit repellendus eos provident asperiores, et dolorem?
                    impedit repellendus eos provident asperiores, et dolorem?
               
-                  <span className="text-lg text-neutral-600 font-medium ml-2">
+                  <span className="text-lg text-neutral-600 font-medium ml-2  dark:text-neutral-50">
                     Want to see more about the bus?
                   </span>
                 </p>

@@ -20,4 +20,3 @@ export class Driver {
 }
 
 export const DriverSchema = SchemaFactory.createForClass(Driver);
-

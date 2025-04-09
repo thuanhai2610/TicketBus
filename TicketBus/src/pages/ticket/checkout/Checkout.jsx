@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React ,  { useState } from 'react'
 import bgImage from "../../../assets/bgimg.png";
 import TopLayout from '../../../layout/toppage/TopLayout';

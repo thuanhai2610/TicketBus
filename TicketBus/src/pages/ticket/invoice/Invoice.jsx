@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useRef, useEffect,  useState } from 'react';
 import { useLocation } from 'react-router-dom'; // Import useLocation to access state
 import bgImage from '../../../assets/bgimg.png';
@@ -79,7 +80,7 @@ const Invoice = () => {
       {/* Top Layout */}
       <TopLayout bgImg={bgImage} title={'Collect your invoice'} />
 
-      <RootLayout className="space-y-12 w-full pb-16 py-8">
+      <RootLayout className="space-y-12 w-full pb-16 py-8 bg-white">
         <div className="w-full flex items-center justify-center">
           {/* Invoice card */}
           <div
