@@ -8,6 +8,7 @@
   font-family: "Inter", sans-serif;
 }
 
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,6 +18,7 @@
   display: none;
 }
 
+-------------------------------------
 
 
 .slider {

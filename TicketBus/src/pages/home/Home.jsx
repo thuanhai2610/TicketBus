@@ -4,13 +4,14 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import Hero from './hero/Hero'
 import Search from './hero/search/Search'
-import Offer from '../offer/Offer'
-import Blog from '../blog/Blog'
+import Feature from './feature/Feature'  // New section
+import Testimonial from './testimonial/Testimonial'  // New section
+import BusHome from './bushome/BusHome'
 
 const SectionWrapper = ({ children }) => {
   const { ref, inView } = useInView({
-    triggerOnce: true, // Chỉ chạy animation một lần
-    threshold: 0.2, // Khi 20% phần tử xuất hiện
+    triggerOnce: true, // Run animation only once
+    threshold: 0.2, // Trigger animation when 20% of the element is in view
   })
 
   return (
@@ -38,14 +39,18 @@ const Home = () => {
         <Search />
       </SectionWrapper>
 
-      {/* Services */}
+      {/* Feature Section */}
       <SectionWrapper>
-        <Offer />
+        <Feature />
       </SectionWrapper>
 
-      {/* Top Search */}
+      {/* Testimonial Section */}
       <SectionWrapper>
-        <Blog />
+        <Testimonial />
+      </SectionWrapper>
+
+      <SectionWrapper>
+        <BusHome/> 
       </SectionWrapper>
     </div>
   )

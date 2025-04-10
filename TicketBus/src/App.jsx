@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "./components/navbar/Navbar";
@@ -27,6 +28,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import Employees from "./pages/admin/employee/Employee";
 import 'react-toastify/dist/ReactToastify.css';
 import TicketHistory from "./pages/profile/TicketHistory";
+import BlogDetail from "./pages/blog/BlogDetail";
 
 
 function App() {
@@ -62,6 +64,7 @@ function App() {
             {/* Client Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<BlogDetail />} />
             <Route path="/offer" element={<Offer />} />
             <Route path="/bus-tickets" element={<Ticket />} />
             <Route path="/login" element={<Login />} />
