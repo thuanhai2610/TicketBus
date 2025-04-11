@@ -12,7 +12,8 @@ export class Payment extends Document {
 
   @Prop({ required: true, type: String, ref: 'Ticket' })
   ticketId: string;
-
+  // @Prop({ required: true, type: String, ref: 'Trip' })
+  tripId: string;
   @Prop({ required: true, type: String, ref: 'Company' })
   companyId: string;
 

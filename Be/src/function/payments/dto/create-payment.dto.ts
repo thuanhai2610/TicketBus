@@ -30,7 +30,7 @@ export class CreatePaymentDto {
 
   @IsEnum(PaymentStatus)
   paymentStatus: PaymentStatus;
-
+  tripId: string;
   cretedAt: Date;
   paymentUrl?: string;
 }

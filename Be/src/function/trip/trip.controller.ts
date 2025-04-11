@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, BadRequestException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, BadRequestException, Query, NotFoundException } from '@nestjs/common';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -9,7 +9,9 @@ import { Trip } from './schemas/trip.schema';
 
 @Controller('trip')
 export class TripController {
-  constructor(private readonly tripService: TripService) {}
+  constructor(private readonly tripService: TripService,
+    
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -17,15 +19,6 @@ export class TripController {
   create(@Body() createTripDto: CreateTripDto) {
     return this.tripService.create(createTripDto);
   }
-
-  
-
-  // @Get(':id')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin')
-  // findOne(@Param('id') id: string) {
-  //   return this.tripService.findOne(id);
-  // }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -66,4 +59,27 @@ export class TripController {
       const totalTrips = trips.length;
       return { totalTrips };
     }
+    @Get('tripdetails')
+  async findOne(@Query('tripId') tripId: string): Promise<Trip> {
+    if (!tripId) {
+      throw new BadRequestException('Trip ID is required');
+    }
+    const trip = await this.tripService.findOne(tripId);
+    if (!trip) {
+      throw new NotFoundException(`Trip with ID ${tripId} not found`);
+    }
+    return trip;
+  }
+  @Get('search')
+async searchTrips(
+  @Query('departurePoint') departurePoint: string,
+  @Query('destinationPoint') destinationPoint: string,
+  @Query('date') date: string
+) {
+  if (!departurePoint || !destinationPoint || !date) {
+    throw new BadRequestException('departurePoint, destinationPoint and date are required');
+  }
+
+  return this.tripService.searchTrips(departurePoint, destinationPoint, date);
+}
 }

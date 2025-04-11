@@ -213,4 +213,19 @@ export class TripService {
     ]).exec();
     return trip || [];
   }
+  async searchTrips(departurePoint: string, destinationPoint: string, date: string): Promise<Trip[]> {
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) {
+      throw new BadRequestException('Invalid date format');
+    }
+  
+    return this.tripModel.find({
+      departurePoint: { $regex: new RegExp(departurePoint, 'i') },
+      destinationPoint: { $regex: new RegExp(destinationPoint, 'i') },
+      departureTime: {
+        $gte: new Date(parsedDate.setHours(0, 0, 0, 0)),
+        $lte: new Date(parsedDate.setHours(23, 59, 59, 999)),
+      }
+    }).exec();
+  }
 }

@@ -5,10 +5,9 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { VehicleService } from './vehicle.service';
+import { Vehicle } from './schemas/vehicle.schema';
 
 @Controller('vehicle')
-
-
 export class VehicleController {
   constructor(private readonly vehicleService: VehicleService) {}
 
@@ -53,5 +52,13 @@ export class VehicleController {
     
     console.log(`Received query for companyId: '${companyId}'`);
     return this.vehicleService.findByCompanyId(companyId);
+  }
+
+  @Get('get/details')
+  async findOnez(@Query('vehicleId') vehicleId: string): Promise<Vehicle> {
+    if (!vehicleId) {
+      throw new BadRequestException('Vehicle ID is required');
+    }
+    return this.vehicleService.findOne(vehicleId); // This will throw NotFoundException if the vehicle isn't found
   }
 }

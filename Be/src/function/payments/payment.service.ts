@@ -103,7 +103,7 @@ export class PaymentService {
       throw new NotFoundException('Trip not found');
     }
 
-    let seatNumbers: string[] = [];
+    let seatNumbers = Array.isArray(ticket.seatNumber) ? ticket.seatNumber : [ticket.seatNumber];
     if (typeof ticket.seatNumber === 'string') {
       seatNumbers = [ticket.seatNumber];
       await this.seatModel
@@ -113,19 +113,8 @@ export class PaymentService {
           { new: true }
         )
         .exec();
-    } else if (Array.isArray(ticket.seatNumber)) {
-      seatNumbers = ticket.seatNumber;
-      for (const seatNumber of seatNumbers) {
-        await this.seatModel
-          .findOneAndUpdate(
-            { tripId: ticket.tripId, seatNumber },
-            { availabilityStatus: 'Selected', updatedAt: new Date() },
-            { new: true }
-          )
-          .exec();
-      }
     }
-
+    console.log(`processTicketAndSeats called for ticket ${ticket.ticketId}, payment ${payment.paymentId}, method ${payment.paymentMethod}`);
     console.log(`Processing ticket ${ticket.ticketId} with ${seatNumbers.length} seats: ${seatNumbers.join(', ')}`);
     console.log(`Decrementing seat count for vehicle ${trip.vehicleId} by ${seatNumbers.length}`);
 
@@ -158,6 +147,11 @@ export class PaymentService {
     }
 
     if (vnpParams['vnp_ResponseCode'] === '00') {
+
+      if (payment.paymentStatus === 'completed') {
+        return { status: 'success', paymentId };
+      }
+    
       await this.paymentRepository.updatePaymentStatus(paymentId, 'completed');
       const ticket = await this.ticketService.findTicketById(payment.ticketId);
       await this.processTicketAndSeats(ticket, payment);
@@ -165,8 +159,10 @@ export class PaymentService {
     } else {
       await this.paymentRepository.updatePaymentStatus(paymentId, 'failed');
       return { status: 'failed', message: vnpParams['vnp_ResponseCode'] };
+      
     }
-  }
+    
+  } 
 
   private formatDate(date: Date): string {
     return date.toISOString().replace(/[^0-9]/g, '').slice(0, 14);
@@ -372,5 +368,18 @@ export class PaymentService {
 
   async findAll(): Promise<Payment[]> {
     return this.paymentModel.find().exec();
+  }
+  async getTicketByPaymentId(paymentId: string): Promise<{ payment: PaymentDocument;ticketId: string } | null> {
+    console.log(`Fetching payment with paymentId: ${paymentId}`); // Debug log
+    const payment = await this.paymentRepository.findPaymentById(paymentId);
+    if (!payment) {
+      console.log(`No payment found for paymentId: ${paymentId}`);
+      return null;
+    }
+    if (!payment.ticketId) {
+      console.log(`No ticketId associated with paymentId: ${paymentId}`);
+      return null;
+    }
+    return { payment, ticketId: payment.ticketId };
   }
 }

@@ -93,7 +93,7 @@ const Invoice = () => {
               ticketId= {ticketId}
               passengerName={passengerInfo?.fullName || 'NhismdKhoaHaiz'}
               totalSeats={selectedSeats}
-              // totalPassengers={selectedSeats.length}
+              totalPassengers={selectedSeats.length}
               pickupStation={passengerInfo?.address || 'Nhism dKhoa thHai'}
               departurePoint={tripInfo?.departurePoint || 'Nha Trang'}
               destinationPoint={tripInfo?.destinationPoint || 'Da Nang'}

@@ -91,22 +91,22 @@ async holdSeat(@Body() body: { tripId: string, seatNumber: string[], username: s
   }
 }
   
-  @Post(':ticketId/update-status')
-  async updateTicketStatus(
-    @Param('ticketId') ticketId: string,
-    @Body() body: { status: string }
-  ) {
-    if (!body.status) {
-      throw new BadRequestException('Status is required');
-    }
+  // @Post(':ticketId/update-status')
+  // async updateTicketStatus(
+  //   @Param('ticketId') ticketId: string,
+  //   @Body() body: { status: string }
+  // ) {
+  //   if (!body.status) {
+  //     throw new BadRequestException('Status is required');
+  //   }
     
-    const validStatuses = ['Ready', 'Ordered', 'Paid', 'Cancelled'];
-    if (!validStatuses.includes(body.status)) {
-      throw new BadRequestException(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
-    }
+  //   const validStatuses = ['Ready', 'Ordered', 'Paid', 'Cancelled'];
+  //   if (!validStatuses.includes(body.status)) {
+  //     throw new BadRequestException(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
+  //   }
     
-    return this.ticketsService.updateTicketStatus(ticketId, body.status);
-  }
+  //   return this.ticketsService.updateTicketStatus(ticketId, body.status);
+  // }
   @Get('trip/:tripId')
   async getTicketsByTrip(@Param('tripId') tripId: string) {
     return this.ticketsService.findByTripId(tripId);
@@ -129,4 +129,13 @@ async updateTicket(
     throw new BadRequestException('Failed to update ticket');
   }
 }
+
+@Get('vn-pay/details')
+  async getTicketDetailsById(@Query('ticketId') ticketId: string) {
+    if (!ticketId) {
+      throw new BadRequestException('Ticket ID is required');
+    }
+    const ticket = await this.ticketsService.getTicketById(ticketId);
+    return ticket; 
+  }
 }
