@@ -36,7 +36,7 @@ const Home = () => {
 
       {/* Search */}
       <SectionWrapper>
-        <Search />
+      <Search  />
       </SectionWrapper>
 
       {/* Feature Section */}

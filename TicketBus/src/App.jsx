@@ -29,6 +29,7 @@ import Employees from "./pages/admin/employee/Employee";
 import 'react-toastify/dist/ReactToastify.css';
 import TicketHistory from "./pages/profile/TicketHistory";
 import BlogDetail from "./pages/blog/BlogDetail";
+import VNPAY from "./pages/ticket/TicketVNPAY";
 
 
 function App() {
@@ -90,6 +91,7 @@ function App() {
             {/* <Route path="/bus-tickets/detail" element={<Detail />} /> */}
             <Route path="/bus-tickets/checkout" element={<Checkout />} />
             <Route path="/bus-tickets/payment" element={<Invoice />} />
+            <Route path="/bus-tickets/VNPAY" element={<VNPAY />} />
 
             {/* Admin Routes */}
             <Route path="/admin/*" element={

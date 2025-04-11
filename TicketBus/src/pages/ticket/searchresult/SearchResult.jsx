@@ -7,11 +7,10 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const SearchResult = () => {
+const SearchResult = ({ trips }) => { // Nhận prop trips từ Ticket
   const navigate = useNavigate();
   const tripListRef = useRef(null);
 
-  const [allTrips, setAllTrips] = useState([]);
   const [vehicles, setVehicles] = useState({});
   const [tripsLoading, setTripsLoading] = useState(false);
   const [tripsError, setTripsError] = useState(null);
@@ -51,34 +50,16 @@ const SearchResult = () => {
     }
   };
 
-  const fetchAllTrips = async () => {
-    setTripsLoading(true);
-    try {
-      const response = await axios.get('http://localhost:3001/trip/all', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      const trips = Array.isArray(response.data) ? response.data : response.data?.trips || [];
-      setAllTrips(trips);
-
+  useEffect(() => {
+    if (trips.length > 0) {
+      setTripsLoading(true);
       const vehicleIds = trips.map(trip => trip.vehicleId).filter(Boolean);
       if (vehicleIds.length > 0) {
         fetchVehicles(vehicleIds);
       }
-    } catch (error) {
-      console.error("Error fetching trips:", error);
-      setTripsError(error.response?.data?.message || 'Failed to fetch trips');
-      setAllTrips([]);
-    } finally {
       setTripsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchAllTrips();
-  }, []);
+  }, [trips]); // Gọi fetchVehicles khi trips thay đổi
 
   const getAvailableSeats = (trip) => {
     const vehicle = vehicles[trip.vehicleId];
@@ -96,10 +77,9 @@ const SearchResult = () => {
     }
   };
 
-
   const start = (page - 1) * limit;
-  const currentTrips = allTrips.slice(start, start + limit);
-  const totalPages = Math.ceil(allTrips.length / limit);
+  const currentTrips = trips.slice(start, start + limit); // Sử dụng trips từ props
+  const totalPages = Math.ceil(trips.length / limit);
 
   const handlePageChange = (pageNum) => {
     setPage(pageNum);
@@ -140,7 +120,7 @@ const SearchResult = () => {
           ))}
         </div>
       ) : (
-        <Typography>Không tìm thấy chỗ</Typography>
+        <Typography></Typography>
       )}
 
       {totalPages > 1 && (

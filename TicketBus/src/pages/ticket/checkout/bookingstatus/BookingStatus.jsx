@@ -15,7 +15,6 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
   const [vehicle, setVehicleId] = useState(null);
   const [fetchError, setFetchError] = useState(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  // Calculate total price based on selectedSeats and seatData
   const totalPrice = selectedSeats?.reduce((total, seatId) => {
     const seat = seatData?.find((seat) => seat.id === seatId);
     return total + (seat ? seat.price : 0);
@@ -83,7 +82,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         paymentStatus: 'pending',
       };
   
-      console.log("Sending payment data:", paymentData);
+      console.log("Sending payment data:", paymentData, updateTicketData);
   
       // Create payment
       const paymentResponse = await fetch('http://localhost:3001/payments', {
@@ -104,6 +103,21 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
       console.log('Payment created:', paymentResult);
       setPaymentId(paymentResult.paymentId);
       if (paymentMethod === 'vn_pay') {
+        const updateTicketPayload = {
+          ...updateTicketData,
+          status: 'Booked'
+        };
+      
+      await axios.put(`http://localhost:3001/tickets/${ticketId}`,
+          updateTicketPayload,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      
         if (paymentResult.paymentUrl) {
           window.location.href = paymentResult.paymentUrl; 
         } else {
@@ -123,11 +137,13 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         );
   
         console.log('Payment status updated to completed:', updatePaymentResponse.data);
-  
-        // Update ticket status to Paid
+        const updateTicketPayload = {
+          ...updateTicketData,
+          status: 'Paid',
+        };
         const updateTicketStatusResponse = await axios.put(
           `http://localhost:3001/tickets/${ticketId}`,
-          { status: 'Paid' },
+          updateTicketPayload,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -269,7 +285,35 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
 
     fetchVehicleId();
   }, [vehicleId]);
-
+  useEffect(() => {
+    const timeout = setTimeout(async () => {
+      if (!ticketId) return;
+  
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('No token found. Please log in.');
+  
+        await axios.put(
+          `http://localhost:3001/tickets/${ticketId}`,
+          { status: 'Cancelled' },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        console.warn('Tự động hủy vé do quá hạn thanh toán.');
+        setError('Bạn đã chờ quá lâu. Vé đã bị huỷ.');
+      } catch (err) {
+        console.error('Lỗi khi tự động hủy vé:', err);
+      }
+    }, 5 * 60 * 1000); // 5 phút
+  
+    return () => clearTimeout(timeout); // Dọn dẹp nếu user rời trang
+  }, [ticketId]);
+  
   const departureTime = tripInfo?.departureTime ? formatTime(tripInfo.departureTime) : 'Unknown Time';
   const arrivalTime = tripInfo?.arrivalTime ? formatTime(tripInfo.arrivalTime) : 'Unknown Time';
 

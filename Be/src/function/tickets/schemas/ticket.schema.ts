@@ -1,5 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Expose, Type } from 'class-transformer';
 import { Document } from 'mongoose';
+import { CreateTripDto } from 'src/function/trip/dto/create-trip.dto';
+import { Trip } from 'src/function/trip/schemas/trip.schema';
+import { CreateVehicleDto } from 'src/function/vehicle/dto/create-vehicle.dto';
+import { Vehicle } from 'src/function/vehicle/schemas/vehicle.schema';
 
 export type TicketDocument = Ticket & Document;
 
@@ -44,6 +49,8 @@ export class Ticket extends Document{
 
   @Prop()
   address?: string;
+
+   
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);

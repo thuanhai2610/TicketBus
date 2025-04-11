@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, HttpCode, HttpStatus, Query, BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -61,4 +61,17 @@ export class PaymentController {
       return { message: 'Payment failed', code: result.message };
     }
   }
+  @Get('tickets/ticketvnpay')
+  async getTicketByPaymentId(@Query('paymentId') paymentId: string) {
+    if (!paymentId) {
+      throw new BadRequestException('Payment ID is required');
+     
+    } 
+    const ticket = await this.paymentsService.getTicketByPaymentId(paymentId);
+    if (!ticket) {
+      throw new NotFoundException('Ticket not found for this payment ID');
+    }
+    return ticket;
+  }
 }
+
