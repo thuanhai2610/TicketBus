@@ -23,7 +23,16 @@ export class Trip {
 
   @Prop({ required: true })
   destinationPoint: string;
+  @Prop({ required: true, type: Number })
+  departureLatitude: number;
 
+  @Prop({ required: true, type: Number })
+  departureLongtitude: number;
+  @Prop({ required: true, type: Number })
+  destinationLatitude: number;
+
+  @Prop({ required: true, type: Number })
+  destinationLongtitude: number;
   @Prop({ required: true, type: Date })
   departureTime: Date;
 

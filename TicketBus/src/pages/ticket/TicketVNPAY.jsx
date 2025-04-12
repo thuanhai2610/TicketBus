@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { QRCodeCanvas } from 'qrcode.react';
 
 const TicketVNPAY = () => {
   const [paymentData, setPaymentData] = useState(null);
@@ -9,6 +10,8 @@ const TicketVNPAY = () => {
   const [ticketDetails, setTicketDetails] = useState(null);
   const [tripDetails, setTripDetails] = useState(null);
   const [vehicleDetails, setVehicleDetails] = useState(null);
+    const [qrCodeData, setQrCodeData] = useState(null);
+  
   useEffect(() => {
     const fetchPaymentData = async () => {
       try {
@@ -73,6 +76,20 @@ const TicketVNPAY = () => {
                     );
                     console.log('Vehicle details response:', vehicleDetailsResponse.data);
                     setVehicleDetails(vehicleDetailsResponse.data);
+                    const qrData = JSON.stringify({
+                      ticketId: ticketDetailsResponse.data.ticketId,
+                      status: 'Paid',
+                      fullName: ticketDetailsResponse.data.fullName,
+                      departurePoint: tripDetailsResponse.data.departurePoint,
+                      destinationPoint: tripDetailsResponse.data.destinationPoint,
+                      departureTime: tripDetailsResponse.data.departureTime,
+                      // seats: selectedSeats,
+                      seats: ticketDetailsResponse.data.seatNumber,
+                      seatsLength: ticketDetailsResponse.data.seatNumber.length,
+
+                      lisencePlate: vehicleDetailsResponse.data.lisencePlate || 'Unknown',
+                    });
+                    setQrCodeData(qrData);
                   }
               }
           } 
@@ -125,9 +142,15 @@ const TicketVNPAY = () => {
           <h2>Vehicle Information</h2>
           {vehicleDetails.lisencePlate && <p>License Plate: {vehicleDetails.lisencePlate}</p>}
         </div>
-      )}
-    </div>
-  );
+      )}{qrCodeData && (
+  <div>
+    <h2>QR Code</h2>
+    <QRCodeCanvas value={qrCodeData} size={200} />
+  </div>
+
+   )};
+      </div>
+      )
 };
 
 export default TicketVNPAY;

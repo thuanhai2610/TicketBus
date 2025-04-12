@@ -1,25 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  CircularProgress,
-  Box,
-  Typography,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import {  Table,  TableBody,  TableCell,  TableContainer,  TableHead,  TableRow,  Paper,  CircularProgress,  Box,  Typography,  Button,
+  Dialog,  DialogTitle,  DialogContent,  DialogActions,  TextField,  Snackbar,  Alert,} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
@@ -35,17 +17,8 @@ const ManageTrips = () => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openViewDialog, setOpenViewDialog] = useState(false);
   const [openCreateTripDialog, setOpenCreateTripDialog] = useState(false);
-  const [notification, setNotification] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
-  const [newCompany, setNewCompany] = useState({
-    companyId: "",
-    companyName: "",
-    phone: "",
-    address: "",
-  });
+  const [notification, setNotification] = useState({    open: false,    message: "",    severity: "success",  });
+  const [newCompany, setNewCompany] = useState({ companyId: "", companyName: "",  phone: "",    address: "",  });
   const [editCompany, setEditCompany] = useState(null);
   const [viewCompany, setViewCompany] = useState(null);
   const [vehicles, setVehicles] = useState([]);
@@ -54,13 +27,11 @@ const ManageTrips = () => {
   const [trips, setTrips] = useState([]);
   const [tripsLoading, setTripsLoading] = useState(false);
   const [tripsError, setTripsError] = useState(null);
-  const [newTrip, setNewTrip] = useState({
-    tripId: "",
-    vehicleId: "",
-    companyId: "",
-    driverId: "",
-    departurePoint: "",
+  const [newTrip, setNewTrip] = useState({tripId: "", vehicleId: "",  companyId: "",  driverId: "",    departurePoint: "",    departureLatitude: "",
+    departureLongtitude: "",
     destinationPoint: "",
+    destinationLatitude: "",
+    destinationLongtitude: "",
     departureDate: "",
     departureHour: "",
     arrivalDate: "",
@@ -69,26 +40,11 @@ const ManageTrips = () => {
     status: "",
   });
   const [openCreateVehicleDialog, setOpenCreateVehicleDialog] = useState(false);
-  const [newVehicle, setNewVehicle] = useState({
-    vehicleId: "",
-    companyId: "",
-    lisencePlate: "",
-    vehicleType: "",
-    seatCount: "",
-    availableSeats: "",
-  });
+  const [newVehicle, setNewVehicle] = useState({vehicleId: "", companyId: "", lisencePlate: "", vehicleType: "", seatCount: "", availableSeats: "",  });
 
   const handleCloseCreateVehicleDialog = () => {
     setOpenCreateVehicleDialog(false);
-    setNewVehicle({
-      vehicleId: "",
-      companyId: "",
-      lisencePlate: "",
-      vehicleType: "",
-      seatCount: "",
-      availableSeats: "",
-    });
-  };
+    setNewVehicle({vehicleId: "", companyId: "", lisencePlate: "", vehicleType: "", seatCount: "", availableSeats: "", });  };
 
   const handleVehicleInputChange = (e) => {
     const { name, value } = e.target;
@@ -374,7 +330,11 @@ const ManageTrips = () => {
       companyId: "",
       driverId: "",
       departurePoint: "",
+      departureLatitude: "",
+      departureLongtitude: "",
       destinationPoint: "",
+      destinationLatitude: "",
+      destinationLongtitude: "",
       departureDate: "",
       departureHour: "",
       arrivalDate: "",
@@ -386,12 +346,39 @@ const ManageTrips = () => {
 
   const handleTripInputChange = (e) => {
     const { name, value } = e.target;
-    setNewTrip({
-      ...newTrip,
-      [name]: name === "price" ? (value === "" ? "" : Number(value)) : value,
-    });
-  };
 
+    if (name === "departurePoint" || name === "destinationPoint") {
+      const coords = locationCoordinates[value];
+      if (!coords) return;
+
+      setNewTrip((prev) => ({
+        ...prev,
+        [name]: value,
+        ...(name === "departurePoint"
+          ? {
+              departureLatitude: coords.lat,
+              departureLongtitude: coords.lng,
+            }
+          : {
+              destinationLatitude: coords.lat,
+              destinationLongtitude: coords.lng,
+            }),
+      }));
+    } else {
+      setNewTrip((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+  const locationCoordinates = {
+    "Đà nẵng": { lat: 16.0544, lng: 108.2022 },
+    "Huế": { lat: 16.4637, lng: 107.5909 },
+    "Quảng Ngãi": { lat: 15.1214, lng: 108.8040 },
+    "Bình Định": { lat: 13.7820, lng: 109.2193 },
+    "Phú Yên": { lat: 13.0882, lng: 109.0929 },
+    "Nha Trang": { lat: 12.2388, lng: 109.1967 },
+  };
   const handleCreateTrip = async () => {
     try {
       const [depDay, depMonth, depYear] = newTrip.departureDate.split("-");
@@ -408,6 +395,8 @@ const ManageTrips = () => {
         ...newTrip,
         departureTime,
         arrivalTime,
+        price: Number(newTrip.price),
+
       }; console.log('Sending trip data:', tripToSend);
       const response = await axios.post("http://localhost:3001/trip", tripToSend, {
         headers: {
@@ -872,12 +861,12 @@ const ManageTrips = () => {
               onChange={handleTripInputChange}
               required
             >
-              <MenuItem value="Bến xe Đà nẵng">Bến xe Đà nẵng</MenuItem>
-              <MenuItem value="Bến xe Huế">Bến xe Huế</MenuItem>
-              <MenuItem value="Bến xe Quảng Ngãi">Bến xe Quảng Ngãi</MenuItem>
-              <MenuItem value="Bến xe Bình Định">Bến xe Bình Định</MenuItem>
-              <MenuItem value="Bến xe Phú Yên">Bến xe Phú Yên</MenuItem>     
-              <MenuItem value="Bến xe Nha Trang">Bến xe Nha Trang</MenuItem>
+              <MenuItem value="Đà nẵng">Đà nẵng</MenuItem>
+              <MenuItem value="Huế">Huế</MenuItem>
+              <MenuItem value="Quảng Ngãi">Quảng Ngãi</MenuItem>
+              <MenuItem value="Bình Định">Bình Định</MenuItem>
+              <MenuItem value="Phú Yên">Phú Yên</MenuItem>     
+              <MenuItem value="Nha Trang">Nha Trang</MenuItem>
             </TextField>
             <TextField
               name="destinationPoint"
@@ -889,12 +878,12 @@ const ManageTrips = () => {
               onChange={handleTripInputChange}
               required
             >              
-            <MenuItem value="Bến xe Đà nẵng">Bến xe Đà nẵng</MenuItem>
-              <MenuItem value="Bến xe Huế">Bến xe Huế</MenuItem>
-              <MenuItem value="Bến xe Quảng Ngãi">Bến xe Quảng Ngãi</MenuItem>
-              <MenuItem value="Bến xe Bình Định">Bến xe Bình Định</MenuItem>
-              <MenuItem value="Bến xe Phú Yên">Bến xe Phú Yên</MenuItem>
-              <MenuItem value="Bến xe Nha Trang">Bến xe Nha Trang</MenuItem>
+            <MenuItem value="Đà nẵng">Đà nẵng</MenuItem>
+              <MenuItem value="Huế">Huế</MenuItem>
+              <MenuItem value="Quảng Ngãi">Quảng Ngãi</MenuItem>
+              <MenuItem value="Bình Định">Bình Định</MenuItem>
+              <MenuItem value="Phú Yên">Phú Yên</MenuItem>
+              <MenuItem value="Nha Trang">Nha Trang</MenuItem>
 
             </TextField>
             <TextField

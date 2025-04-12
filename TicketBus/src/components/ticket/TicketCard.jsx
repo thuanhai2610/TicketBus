@@ -6,7 +6,10 @@ import { TbAirConditioning } from 'react-icons/tb'
 import { Link } from 'react-router-dom'
 
 // eslint-disable-next-line no-unused-vars
-const TicketCard = ({ icon: Icon, busName, routeFrom, routeTo, arrivalTime,departureTime, price, availableSeats ,vehicleId}) => {
+const TicketCard = ({ icon: Icon, busName,departureLatitude,
+    departureLongtitude,
+    destinationLatitude,
+    destinationLongtitude,routeFrom, routeTo, arrivalTime,departureTime, price, availableSeats ,vehicleId}) => {
     
     return (
         <div className='w-full rounded-xl p-5 border-2 border-neutral-400 space-y-5 justify-center'>
@@ -54,6 +57,7 @@ const TicketCard = ({ icon: Icon, busName, routeFrom, routeTo, arrivalTime,depar
                                     {availableSeats} seats
                                     </p>
                                </div>
+                            
                             </div>
 
 

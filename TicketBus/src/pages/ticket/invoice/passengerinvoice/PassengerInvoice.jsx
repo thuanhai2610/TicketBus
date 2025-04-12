@@ -4,7 +4,7 @@ import React from 'react'
 
 import { FaCircleCheck } from 'react-icons/fa6'
 import { IoCloseCircle } from 'react-icons/io5'
-
+import { QRCodeCanvas } from 'qrcode.react';
 import BusImg from '../../../../assets/bus.png'
 import QrCode from '../../../../assets/qrcode.jpg'
 import { FaPhone } from 'react-icons/fa'
@@ -20,7 +20,8 @@ const PassengerInvoice = ({
     destinationPoint,
     departureTime,
     arrivalTime,
-    vehicleId,
+    qrCodeData,
+  
 bookedAt,
 lisencePlate}
 
@@ -136,10 +137,12 @@ lisencePlate}
 
                     </div>
                 </div>
-
-                <div className="col-span-1 border border-neutral-200 rounded-xl shadow-sm p-1">
-                    <img src={QrCode} alt="" className="w-full aspect-square object-cover object-center rounded-xl" />
-                </div>
+                {qrCodeData && (
+        <div className="flex flex-col items-center space-y-2">
+          <h3 className="text-sm font-medium">Mã QR vé xe</h3>
+          <QRCodeCanvas id="ticket-qr-code-invoice" value={qrCodeData} size={128} />
+        </div>
+      )}
 
             </div>
 

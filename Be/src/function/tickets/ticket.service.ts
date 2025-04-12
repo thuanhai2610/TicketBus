@@ -276,9 +276,6 @@ export class TicketService {
           )
           .exec();
       }
-
-      // Increment vehicle seat count
-      await this.vehicleService.increaseSeatCount(trip.vehicleId, seatNumbers.length);
     }
 
     // Update the ticket with the fields from updateTicketDto

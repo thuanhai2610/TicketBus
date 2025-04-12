@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRightLong } from 'react-icons/fa6';
-
+import { QRCodeCanvas } from 'qrcode.react';
 
 const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passengerInfo, ticketId }) => {
   const [error, setError] = useState(null);
@@ -15,6 +15,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
   const [vehicle, setVehicleId] = useState(null);
   const [fetchError, setFetchError] = useState(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [qrCodeData, setQrCodeData] = useState(null);
   const totalPrice = selectedSeats?.reduce((total, seatId) => {
     const seat = seatData?.find((seat) => seat.id === seatId);
     return total + (seat ? seat.price : 0);
@@ -153,7 +154,17 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         );
   
         console.log('Ticket status updated to Paid:', updateTicketStatusResponse.data);
-  
+        const qrData = JSON.stringify({
+          ticketId: ticketId,
+          status: 'Paid',
+          fullName: passengerInfo.fullName,
+          departurePoint: tripInfo.departurePoint,
+          destinationPoint: tripInfo.destinationPoint,
+          departureTime: tripInfo.departureTime,
+          seats: selectedSeats,
+          lisencePlate: vehicle?.lisencePlate || 'Unknown',
+        });
+        setQrCodeData(qrData);
         // Set success and navigate to confirmation page
         setSuccess(true);
         setError(null);
@@ -168,6 +179,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
               passengerInfo: passengerInfo,
               vehicleId: vehicleId,
               lisencePlate: vehicle?.lisencePlate,
+              qrCodeData: qrData,
             },
           });
           setIsRedirecting(false); // Reset redirecting state after navigation
@@ -193,7 +205,19 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
       setIsLoading(false);
     }
   };
-
+  const downloadQRCode = () => {
+    const qrCanvas = document.getElementById('ticket-qr-code');
+    if (qrCanvas instanceof HTMLCanvasElement) {
+      const qrImage = qrCanvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = qrImage;
+      link.download = `ticket_${ticketId}.png`;
+      link.click();
+    } else {
+      console.error('QR code canvas not found or not a canvas element');
+    }
+  };
+  
   const handleCancel = async () => {
     setError(null);
     setIsLoading(true);
@@ -285,35 +309,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
 
     fetchVehicleId();
   }, [vehicleId]);
-  useEffect(() => {
-    const timeout = setTimeout(async () => {
-      if (!ticketId) return;
-  
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) throw new Error('No token found. Please log in.');
-  
-        await axios.put(
-          `http://localhost:3001/tickets/${ticketId}`,
-          { status: 'Cancelled' },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-  
-        console.warn('Tự động hủy vé do quá hạn thanh toán.');
-        setError('Bạn đã chờ quá lâu. Vé đã bị huỷ.');
-      } catch (err) {
-        console.error('Lỗi khi tự động hủy vé:', err);
-      }
-    }, 5 * 60 * 1000); // 5 phút
-  
-    return () => clearTimeout(timeout); // Dọn dẹp nếu user rời trang
-  }, [ticketId]);
-  
+ 
   const departureTime = tripInfo?.departureTime ? formatTime(tripInfo.departureTime) : 'Unknown Time';
   const arrivalTime = tripInfo?.arrivalTime ? formatTime(tripInfo.arrivalTime) : 'Unknown Time';
 
@@ -388,6 +384,18 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
           Thanh toán thành công! Vé của bạn đã được cập nhật.
+          {qrCodeData && (
+            <div className="flex flex-col items-center space-y-2">
+              <h3 className="text-sm font-medium">Mã QR vé xe của bạn</h3>
+              <QRCodeCanvas id="ticket-qr-code" value={qrCodeData} size={128} />
+              <button
+                onClick={downloadQRCode}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-normal py-2 px-4 rounded-lg transition"
+              >
+                Tải mã QR
+              </button>
+            </div>
+          )}
         </div>
       )}
 
