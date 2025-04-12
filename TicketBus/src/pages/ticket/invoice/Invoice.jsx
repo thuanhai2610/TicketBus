@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
-import React, { useRef, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useRef, useEffect,  useState } from 'react';
+import { useLocation } from 'react-router-dom'; // Import useLocation to access state
 import bgImage from '../../../assets/bgimg.png';
 import TopLayout from '../../../layout/toppage/TopLayout';
 import RootLayout from '../../../layout/RootLayout';
@@ -8,38 +8,35 @@ import PassengerInvoice from './passengerinvoice/PassengerInvoice';
 import CompanyInvoice from './company/CompanyInvoice';
 import { toPng } from 'html-to-image';
 import download from 'downloadjs';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import ErrorBoundary from '../invoice/ErrorBoundary'
 
 const Invoice = () => {
   const inVoiceRef = useRef(null);
-  const location = useLocation();
+  const location = useLocation(); // Access the state passed via navigate
   const navigate = useNavigate();
-  const [ticket, setTicket] = useState(null);
-  const [fetchError, setFetchError] = useState(null);
+  const [ticket, setTicket] = useState(null); 
+  const [fetchError, setFetchError] = useState(null); 
+  const mapRef = useRef(null);
+const leafletMapRef = useRef(null);
 
-  // Destructuring an toàn
+  // Extract data from state
   const {
-    lisencePlate = '',
-    ticketId = '',
-    tripInfo = {},
-    selectedSeats = [],
-    totalPrice = 0,
-    passengerInfo = {},
-    vehicleId = '',
-    qrCodeData = '',
-  } = location.state || {};
-
+    lisencePlate,
+    ticketId,
+    tripInfo,
+    selectedSeats,
+    totalPrice,
+    passengerInfo,
+    vehicleId,
+ qrCodeData } = location.state || {};
   useEffect(() => {
-    if (!location.state || !ticketId) {
-      console.warn('No state or ticketId found. Redirecting to booking page.');
-      navigate('/bus-tickets');
-      return;
-    }
-
     const fetchTicket = async () => {
+      if (!ticketId) {
+        setFetchError('Ticket ID is missing. Unable to fetch ticket details.');
+        return;
+      }
+
       try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -61,41 +58,49 @@ const Invoice = () => {
     };
 
     fetchTicket();
+  }, [ticketId]);
+
+  useEffect(() => {
+    if (!location.state || !ticketId) {
+      console.warn('No state or ticketId found. Redirecting to booking page.');
+      navigate('/bus-tickets');
+    }
   }, [location.state, ticketId, navigate]);
-
-  const position = [51.505, -0.09]; // Thay bằng tọa độ thực tế nếu có
-
   const handleDownload = async () => {
     if (inVoiceRef.current === null) return;
 
     try {
       const dataUrl = await toPng(inVoiceRef.current);
-      download(dataUrl, 'invoice.png');
+      // Download image
+      download(dataUrl, 'nhismdKhoaHaiz.png');
     } catch (error) {
       console.error('Error while downloading the invoice', error);
     }
   };
 
+
+  
   return (
     <div>
+      {/* Top Layout */}
       <TopLayout bgImg={bgImage} title={'Collect your invoice'} />
+
       <RootLayout className="space-y-12 w-full pb-16 py-8 bg-white">
-        {fetchError && (
-          <div className="text-red-500 text-center">{fetchError}</div>
-        )}
         <div className="w-full flex items-center justify-center">
+          {/* Invoice card */}
           <div
             ref={inVoiceRef}
             className="w-[90%] grid grid-cols-5 bg-white rounded-3xl border border-neutral-200 shadow-sm relative"
           >
+            {/* Left side passenger */}
             <PassengerInvoice
-              qrCodeData={qrCodeData}
-              lisencePlate={lisencePlate}
-              ticketId={ticketId}
-              passengerName={passengerInfo?.fullName || 'N/A'}
+            qrCodeData = {qrCodeData}
+             lisencePlate= { lisencePlate}
+              ticketId= {ticketId}
+              passengerName={passengerInfo?.fullName || 'NhismdKhoaHaiz'}
               totalSeats={selectedSeats}
               totalPassengers={selectedSeats.length}
-              pickupStation={passengerInfo?.address || 'N/A'}
+              pickupStation={passengerInfo?.address || 'Nhism dKhoa thHai'}
               departurePoint={tripInfo?.departurePoint || 'Nha Trang'}
               destinationPoint={tripInfo?.destinationPoint || 'Da Nang'}
               departureTime={tripInfo?.departureTime || '09:05 AM'}
@@ -104,14 +109,15 @@ const Invoice = () => {
               totalPrice={totalPrice || 500000}
               bookedAt={ticket?.bookedAt}
             />
+            {/* Right side company */}
             <CompanyInvoice
-              ticketId={ticketId}
-              bookedAt={ticket?.bookedAt}
-              lisencePlate={lisencePlate}
-              passengerName={passengerInfo?.fullName || 'N/A'}
-              totalSeats={selectedSeats}
+               ticketId= {ticketId}
+                         bookedAt={ticket?.bookedAt}
+                         lisencePlate={ lisencePlate}
+              passengerName={passengerInfo?.fullName || 'NhismdKhoaHaiz'}
+              totalSeats={selectedSeats }
               totalPassengers={selectedSeats.length}
-              pickupStation={passengerInfo?.address || 'N/A'}
+              pickupStation={passengerInfo?.address || 'Nhism dKhoa thHai'}
               departurePoint={tripInfo?.departurePoint || 'Nha Trang'}
               destinationPoint={tripInfo?.destinationPoint || 'Da Nang'}
               departureTime={tripInfo?.departureTime || '09:05 AM'}
@@ -120,10 +126,14 @@ const Invoice = () => {
               totalPrice={totalPrice || 500000}
               billStatus="Bill Paid"
             />
+
+            {/* Cut circle */}
             <div className="absolute -top-3 right-[18.8%] h-6 w-6 rounded-full bg-neutral-50" />
             <div className="absolute -bottom-3 right-[18.8%] h-6 w-6 rounded-full bg-neutral-50" />
           </div>
         </div>
+
+        {/* Download invoice card button */}
         <div className="w-full flex justify-center items-center">
           <button
             onClick={handleDownload}
@@ -132,26 +142,13 @@ const Invoice = () => {
             Download Ticket
           </button>
         </div>
-        <ErrorBoundary>
-  {ticketId && (
-    <div style={{ height: '400px', width: '100%', marginTop: '20px' }}>
-      <MapContainer
-        center={[51.505, -0.09]}
-        zoom={13}
-        scrollWheelZoom={false}
-        style={{ height: '100%', width: '100%' }}
-      >
-        <TileLayer
-          attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-      </MapContainer>
-    </div>
-  )}
-</ErrorBoundary>
+
       </RootLayout>
+     
     </div>
+   
   );
+
 };
 
-export default Invoice;
+export default Invoice; 
