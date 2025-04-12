@@ -57,7 +57,12 @@ const TicketCard = ({ icon: Icon, busName,departureLatitude,
                                     {availableSeats} seats
                                     </p>
                                </div>
-                            
+                               <div className="flex items-center gap-x-1 bg-neutral-200/50 rounded-full px-1.5 py-0.5">
+                                    <MdOutlineChair className='w-4 h-4 text-primary -rotate-90 dark:text-neutral-50'/>
+                                    <p className="text-xs text-neutral-600 font-normal dark:text-neutral-50">
+                                    {departureLatitude} seats
+                                    </p>
+                               </div>
                             </div>
 
 
