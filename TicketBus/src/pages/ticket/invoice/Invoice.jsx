@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useRef, useEffect,  useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom'; // Import useLocation to access state
 import bgImage from '../../../assets/bgimg.png';
 import TopLayout from '../../../layout/toppage/TopLayout';
@@ -15,10 +15,10 @@ const Invoice = () => {
   const inVoiceRef = useRef(null);
   const location = useLocation(); // Access the state passed via navigate
   const navigate = useNavigate();
-  const [ticket, setTicket] = useState(null); 
-  const [fetchError, setFetchError] = useState(null); 
+  const [ticket, setTicket] = useState(null);
+  const [fetchError, setFetchError] = useState(null);
   const mapRef = useRef(null);
-const leafletMapRef = useRef(null);
+  const leafletMapRef = useRef(null);
 
   // Extract data from state
   const {
@@ -29,7 +29,7 @@ const leafletMapRef = useRef(null);
     totalPrice,
     passengerInfo,
     vehicleId,
- qrCodeData } = location.state || {};
+    qrCodeData } = location.state || {};
   useEffect(() => {
     const fetchTicket = async () => {
       if (!ticketId) {
@@ -79,7 +79,7 @@ const leafletMapRef = useRef(null);
   };
 
 
-  
+
   return (
     <div>
       {/* Top Layout */}
@@ -94,9 +94,10 @@ const leafletMapRef = useRef(null);
           >
             {/* Left side passenger */}
             <PassengerInvoice
-            qrCodeData = {qrCodeData}
-             lisencePlate= { lisencePlate}
-              ticketId= {ticketId}
+              qrCodeData={qrCodeData}
+              lisencePlate={lisencePlate}
+              ticketId={ticketId}
+              passengerInfo={passengerInfo}
               passengerName={passengerInfo?.fullName || 'NhismdKhoaHaiz'}
               totalSeats={selectedSeats}
               totalPassengers={selectedSeats.length}
@@ -111,11 +112,12 @@ const leafletMapRef = useRef(null);
             />
             {/* Right side company */}
             <CompanyInvoice
-               ticketId= {ticketId}
-                         bookedAt={ticket?.bookedAt}
-                         lisencePlate={ lisencePlate}
+              ticketId={ticketId}
+              bookedAt={ticket?.bookedAt}
+              lisencePlate={lisencePlate}
+              passengerInfo={passengerInfo}
               passengerName={passengerInfo?.fullName || 'NhismdKhoaHaiz'}
-              totalSeats={selectedSeats }
+              totalSeats={selectedSeats}
               totalPassengers={selectedSeats.length}
               pickupStation={passengerInfo?.address || 'Nhism dKhoa thHai'}
               departurePoint={tripInfo?.departurePoint || 'Nha Trang'}
@@ -139,14 +141,14 @@ const leafletMapRef = useRef(null);
             onClick={handleDownload}
             className="w-fit px-6 py-3 bg-primary text-neutral-50 font-bold text-lg rounded-lg"
           >
-            Download Ticket
+            Tải Vé
           </button>
         </div>
 
       </RootLayout>
-     
+
     </div>
-   
+
   );
 
 };

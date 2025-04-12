@@ -13,6 +13,7 @@ const CompanyInvoice = ( {totalPrice,
     arrivalTime,
     vehicleId,
     bookedAt,
+    passengerInfo,
 ticketId}) => { 
         const formatTime = (dateString) => {
         const date = new Date(dateString);
@@ -39,31 +40,31 @@ ticketId}) => {
         </div>
         <div className="w-full px-4 py-7 space-y-2">
             <p className="text-sm text-neutral-600 font-normal">
-                Bill No. : {ticketId}
+                Hóa Đơn : {ticketId}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Date : {bookedAt ? formatDateVerbose(bookedAt) : ''}
+                Ngày Đặt : {bookedAt ? formatDateVerbose(bookedAt) : ''}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Name : {passengerName}
+                Tên Khách Hàng: {passengerName}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                From : {departurePoint} <span className="text-xs"></span>
+                Điểm Đi : {departurePoint} <span className="text-xs"></span>
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                To : {destinationPoint} <span className="text-xs"></span>
+                Điểm Đến : {destinationPoint} <span className="text-xs"></span>
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Dept. Time : { departureTime ? formatTime(departureTime) : 'Unknown Time'}
+                Giờ Khởi Hành : { departureTime ? formatTime(departureTime) : 'Unknown Time'}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Seat No.: {totalSeats}
+                Ghế : {Array.isArray(totalSeats) ? totalSeats.join(', ') : totalSeats}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Total Passenger: {totalPassengers}
+                Tổng Hành Khách: {totalPassengers}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Total Price: {totalPrice}
+                Tổng Tiền : {Number(totalPrice).toLocaleString("vi-VN")} VNĐ
             </p>
         </div>
       

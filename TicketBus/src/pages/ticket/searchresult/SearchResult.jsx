@@ -89,7 +89,7 @@ const SearchResult = ({ trips }) => { // Nhận prop trips từ Ticket
   return (
     <motion.div
       initial={{ opacity: 0, y: 100 }}
-      animate={{ opacity: 1, y: -200 }}
+      animate={{ opacity: 1, y: -150 }}
       exit={{ opacity: 0, y: 100 }}
       transition={{ duration: 1, ease: 'easeInOut' }}
       className="w-full col-span-3 space-y-8 pt-6"

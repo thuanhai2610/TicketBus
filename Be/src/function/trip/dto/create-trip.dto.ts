@@ -3,12 +3,12 @@ import { IsEnum, IsNotEmpty, IsNumber, IsString, Matches, ValidationArguments, V
 
 // Predefined city coordinates
 const CITY_COORDINATES: Record<string, { latitude: number; longtitude: number }> = {
-  'Đà nẵng': { latitude: 16.0544, longtitude: 108.2022 },
-  'Huế': { latitude: 16.463713, longtitude: 107.590866 },
-  'Quảng Ngãi': { latitude: 15.122330, longtitude: 108.799362 },
-  'Phú Yên': { latitude: 13.092338, longtitude: 109.294493 },
-  'Nha Trang': { latitude: 12.249265, longtitude: 109.192804 },
-  'Bình Định': { latitude: 14.174993, longtitude: 109.052671 },
+  'Đà Nẵng': { latitude: 16.05676, longtitude: 108.17257 },
+  'Huế': { latitude: 16.45266, longtitude: 107.60618 },
+  'Quảng Ngãi': { latitude: 15.10798, longtitude: 108.82012 },
+  'Phú Yên': { latitude: 13.10562, longtitude: 109.29385 },
+  'Nha Trang': { latitude: 12.24406, longtitude: 109.09787 },
+  'Bình Định': { latitude: 13.75342, longtitude: 109.20895 },
 };
 
 // Custom validator for city coordinates
