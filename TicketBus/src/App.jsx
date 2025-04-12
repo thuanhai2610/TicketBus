@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "./components/navbar/Navbar";
@@ -30,8 +29,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import TicketHistory from "./pages/profile/TicketHistory";
 import BlogDetail from "./pages/blog/BlogDetail";
 import VNPAY from "./pages/ticket/TicketVNPAY";
-
-
+import QRCodeScanner from "./pages/ticket/qrcode/QRCodeScanner";
+import React from "react";
+import "./pages/ticket/qrcode/style.css";
+import 'leaflet/dist/leaflet.css';
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
@@ -72,23 +73,15 @@ function App() {
             <Route path="/verify-otp" element={<VerifyOtp />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-
-
-
+            <Route path="/qr-scanner" element={<QRCodeScanner />} />
 
             <Route path="/user/profile" element={<Profile />}>
               <Route path="" element={<div />} /> {/* Thông tin mặc định */}
               <Route path="edit" element={<UpdateProfile />} />
               <Route path="history" element={<TicketHistory />} />
-  
             </Route>
 
-
-
-
-
             <Route path="/bus-tickets/detail/:vehicleId" element={<Detail />} />
-            {/* <Route path="/bus-tickets/detail" element={<Detail />} /> */}
             <Route path="/bus-tickets/checkout" element={<Checkout />} />
             <Route path="/bus-tickets/payment" element={<Invoice />} />
             <Route path="/bus-tickets/VNPAY" element={<VNPAY />} />
@@ -104,7 +97,6 @@ function App() {
               <Route path="manage-tickets" element={<ManageTickets />} />
               <Route path="manage-customers" element={<ManageCustomers />} />
               <Route path="manage-employees" element={<Employees />} />
-           
               <Route path="settings" element={<Settings />} />
               <Route path="revenue" element={<RevenueChart />} />
             </Route>

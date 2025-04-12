@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CreateTripDto } from './dto/create-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { Trip, TripDocument } from './schemas/trip.schema';
-import { TripRepository } from './trip.repsitory';
 import { InjectModel } from '@nestjs/mongoose';
 import { Company, CompanyDocument } from '../companies/schemas/company.schema';
 import { Model } from 'mongoose';
@@ -11,19 +10,27 @@ import { Driver, DriverDocument } from '../driver/schemas/driver.schema';
 import { Seat, SeatDocument } from '../seats/schemas/seat.schema';
 import { CreateSeatDto } from '../seats/dto/create-seat.dto';
 import { validate } from 'class-validator';
-
+import { TripRepository } from './trip.repsitory';
+import { plainToInstance } from 'class-transformer';
 @Injectable()
 export class TripService {
-  constructor(@InjectModel(Trip.name) private tripModel: Model<TripDocument>,
-  @InjectModel(Company.name) private companyModel: Model<CompanyDocument>,
-  @InjectModel(Vehicle.name) private vehicleModel: Model<VehicleDocument>,
-  @InjectModel(Driver.name) private driverModel: Model<DriverDocument>,
-  @InjectModel(Seat.name) private seatModel: Model<SeatDocument>,
-  private readonly tripRepository: TripRepository) {}
+  constructor(
+    @InjectModel(Trip.name) private tripModel: Model<TripDocument>,
+    @InjectModel(Company.name) private companyModel: Model<CompanyDocument>,
+    @InjectModel(Vehicle.name) private vehicleModel: Model<VehicleDocument>,
+    @InjectModel(Driver.name) private driverModel: Model<DriverDocument>,
+    @InjectModel(Seat.name) private seatModel: Model<SeatDocument>,
+    private readonly tripRepository: TripRepository,
+  ) {}
 
   async create(createTripDto: CreateTripDto): Promise<Trip | null> {
-    console.log('Received createTripDto:', createTripDto); // Log dữ liệu đầu vào
-  
+    console.log('Received createTripDto:', createTripDto);
+
+    // Set default coordinates
+    const dtoInstance = plainToInstance(CreateTripDto, createTripDto);
+  dtoInstance.setDefaultCoordinates();
+
+    // Validate company
     const company = await this.companyModel
       .findOne({ companyId: createTripDto.companyId })
       .exec();
@@ -33,7 +40,8 @@ export class TripService {
         `Company with ID ${createTripDto.companyId} does not exist`,
       );
     }
-  
+
+    // Validate vehicle
     const vehicle = await this.vehicleModel
       .findOne({ vehicleId: createTripDto.vehicleId })
       .exec();
@@ -43,7 +51,8 @@ export class TripService {
         `Vehicle with ID ${createTripDto.vehicleId} does not exist`,
       );
     }
-  
+
+    // Validate driver
     const driver = await this.driverModel
       .findOne({ driverId: createTripDto.driverId })
       .exec();
@@ -53,8 +62,8 @@ export class TripService {
         `Driver with ID ${createTripDto.driverId} does not exist`,
       );
     }
-  
-    // Kiểm tra tài xế đã được phân công chưa
+
+    // Check if driver is already assigned
     const existingTripWithDriver = await this.tripModel
       .findOne({
         driverId: createTripDto.driverId,
@@ -67,8 +76,8 @@ export class TripService {
       );
       return null;
     }
-  
-    // Kiểm tra xe đã được phân công chưa
+
+    // Check if vehicle is already assigned
     const existingTripVehicle = await this.tripModel
       .findOne({
         vehicleId: createTripDto.vehicleId,
@@ -81,7 +90,7 @@ export class TripService {
       );
       return null;
     }
-  
+
     // Convert departureDate
     const departureDateParts = createTripDto.departureDate.split('-');
     if (departureDateParts.length !== 3) {
@@ -97,7 +106,7 @@ export class TripService {
       console.log('Invalid departureTime:', departureTimeString);
       throw new BadRequestException('Invalid departure date or time');
     }
-  
+
     // Convert arrivalDate
     const arrivalDateParts = createTripDto.arrivalDate.split('-');
     if (arrivalDateParts.length !== 3) {
@@ -113,14 +122,22 @@ export class TripService {
       console.log('Invalid arrivalTime:', arrivalTimeString);
       throw new BadRequestException('Invalid arrival date or time');
     }
-  
+
     if (arrivalTime <= departureTime) {
       console.log('arrivalTime is not after departureTime:', { departureTime, arrivalTime });
       throw new BadRequestException('arrivalTime must be after departureTime');
     }
-  
-    console.log('Creating trip with data:', { ...createTripDto, departureTime, arrivalTime });
-  
+
+    console.log('Creating trip with data:', {
+      ...createTripDto,
+      departureTime,
+      arrivalTime,
+      departureLatitude: createTripDto.departureLatitude,
+      departureLongtitude: createTripDto.departureLongtitude,
+      destinationLatitude: createTripDto.destinationLatitude,
+      destinationLongtitude: createTripDto.destinationLongtitude,
+    });
+
     // Create the trip
     const trip = new this.tripModel({
       ...createTripDto,
@@ -130,21 +147,25 @@ export class TripService {
       departureTime: departureTime,
       departurePoint: createTripDto.departurePoint,
       destinationPoint: createTripDto.destinationPoint,
+      departureLatitude: createTripDto.departureLatitude,
+      departureLongtitude: createTripDto.departureLongtitude,
+      destinationLatitude: createTripDto.destinationLatitude,
+      destinationLongtitude: createTripDto.destinationLongtitude,
       arrivalTime: arrivalTime,
       status: createTripDto.status || 'PENDING',
       price: createTripDto.price,
     });
-  
+
     // Save the trip
     const savedTrip = await trip.save();
     console.log('Trip saved successfully:', savedTrip);
-  
+
     // Generate seats
     const seatCount = vehicle.seatCount || 32;
     if (seatCount > 0) {
       const seats: CreateSeatDto[] = [];
       const rows = Math.ceil(seatCount / 4);
-  
+
       for (let row = 1; row <= rows; row++) {
         const seatsInRow = Math.min(4, seatCount - (row - 1) * 4);
         for (let col = 1; col <= seatsInRow; col++) {
@@ -157,33 +178,32 @@ export class TripService {
           seatDto.seatNumber = seatNumber;
           seatDto.isAvailable = true;
           seatDto.price = createTripDto.price || 0;
-  
+
           const errors = await validate(seatDto);
           if (errors.length > 0) {
             console.log('Invalid seat data:', errors);
             throw new BadRequestException(`Invalid seat data: ${errors}`);
           }
-  
+
           seats.push(seatDto);
         }
       }
-  
+
       await this.seatModel.insertMany(seats);
       console.log('Seats created:', seats.length);
-  
+
       await this.vehicleModel.updateOne(
         { vehicleId: savedTrip.vehicleId },
         { availableSeats: seats.length },
       );
       console.log('Vehicle updated with availableSeats:', seats.length);
     }
-  
+
     return savedTrip;
   }
 
-
   async findAll(): Promise<Trip[]> {
-    return this.tripRepository.findAll(); 
+    return this.tripRepository.findAll();
   }
 
   async findOne(tripId: string): Promise<Trip> {
@@ -201,31 +221,36 @@ export class TripService {
   remove(id: string): Promise<Trip> {
     return this.tripRepository.remove(id);
   }
+
   async findByCompanyId(companyId: string): Promise<Trip[]> {
     console.log(`Fetching trip for companyId: ${companyId}`);
-    
-    const trip = await this.tripModel.aggregate([
-      {
-        $match: {
-          companyId: companyId
-        }
-      }
-    ]).exec();
+    const trip = await this.tripModel
+      .aggregate([
+        {
+          $match: {
+            companyId: companyId,
+          },
+        },
+      ])
+      .exec();
     return trip || [];
   }
+
   async searchTrips(departurePoint: string, destinationPoint: string, date: string): Promise<Trip[]> {
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {
       throw new BadRequestException('Invalid date format');
     }
-  
-    return this.tripModel.find({
-      departurePoint: { $regex: new RegExp(departurePoint, 'i') },
-      destinationPoint: { $regex: new RegExp(destinationPoint, 'i') },
-      departureTime: {
-        $gte: new Date(parsedDate.setHours(0, 0, 0, 0)),
-        $lte: new Date(parsedDate.setHours(23, 59, 59, 999)),
-      }
-    }).exec();
+
+    return this.tripModel
+      .find({
+        departurePoint: { $regex: new RegExp(departurePoint, 'i') },
+        destinationPoint: { $regex: new RegExp(destinationPoint, 'i') },
+        departureTime: {
+          $gte: new Date(parsedDate.setHours(0, 0, 0, 0)),
+          $lte: new Date(parsedDate.setHours(23, 59, 59, 999)),
+        },
+      })
+      .exec();
   }
 }

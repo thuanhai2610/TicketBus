@@ -112,6 +112,10 @@ const SearchResult = ({ trips }) => { // Nhận prop trips từ Ticket
               departureTime={trip.departureTime ? formatTime(trip.departureTime) : 'TBD'}
               arrivalTime={trip.arrivalTime ? formatTime(trip.arrivalTime) : 'TBD'}
               price={formatPrice(trip.price)}
+              departureLatitude={trip.departureLatitude}
+              departureLongtitude={trip.departureLongtitude}
+              destinationLatitude={trip.destinationLatitude}
+              destinationLongtitude={trip.destinationLongtitude}
               availableSeats={getAvailableSeats(trip)}
               onBusClick={() => handleBusClick(trip.vehicleId)}
               tripData={trip}

@@ -21,13 +21,10 @@ const Search = () => {
   const navigate = useNavigate(); // Hook để chuyển hướng
 
   const handleSearch = () => {
-    // Kiểm tra nếu không nhập điểm đi hoặc điểm đến
     if (!from || !to) {
       setError("Vui lòng nhập điểm đi và điểm đến");
       return;
     }
-
-    // Chuyển hướng sang /bus-tickets với query parameters
     navigate(
       `/bus-tickets?departurePoint=${encodeURIComponent(from)}&destinationPoint=${encodeURIComponent(to)}&date=${format(date, "yyyy-MM-dd")}`
     );

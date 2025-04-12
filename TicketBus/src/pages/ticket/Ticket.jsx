@@ -6,7 +6,6 @@ import Filter from './filter/Filter';
 import SearchResult from './searchresult/SearchResult';
 import bgImage from '../../assets/bgimg.png';
 import { useLocation } from 'react-router-dom'; // Import useLocation
-import { format } from 'date-fns';
 
 const Ticket = () => {
   const [trips, setTrips] = useState([]);

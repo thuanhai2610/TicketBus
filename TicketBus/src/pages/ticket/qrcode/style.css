@@ -1,0 +1,219 @@
+/* QR Scanner Styles */
+.scanner-container {
+  text-align: center;
+  margin: 20px;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.scanner-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.qr-reader-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.qr-reader {
+  width: 100%;
+  max-width: 500px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.scan-error {
+  color: #d32f2f;
+  margin-top: 10px;
+  padding: 8px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.scan-again-button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 20px 0;
+  transition: background-color 0.3s;
+}
+
+.scan-again-button:hover {
+  background-color: #1565c0;
+}
+
+.ticket-container {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 20px;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin: 20px auto;
+}
+
+.ticket-header {
+  background-color: #f5f5f5;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed #ddd;
+}
+
+.ticket-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.ticket-status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.ticket-status[data-status="Paid"] {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.ticket-status[data-status="Unpaid"] {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.ticket-content {
+  padding: 15px;
+}
+
+.ticket-info-row {
+  display: flex;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.info-label {
+  min-width: 120px;
+  font-weight: 500;
+  color: #555;
+}
+
+.info-value {
+  flex: 1;
+  color: #333;
+}
+
+.ticket-journey {
+  margin: 25px 0;
+  position: relative;
+}
+
+.journey-line {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  height: 40px;
+  width: 2px;
+  background-color: #1976d2;
+}
+
+.journey-point {
+  display: flex;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.point-marker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: white;
+  border: 2px solid #1976d2;
+  margin-right: 15px;
+}
+
+.point-marker.departure {
+  background-color: #1976d2;
+}
+
+.point-details {
+  flex: 1;
+}
+
+.point-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.point-time {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 3px;
+}
+
+.seat-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.seat-badge {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.license-plate {
+  background-color: #f5f5f5;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.ticket-footer {
+  padding: 15px;
+  background-color: #f5f5f5;
+  text-align: center;
+  border-top: 1px dashed #ddd;
+}
+
+.barcode {
+  height: 30px;
+  background: repeating-linear-gradient(90deg, #333, #333 2px, transparent 2px, transparent 4px);
+  margin: 10px auto;
+  width: 80%;
+}
+
+.ticket-note {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 10px;
+}
+
+.no-data-message {
+  margin: 20px;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  text-align: center;
+  color: #666;
+}
