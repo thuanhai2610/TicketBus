@@ -372,12 +372,12 @@ const ManageTrips = () => {
     }
   };
   const locationCoordinates = {
-    "Đà nẵng": { lat: 16.0544, lng: 108.2022 },
-    "Huế": { lat: 16.4637, lng: 107.5909 },
-    "Quảng Ngãi": { lat: 15.1214, lng: 108.8040 },
-    "Bình Định": { lat: 13.7820, lng: 109.2193 },
-    "Phú Yên": { lat: 13.0882, lng: 109.0929 },
-    "Nha Trang": { lat: 12.2388, lng: 109.1967 },
+    "Đà Nẵng": { lat: 16.05676, lng: 108.17257 },
+    "Huế": { lat: 16.45266, lng: 107.60618 },
+    "Quảng Ngãi": { lat: 15.10798, lng: 108.82012 },
+    "Bình Định": { lat: 13.75342, lng: 109.20895 },
+    "Phú Yên": { lat: 13.10562, lng: 109.29385 },
+    "Nha Trang": { lat: 12.24406, lng: 109.09787 },
   };
   const handleCreateTrip = async () => {
     try {
@@ -861,7 +861,7 @@ const ManageTrips = () => {
               onChange={handleTripInputChange}
               required
             >
-              <MenuItem value="Đà nẵng">Đà nẵng</MenuItem>
+              <MenuItem value="Đà Nẵng">Đà Nẵng</MenuItem>
               <MenuItem value="Huế">Huế</MenuItem>
               <MenuItem value="Quảng Ngãi">Quảng Ngãi</MenuItem>
               <MenuItem value="Bình Định">Bình Định</MenuItem>
@@ -878,7 +878,7 @@ const ManageTrips = () => {
               onChange={handleTripInputChange}
               required
             >              
-            <MenuItem value="Đà nẵng">Đà nẵng</MenuItem>
+            <MenuItem value="Đà Nẵng">Đà nẵng</MenuItem>
               <MenuItem value="Huế">Huế</MenuItem>
               <MenuItem value="Quảng Ngãi">Quảng Ngãi</MenuItem>
               <MenuItem value="Bình Định">Bình Định</MenuItem>
