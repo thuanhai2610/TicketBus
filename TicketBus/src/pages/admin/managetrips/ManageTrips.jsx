@@ -878,7 +878,7 @@ const ManageTrips = () => {
               onChange={handleTripInputChange}
               required
             >              
-            <MenuItem value="Đà Nẵng">Đà nẵng</MenuItem>
+            <MenuItem value="Đà Nẵng">Đà Nẵng</MenuItem>
               <MenuItem value="Huế">Huế</MenuItem>
               <MenuItem value="Quảng Ngãi">Quảng Ngãi</MenuItem>
               <MenuItem value="Bình Định">Bình Định</MenuItem>
