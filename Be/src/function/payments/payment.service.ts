@@ -115,9 +115,6 @@ export class PaymentService {
         .exec();
     }
     console.log(`processTicketAndSeats called for ticket ${ticket.ticketId}, payment ${payment.paymentId}, method ${payment.paymentMethod}`);
-    console.log(`Processing ticket ${ticket.ticketId} with ${seatNumbers.length} seats: ${seatNumbers.join(', ')}`);
-    console.log(`Decrementing seat count for vehicle ${trip.vehicleId} by ${seatNumbers.length}`);
-
     await this.vehicleService.updateSeatCount(trip.vehicleId, seatNumbers);
   }
 

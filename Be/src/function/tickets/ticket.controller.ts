@@ -95,6 +95,7 @@ async updateTicket(
     return {
       message: 'Ticket updated successfully',
       ticket: updatedTicket,
+      // updateseat,
     };
   } catch (error) {
     if (error instanceof NotFoundException || error instanceof BadRequestException) {
@@ -103,7 +104,6 @@ async updateTicket(
     throw new BadRequestException('Failed to update ticket');
   }
 }
-
 @Get('vn-pay/details')
   async getTicketDetailsById(@Query('ticketId') ticketId: string) {
     if (!ticketId) {
