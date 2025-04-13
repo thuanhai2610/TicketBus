@@ -31,39 +31,39 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
   const handlePayment = async () => {
     setError(null);
     setIsLoading(true);
-  
+
     // Validate inputs
     if (!ticketId) {
       setError('Ticket ID is missing. Please book seats first.');
       setIsLoading(false);
       return;
     }
-  
+
     if (!paymentMethod) {
       setError('Please select a payment method.');
       setIsLoading(false);
       return;
     }
-  
+
     if (!passengerInfo.fullName || !passengerInfo.email || !passengerInfo.phone || !passengerInfo.address) {
       setError('Vui Lòng! Điền đầy đủ thông tin trước khi thanh toán');
       setIsLoading(false);
       return;
     }
-  
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found. Please log in.');
       }
-  
+
       const tripId = tripInfo?.tripId;
       const companyId = tripInfo?.companyId;
-  
+
       if (!tripId || !companyId) {
         throw new Error('Trip ID or Company ID is missing in trip information.');
       }
-  
+
       // Update ticket with passenger info before creating payment
       const updateTicketData = {
         email: passengerInfo.email,
@@ -72,7 +72,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         address: passengerInfo.address,
         status: 'pending', // Set to Pending initially
       };
-  
+
 
       const paymentData = {
         ticketId: ticketId,
@@ -82,9 +82,9 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         paymentMethod: paymentMethod,
         paymentStatus: 'pending',
       };
-  
+
       console.log("Sending payment data:", paymentData, updateTicketData);
-  
+
       // Create payment
       const paymentResponse = await fetch('http://localhost:3001/payments', {
         method: 'POST',
@@ -94,12 +94,12 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         },
         body: JSON.stringify(paymentData),
       });
-  
+
       if (!paymentResponse.ok) {
         const errorData = await paymentResponse.json();
         throw new Error(errorData.message || 'Failed to create payment');
       }
-  
+
       const paymentResult = await paymentResponse.json();
       console.log('Payment created:', paymentResult);
       setPaymentId(paymentResult.paymentId);
@@ -108,8 +108,8 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
           ...updateTicketData,
           status: 'Booked'
         };
-      
-      await axios.put(`http://localhost:3001/tickets/${ticketId}`,
+
+        await axios.put(`http://localhost:3001/tickets/${ticketId}`,
           updateTicketPayload,
           {
             headers: {
@@ -118,14 +118,14 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
             },
           }
         );
-      
+
         if (paymentResult.paymentUrl) {
-          window.location.href = paymentResult.paymentUrl; 
+          window.location.href = paymentResult.paymentUrl;
         } else {
           throw new Error('Payment URL not provided by the server.');
         }
       } else if (paymentMethod === 'cash') {
-     
+
         const updatePaymentResponse = await axios.put(
           `http://localhost:3001/payments/${ticketId}`,
           { paymentStatus: 'completed' },
@@ -136,7 +136,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
             },
           }
         );
-  
+
         console.log('Payment status updated to completed:', updatePaymentResponse.data);
         const updateTicketPayload = {
           ...updateTicketData,
@@ -152,7 +152,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
             },
           }
         );
-  
+
         console.log('Ticket status updated to Paid:', updateTicketStatusResponse.data);
         const qrData = JSON.stringify({
           ticketId: ticketId,
@@ -168,7 +168,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         // Set success and navigate to confirmation page
         setSuccess(true);
         setError(null);
-  
+
         setTimeout(() => {
           navigate('/bus-tickets/payment', {
             state: {
@@ -217,7 +217,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
       console.error('QR code canvas not found or not a canvas element');
     }
   };
-  
+
   const handleCancel = async () => {
     setError(null);
     setIsLoading(true);
@@ -309,7 +309,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
 
     fetchVehicleId();
   }, [vehicleId]);
- 
+
   const departureTime = tripInfo?.departureTime ? formatTime(tripInfo.departureTime) : 'Unknown Time';
   const arrivalTime = tripInfo?.arrivalTime ? formatTime(tripInfo.arrivalTime) : 'Unknown Time';
 

@@ -10,6 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { vi } from "date-fns/locale"
 
 const Search = () => {
   const [date, setDate] = useState(new Date());
@@ -87,11 +88,13 @@ const Search = () => {
         <Popover>
           <PopoverTrigger asChild>
             <Button
+
               variant="outline"
-              className="h-12 w-full sm:w-56 border border-gray-300 bg-white text-gray-700 px-4 py-3 rounded-lg flex items-center"
+              className="h-12 w-full sm:w-56 border border-gray-300 bg-white  text-gray-700 px-4 py-3 rounded-lg flex items-center"
             >
               <BsCalendar2Date className="text-gray-400 mr-2" />
-              {date ? format(date, "PPP") : "Chọn ngày"}
+              {date ? format(date, "dd 'tháng' MM 'năm' yyyy", { locale: vi }) : "Chọn ngày"}
+
             </Button>
           </PopoverTrigger>
           <PopoverContent
