@@ -37,6 +37,7 @@ const Login = () => {
             });
             const { access_token, role } = response.data;
             localStorage.setItem("token", access_token);
+            localStorage.setItem("username", username);
             if (role === "admin") {
                 navigate("/admin");
             } else {
@@ -58,8 +59,9 @@ const Login = () => {
             const response = await axios.post("http://localhost:3001/google-login", {
                 credential: credentialResponse.credential,
             });
-            const { access_token, role } = response.data;
+            const { access_token, role, username } = response.data;
             localStorage.setItem("token", access_token);
+            localStorage.setItem("username", username);
             if (role === "admin") {
                 navigate("/admin");
             } else {

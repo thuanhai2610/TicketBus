@@ -11,6 +11,7 @@ import { VehicleService } from '../vehicle/vehicle.service';
 import { TicketRepository } from './ticket.repsitory';
 import { Seat, SeatAvailabilityStatus, SeatDocument } from '../seats/schemas/seat.schema';
 import { Trip, TripDocument } from '../trip/schemas/trip.schema';
+import { TripRepository } from '../trip/trip.repsitory';
 
 @Injectable()
 export class TicketService {
@@ -18,7 +19,6 @@ export class TicketService {
     @InjectModel(Ticket.name) private ticketModel: Model<TicketDocument>,
     @InjectModel(Seat.name) private seatModel: Model<SeatDocument>,
     @InjectModel(Trip.name) private tripModel: Model<TripDocument>,
-
     private readonly ticketRepository: TicketRepository,
     private tripService: TripService,
     private seatService: SeatService,
@@ -106,22 +106,17 @@ export class TicketService {
   
     const oldStatus = ticket.status;
     ticket.status = newStatus;
-  
-    // Save the status change first to ensure it's recorded
     await ticket.save();
   
     try {
-      // Handle seat and vehicle updates based on status change
       const trip = await this.tripService.findOne(ticket.tripId);
       if (!trip || !trip.vehicleId) {
         console.error(`Trip not found or missing vehicleId for ticket ${ticketId}`);
-        return ticket; // Early return to avoid further processing
+        return ticket; 
       }
-  
       const seatNumbers = Array.isArray(ticket.seatNumber) ? ticket.seatNumber : [ticket.seatNumber];
       const seatCount = seatNumbers.length;
       console.log(`Processing ticket ${ticketId} with ${seatCount} seats: ${seatNumbers.join(', ')}`);
-  
       const seats = await this.seatService.findByVehicleAndSeatNumbers(trip.vehicleId, seatNumbers);
       if (!seats || seats.length !== seatNumbers.length) {
         console.warn(`One or more seats not found for vehicle ${trip.vehicleId}`);
@@ -142,7 +137,6 @@ export class TicketService {
       } else if (oldStatus === 'Booked' && newStatus === 'Paid') {
         // No changes needed as seats are already SELECTED from holdSeat
       } else if (( oldStatus === 'Paid' || oldStatus === 'Booked') && newStatus === 'Cancelled') {
-        // When cancelling a ticket, free up all seats
         if (seats) {
           for (const seat of seats) {
             try {
@@ -153,8 +147,6 @@ export class TicketService {
             }
           }
         }
-  
-        // If it was paid, increase the available count for all seats
         if (oldStatus === 'Paid') {
           console.log(`Incrementing seat count for vehicle ${trip.vehicleId} by ${seatCount}`);
           await this.vehicleService.updateSeatCount(trip.vehicleId, true, seatCount);
@@ -174,64 +166,6 @@ export class TicketService {
     }
     return ticket;
   }
-
-  // async getTicketInfoBySeat(tripId: string, seatNumber: string[]): Promise<object> {
-  //   const trip = await this.tripService.findOne(tripId);
-  //   if (!trip) {
-  //     throw new NotFoundException('Trip not found');
-  //   }
-  //   if (Array.isArray(seatNumber) && seatNumber.length > 1) {
-  //     const seats = await this.seatService.findByVehicleAndSeatNumbers(trip.vehicleId, seatNumber);
-  //     const unavailableSeats = seats.filter(
-  //       seat => seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE
-  //     );
-      
-  //     if (unavailableSeats.length > 0) {
-  //       throw new BadRequestException(
-  //         `Seats ${unavailableSeats.map(seat => seat.seatNumber).join(', ')} are not available`
-  //       );
-  //     }
-      
-  //     return {
-  //       tripInfo: {
-  //         tripId: trip.tripId,
-  //         departurePoint: trip.departurePoint,
-  //         destinationPoint: trip.destinationPoint,
-  //         departureTime: trip.departureTime,
-  //         arrivalTime: trip.arrivalTime,
-  //       },
-  //       seatsInfo: seats.map(seat => ({
-  //         seatId: seat.seatId,
-  //         seatNumber: seat.seatNumber,
-  //         availabilityStatus: seat.availabilityStatus
-  //       })),
-  //       ticketPrice: trip.price * seats.length
-  //     };
-  //   } else {
-  //     const singleSeatNumber = Array.isArray(seatNumber) ? seatNumber[0] : seatNumber;
-  //     const seat = await this.seatService.findByVehicleAndSeatNumber(trip.vehicleId, [singleSeatNumber]);
-      
-  //     if (seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE) {
-  //       throw new BadRequestException(`Seat ${seat.seatNumber} is not available (Status: ${seat.availabilityStatus})`);
-  //     }
-      
-  //     return {
-  //       tripInfo: {
-  //         tripId: trip.tripId,
-  //         departurePoint: trip.departurePoint,
-  //         destinationPoint: trip.destinationPoint,
-  //         departureTime: trip.departureTime,
-  //         arrivalTime: trip.arrivalTime,
-  //       },
-  //       seatInfo: {
-  //         seatId: seat.seatId,
-  //         seatNumber: seat.seatNumber,
-  //         availabilityStatus: seat.availabilityStatus
-  //       },
-  //       ticketPrice: trip.price
-  //     };
-  //   }
-  // }
   async findByUserId(userId: string): Promise<Ticket[]> {
     return this.ticketModel.find({ userId }).exec();
   }
@@ -285,4 +219,11 @@ export class TicketService {
     // Save the updated ticket
     return ticket.save();
   }
+  async findByUsername(username: string) {
+    return this.ticketModel.find({ username }).exec();
+  }
+  async findTripById(tripId: string) {
+    return await this.tripService.findOne(tripId);
+  }
+  
 }

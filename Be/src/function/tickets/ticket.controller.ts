@@ -19,16 +19,6 @@ export class TicketController {
     return this.ticketsService.getTicketById(ticketId);
   }
   
-  // @Post('get-seat-info')
-  // async getSeatInfo(@Body() body: { tripId: string, seatNumber: string[] }) {
-  //   if (!body.tripId || !body.seatNumber) {
-  //     throw new BadRequestException('tripId and seatNumber are required');
-  //   }
-    
-  //   // Use the new service method to get ticket info by seat
-  //   return this.ticketsService.getTicketInfoBySeat(body.tripId, body.seatNumber);
-  // }
-  
   @Post('hold-seat')
 async holdSeat(@Body() body: { tripId: string, seatNumber: string[], username: string, vehicleId: string }) {
   if (!body.tripId || !body.seatNumber || !body.username || !body.vehicleId) {
@@ -91,22 +81,6 @@ async holdSeat(@Body() body: { tripId: string, seatNumber: string[], username: s
   }
 }
   
-  // @Post(':ticketId/update-status')
-  // async updateTicketStatus(
-  //   @Param('ticketId') ticketId: string,
-  //   @Body() body: { status: string }
-  // ) {
-  //   if (!body.status) {
-  //     throw new BadRequestException('Status is required');
-  //   }
-    
-  //   const validStatuses = ['Ready', 'Ordered', 'Paid', 'Cancelled'];
-  //   if (!validStatuses.includes(body.status)) {
-  //     throw new BadRequestException(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
-  //   }
-    
-  //   return this.ticketsService.updateTicketStatus(ticketId, body.status);
-  // }
   @Get('trip/:tripId')
   async getTicketsByTrip(@Param('tripId') tripId: string) {
     return this.ticketsService.findByTripId(tripId);
@@ -138,4 +112,29 @@ async updateTicket(
     const ticket = await this.ticketsService.getTicketById(ticketId);
     return ticket; 
   }
+  @Get('user/:username')
+  async getTicketsByUsername(@Param('username') username: string) {
+    if (!username) {
+      throw new BadRequestException('Username is required');
+    }
+  
+    const tickets = await this.ticketsService.findByUsername(username);
+  
+    // Lấy thông tin trip cho mỗi vé
+    const enrichedTickets = await Promise.all(
+      tickets.map(async (ticket) => {
+        const trip = await this.ticketsService.findTripById(ticket.tripId);
+  
+        return {
+          ...ticket,
+          departurePoint: trip?.departurePoint || null,
+          destinationPoint: trip?.destinationPoint || null,
+          departureTime: trip?.departureTime || null,
+        };
+      })
+    );
+  
+    return enrichedTickets;
+  }
+  
 }
