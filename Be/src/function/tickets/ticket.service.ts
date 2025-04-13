@@ -134,12 +134,11 @@ export class TicketService {
             }
           }
         }
-      } else if (oldStatus === 'Booked' && newStatus === 'Paid') {
-        // No changes needed as seats are already SELECTED from holdSeat
       } else if (( oldStatus === 'Paid' || oldStatus === 'Booked') && newStatus === 'Cancelled') {
         if (seats) {
           for (const seat of seats) {
             try {
+              // await this.vehicleService.updateSeatCount(trip.vehicleId, true, seatCount);
               await this.seatService.updateAvailabilityStatus(seat.seatId, SeatAvailabilityStatus.AVAILABLE);
               console.log(`Set seat ${seat.seatNumber} status to ${SeatAvailabilityStatus.AVAILABLE}`);
             } catch (seatError) {
@@ -147,7 +146,7 @@ export class TicketService {
             }
           }
         }
-        if (oldStatus === 'Paid') {
+        if (oldStatus === 'Paid' && newStatus === 'Cancelled') {
           console.log(`Incrementing seat count for vehicle ${trip.vehicleId} by ${seatCount}`);
           await this.vehicleService.updateSeatCount(trip.vehicleId, true, seatCount);
         }
@@ -185,8 +184,6 @@ export class TicketService {
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
     }
-
-    // If the status is being updated to "Cancelled", update seats and vehicle
     if (updateTicketDto.status === 'Cancelled') {
       const trip = await this.tripModel.findOne({ tripId: ticket.tripId }).exec();
       if (!trip) {
@@ -209,14 +206,11 @@ export class TicketService {
             { new: true }
           )
           .exec();
+     await this.updateTicketStatus(ticketId, 'Cancelled')
+
       }
     }
-
-    // Update the ticket with the fields from updateTicketDto
     Object.assign(ticket, updateTicketDto);
-    // ticket.updatedAt = new Date(); // Ensure updatedAt is set
-
-    // Save the updated ticket
     return ticket.save();
   }
   async findByUsername(username: string) {

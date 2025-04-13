@@ -39,7 +39,21 @@ const TicketHistory = () => {
             console.error("Error fetching tickets:", error);
         }
     };
+    const cancelTicket = async () => {
+        const ticketId = prompt("Nhập mã vé bạn muốn hủy:");
+        if (!ticketId) return;
 
+        try {
+            await axios.put(`http://localhost:3001/tickets/${ticketId}`, {
+                status: "Cancelled"
+            });
+            alert("Hủy vé thành công!");
+            fetchTickets(); // Refresh danh sách vé
+        } catch (error) {
+            console.error("Hủy vé thất bại:", error);
+            alert("Không thể hủy vé. Vui lòng kiểm tra lại mã vé.");
+        }
+    };
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-6">
@@ -54,6 +68,7 @@ const TicketHistory = () => {
                     Đặt vé
                 </Link>
                 <button 
+                onClick={cancelTicket}
                     className="bg-red-600  hover:bg-primaryblue dark:hover:text-neutral-800 hover:text-neutral-950 text-white px-6 py-2 rounded-full shadow transition"
                     >
                   Hủy vé

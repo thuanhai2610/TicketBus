@@ -82,9 +82,7 @@ export class VehicleService {
       increment = typeof arg2 === 'boolean' ? arg2 : false;
       count = typeof arg3 === 'number' ? arg3 : 1;
     }
-    
-    console.log(`Parameters resolved: increment=${increment}, count=${count}, seatNumbers=${JSON.stringify(seatNumbers)}`);
-    
+
     // Ensure count is a valid number
     if (isNaN(count) || count <= 0) {
       console.warn(`Invalid seat count value: ${count}, using default of 1`);
@@ -124,9 +122,8 @@ export class VehicleService {
       }
   
       try {
-        // Update the vehicle's availableSeats with optimistic concurrency
         const updateResult = await this.vehicleModel.updateOne(
-          { vehicleId, availableSeats: available }, // Match the current availableSeats value
+          { vehicleId, availableSeats: available }, 
           { $set: { availableSeats: newAvailable } }
         ).exec();
   
@@ -138,8 +135,6 @@ export class VehicleService {
           }
           continue;
         }
-  
-        // Fetch the updated vehicle to return
         const updatedVehicle = await this.findOne(vehicleId);
         if (!updatedVehicle) {
           throw new BadRequestException('Failed to retrieve updated vehicle');
