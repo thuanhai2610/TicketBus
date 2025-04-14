@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Request, UseGuards, Body, Get, Headers, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Request, UseGuards, Body, Get, Headers, HttpCode, HttpStatus, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -12,6 +12,7 @@ import { RolesGuard } from './roles.guard';
 import { Roles } from './roles.decorator';
 import { RegisterDto } from './dto/register.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express';
 
 @Controller()
 export class AuthController {
@@ -65,11 +66,12 @@ async verifyOtp(@Body('otp') otp: string) {
     async facebookLogin() {
     }
   
-    // @Get('facebook/callback')
-    // @UseGuards(AuthGuard('facebook'))
-    // async facebookLoginCallback(@Request() req: any) {
-    //   const result = await this.authService.login(req.user, undefined);
-    //   return { message: 'Facebook login successful', data: result };
-    // }
+    @Get('facebook/callback')
+    @UseGuards(AuthGuard('facebook'))
+    async facebookCallback(@Req() req, @Res() res: Response) {
+      const token = await this.authService.loginWithSocial(req.user);
+      // Redirect về frontend với access_token
+      return res.redirect(`http://localhost:3000/social-login-success?token=${token.access_token}`);
+    }
     
 }

@@ -2,8 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook, FaGithub, FaDiscord, FaApple, FaRegEye, FaEyeSlash } from "react-icons/fa";
-// import { FaSquareTwitter } from "react-icons/fa6";
+import { FaFacebook, FaRegEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
@@ -15,6 +14,7 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [socialLoading, setSocialLoading] = useState(false);
     const [error, setError] = useState("");
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -24,6 +24,13 @@ const Login = () => {
         }
     }, [location]);
 
+    const storeAndRedirect = ({ access_token, role, username }) => {
+        localStorage.setItem("token", access_token);
+        localStorage.setItem("username", username || "");
+        navigate(role === "admin" ? "/admin" : "/");
+        window.location.reload();
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (isLoading) return;
@@ -31,46 +38,44 @@ const Login = () => {
         setError("");
 
         try {
-            const response = await axios.post("http://localhost:3001/login", {
-                username,
-                password,
-            });
-            const { access_token, role } = response.data;
-            localStorage.setItem("token", access_token);
-            localStorage.setItem("username", username);
-            if (role === "admin") {
-                navigate("/admin");
-            } else {
-                navigate("/");
-            }
-            window.location.reload();
-        } catch (error) {
-            const errorMessage = error.response?.data?.message || "Login failed. Please check your credentials.";
-            setError(errorMessage);
+            const res = await axios.post("http://localhost:3001/login", { username, password });
+            storeAndRedirect(res.data);
+        } catch (err) {
+            const msg = err.response?.data?.message || "Login failed. Please check your credentials.";
+            setError(msg);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleGoogleSuccess = async (credentialResponse) => {
+    const handleGoogleSuccess = async (response) => {
         setSocialLoading(true);
         setError("");
         try {
-            const response = await axios.post("http://localhost:3001/google-login", {
-                credential: credentialResponse.credential,
+            const res = await axios.post("http://localhost:3001/google-login", {
+                credential: response.credential,
             });
-            const { access_token, role, username } = response.data;
-            localStorage.setItem("token", access_token);
-            localStorage.setItem("username", username);
-            if (role === "admin") {
-                navigate("/admin");
-            } else {
-                navigate("/");
-            }
-            window.location.reload();
-        } catch (error) {
-            const errorMessage = error.response?.data?.message || "Google login failed. Please try again.";
-            setError(errorMessage);
+            storeAndRedirect(res.data);
+        } catch (err) {
+            const msg = err.response?.data?.message || "Google login failed. Please try again.";
+            setError(msg);
+        } finally {
+            setSocialLoading(false);
+        }
+    };
+
+    const handleFacebookLogin = async (response) => {
+        setSocialLoading(true);
+        setError("");
+        try {
+            const res = await axios.post("http://localhost:3001/facebook-login", {
+                accessToken: response.accessToken,
+                userID: response.userID,
+            });
+            storeAndRedirect(res.data);
+        } catch (err) {
+            const msg = err.response?.data?.message || "Facebook login failed. Please try again.";
+            setError(msg);
         } finally {
             setSocialLoading(false);
         }
@@ -80,26 +85,25 @@ const Login = () => {
         setError("Google login failed. Please try again.");
         setSocialLoading(false);
     };
-    const handleFacebookSuccess = (response) => {
-        console.log("Facebook login success:", response);
-    };
 
     const handleFacebookFailure = (error) => {
         console.error("Facebook login failed:", error);
+        setError("Facebook login failed. Please try again.");
+        setSocialLoading(false);
     };
+
     return (
-        <GoogleOAuthProvider clientId={"1055268521864-uqrdrd5mpqbeskmqe28gb2kk37050t4b.apps.googleusercontent.com"}>
+        <GoogleOAuthProvider clientId="1055268521864-uqrdrd5mpqbeskmqe28gb2kk37050t4b.apps.googleusercontent.com">
             <div className="flex min-h-screen items-center justify-center bg-primaryblue">
                 <div className="bg-white p-10 rounded-2xl shadow-2xl w-96 border border-gray-300">
                     <h2 className="text-primary text-3xl font-semibold text-center mb-6">Welcome Back</h2>
 
                     {error && <p className="text-primary text-center mb-4">{error}</p>}
-                    <div className="space-y-4">
 
+                    <div className="space-y-4">
                         <FacebookLogin
-                            appId="YOUR_FACEBOOK_APP_ID"
                             autoLoad={false}
-                            callback={handleFacebookSuccess}
+                            callback={handleFacebookLogin}
                             onFailure={handleFacebookFailure}
                             render={(renderProps) => (
                                 <button
@@ -107,12 +111,12 @@ const Login = () => {
                                     disabled={socialLoading}
                                     className="flex items-center justify-center w-full py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition duration-200"
                                 >
-                                    <FaFacebook className="mr-2" /> {socialLoading ? "Loading..." : "Log in with Facebook"}
+                                    <FaFacebook className="mr-2" />
+                                    {socialLoading ? "Loading..." : "Log in with Facebook"}
                                 </button>
                             )}
                         />
 
-              
                         <GoogleLogin
                             onSuccess={handleGoogleSuccess}
                             onError={handleGoogleFailure}
@@ -122,12 +126,12 @@ const Login = () => {
                                     disabled={renderProps.disabled || socialLoading}
                                     className="flex items-center justify-center w-full py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition duration-200"
                                 >
-                                    <FcGoogle className="mr-2" /> {socialLoading ? "Loading..." : "Log in with Google"}
+                                    <FcGoogle className="mr-2" />
+                                    {socialLoading ? "Loading..." : "Log in with Google"}
                                 </button>
                             )}
                         />
                     </div>
-
 
                     <div className="my-6 flex items-center">
                         <div className="flex-1 border-t border-gray-300"></div>

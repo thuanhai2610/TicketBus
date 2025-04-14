@@ -335,4 +335,5 @@ async verifyGoogleCredential(credential: string) {
       throw new BadRequestException('Failed to verify Google credential: ' + error.message);
   }
 }
+
 }

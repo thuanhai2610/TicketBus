@@ -206,10 +206,12 @@ export class TicketService {
             { new: true }
           )
           .exec();
-     await this.updateTicketStatus(ticketId, 'Cancelled')
 
       }
+     await this.updateTicketStatus(ticketId, 'Cancelled')
+
     }
+    
     Object.assign(ticket, updateTicketDto);
     return ticket.save();
   }

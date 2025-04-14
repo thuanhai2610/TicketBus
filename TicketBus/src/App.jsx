@@ -74,7 +74,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/qr-scanner" element={<QRCodeScanner />} />
-
+         
             <Route path="/user/profile" element={<Profile />}>
               <Route path="" element={<div />} /> {/* Thông tin mặc định */}
               <Route path="edit" element={<UpdateProfile />} />

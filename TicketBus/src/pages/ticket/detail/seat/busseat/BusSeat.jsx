@@ -31,22 +31,16 @@ const BusSeat = () => {
 
       const decoded = jwtDecode(token);
       const currentTime = Date.now() / 1000;
-
-      // Check if token is expired
       if (decoded.exp < currentTime) {
         console.error("Token has expired");
         handleLogout();
         return;
       }
-
       const response = await axios.get(`http://localhost:3001/user/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      console.log("User profile response:", response.data);
-
       const fetchedUsername = response.data.username;
       if (!fetchedUsername) {
         throw new Error("Username not found in user profile.");
@@ -74,17 +68,11 @@ const BusSeat = () => {
     setSeatsLoading(true);
     try {
       const token = localStorage.getItem("token");
-      console.log("Token:", token); // Debug token
-      console.log("Fetching seats for vehicleId:", vehicleId); // Debug vehicleId
-
       const response = await axios.get(`http://localhost:3001/seats?vehicleId=${vehicleId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      console.log("Seats API response:", response.data); // Debug API response
-
       if (!response.data || response.data.length === 0) {
         setSeatsError("No seats found for this vehicle.");
         setSeatData([]);
@@ -114,8 +102,6 @@ const BusSeat = () => {
         const seat = seats.find((s) => s.id === seatId);
         return seat || { id: seatId, status: 'Unavailable', price: 0 };
       });
-
-      console.log("Sorted seats:", sortedSeats); // Debug sorted seats
       setSeatData(sortedSeats);
     } catch (error) {
       console.error("Error fetching seats:", error);
@@ -193,7 +179,6 @@ const fetchTripInfo = async (vehicleId) => {
   };
 
   useEffect(() => {
-    console.log("vehicleId from useParams:", vehicleId);
     if (vehicleId) {
       fetchUsername();
       fetchSeats(vehicleId);
@@ -213,7 +198,6 @@ const fetchTripInfo = async (vehicleId) => {
       setShowError(true);
       throw new Error("Trip ID not available");
     }
-
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -221,7 +205,6 @@ const fetchTripInfo = async (vehicleId) => {
       }
 
       const payload = {
-
         tripId: tripId,
         seatNumber: selectedSeats,
         username: username,
