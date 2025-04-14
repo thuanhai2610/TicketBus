@@ -21,7 +21,8 @@ import { TicketModule } from './function/tickets/ticket.module';
 import { SeatModule } from './function/seats/seat.module';
 import { PaymentModule } from './function/payments/payment.module';
 @Module({
-  imports: [AuthModule, PendingUsersModule, ItemsModule, MongooseModule.forRoot('mongodb://localhost:27017/admin'),ConfigModule.forRoot({
+  imports: [AuthModule, PendingUsersModule, ItemsModule, MongooseModule.forRoot('mongodb://localhost:27017/admin'),
+    ConfigModule.forRoot({
       isGlobal: true, 
       envFilePath: '.env', 
     }),

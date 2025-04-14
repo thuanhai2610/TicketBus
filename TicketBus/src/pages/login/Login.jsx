@@ -23,7 +23,28 @@ const Login = () => {
             setError(location.state.error);
         }
     }, [location]);
-
+    
+    useEffect(() => {
+        // Tải SDK Facebook
+        window.fbAsyncInit = function () {
+          window.FB.init({
+            appId: '662001183185682', // Thay bằng App ID của bạn
+            cookie: true,
+            xfbml: true,
+            version: 'v20.0', // Sử dụng phiên bản mới nhất
+          });
+        };
+      
+        (function (d, s, id) {
+          var js,
+            fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s);
+          js.id = id;
+          js.src = 'https://connect.facebook.net/en_US/sdk.js';
+          fjs.parentNode.insertBefore(js, fjs);
+        })(document, 'script', 'facebook-jssdk');
+      }, []);
     const storeAndRedirect = ({ access_token, role, username }) => {
         localStorage.setItem("token", access_token);
         localStorage.setItem("username", username || "");
@@ -64,31 +85,28 @@ const Login = () => {
         }
     };
 
-    const handleFacebookLogin = async (response) => {
+    const handleFacebookLogin = async () => {
         setSocialLoading(true);
-        setError("");
+        setError('');
         try {
-            const res = await axios.post("http://localhost:3001/facebook-login", {
-                accessToken: response.accessToken,
-                userID: response.userID,
-            });
-            storeAndRedirect(res.data);
+          // Gửi yêu cầu đến backend để lấy URL đăng nhập
+          const res = await axios.get('http://localhost:3001/facebook-login-url');
+          window.location.href = res.data.authUrl;
         } catch (err) {
-            const msg = err.response?.data?.message || "Facebook login failed. Please try again.";
-            setError(msg);
-        } finally {
-            setSocialLoading(false);
+          setError('Không thể bắt đầu đăng nhập Facebook. Vui lòng thử lại.');
+          setSocialLoading(false);
         }
-    };
-
+      };
+      useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token');
+        if (token) {
+          localStorage.setItem('token', token);
+          navigate('/');
+        }
+      }, [location, navigate]);
     const handleGoogleFailure = () => {
         setError("Google login failed. Please try again.");
-        setSocialLoading(false);
-    };
-
-    const handleFacebookFailure = (error) => {
-        console.error("Facebook login failed:", error);
-        setError("Facebook login failed. Please try again.");
         setSocialLoading(false);
     };
 
@@ -101,21 +119,22 @@ const Login = () => {
                     {error && <p className="text-primary text-center mb-4">{error}</p>}
 
                     <div className="space-y-4">
-                        <FacebookLogin
+                        {/* <FacebookLogin
+                          appId='662001183185682'
                             autoLoad={false}
                             callback={handleFacebookLogin}
                             onFailure={handleFacebookFailure}
-                            render={(renderProps) => (
+                            render={(renderProps) => ( */}
                                 <button
-                                    onClick={renderProps.onClick}
+                                    onClick={handleFacebookLogin}
                                     disabled={socialLoading}
                                     className="flex items-center justify-center w-full py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition duration-200"
                                 >
                                     <FaFacebook className="mr-2" />
                                     {socialLoading ? "Loading..." : "Log in with Facebook"}
                                 </button>
-                            )}
-                        />
+                            {/* )}
+                        /> */}
 
                         <GoogleLogin
                             onSuccess={handleGoogleSuccess}
