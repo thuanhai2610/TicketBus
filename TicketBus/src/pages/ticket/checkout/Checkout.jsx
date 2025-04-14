@@ -6,8 +6,12 @@ import TopLayout from '../../../layout/toppage/TopLayout';
 import RootLayout from '../../../layout/RootLayout';
 import PassengerData from './passengerdata/PassengerData';
 import BookingStatus from './bookingstatus/BookingStatus';
-import { useLocation} from 'react-router-dom';
+import { useNavigate, useLocation} from 'react-router-dom';
 import { useEffect } from 'react';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const Checkout = () => {
   const location = useLocation();
   const { tripInfo, selectedSeats, vehicleId, seatData, username, tripId,  ticketId } = location.state || {};
@@ -17,6 +21,7 @@ const Checkout = () => {
     phone: '',
     address: '',
   });
+  const navigate = useNavigate(); 
     useEffect(() => {
       const timeout = setTimeout(async () => {
         if (!ticketId) return;
@@ -37,8 +42,10 @@ const Checkout = () => {
           );
     
           console.warn('Tự động hủy vé do quá hạn thanh toán.');
-          setError('Bạn đã chờ quá lâu. Vé đã bị huỷ.');
-          navigate('/bus-tickets');
+          toast.error('Bạn đã chờ quá lâu. Vé đã bị huỷ.');
+          setTimeout(() => {
+            navigate('/bus-tickets'); 
+          }, 5000);
         } catch (err) {
           console.error('Lỗi khi tự động hủy vé:', err);
         }
@@ -74,6 +81,7 @@ const Checkout = () => {
 
         </div>
       </RootLayout>
+      <ToastContainer position="top-center" autoClose={5000} />
 
     </div>
   )

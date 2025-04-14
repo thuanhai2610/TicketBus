@@ -36,13 +36,9 @@ export default function RevenueChart({ chartHeight = 400 }) {
         },
       });
       const rawData = await response.json();
-      console.log("Raw API data:", rawData);
-
       const completedPayments = rawData.filter(
         (payment) => payment.paymentStatus === "completed"
       );
-      console.log("Completed payments:", completedPayments);
-
       const dailyMap = {};
       const monthlyMap = {};
       const yearlyMap = {};
@@ -84,10 +80,6 @@ export default function RevenueChart({ chartHeight = 400 }) {
       });
 
       const yearlyData = Object.values(yearlyMap).sort((a, b) => Number(a.date) - Number(b.date));
-
-      console.log("Daily data:", dailyData);
-      console.log("Monthly data:", monthlyData);
-      console.log("Yearly data:", yearlyData);
 
       if (view === "daily") {
         setChartData(dailyData);

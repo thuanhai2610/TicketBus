@@ -46,24 +46,22 @@ const Ticket = () => {
     }
   };
 
-  // Hàm cập nhật bản đồ với dữ liệu mới
   const updateMap = (tripData) => {
     if (!mapRef.current) return;
 
     // Khởi tạo bản đồ nếu chưa có
     if (!leafletMapRef.current) {
       leafletMapRef.current = L.map(mapRef.current, {
-        doubleClickZoom: false,  // không cho zoom bằng double click
-        boxZoom: false,          // không cho zoom bằng kéo hộp
-        keyboard: false,         // không cho điều khiển bằng bàn phím
-        tap: false               // không cho chạm trên mobile
+        doubleClickZoom: false,  
+        boxZoom: false,        
+        keyboard: false,        
+        tap: false              
       }).setView([16.0544, 108.2022], 4);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
       }).addTo(leafletMapRef.current);
     } else {
-      // If map already exists, invalidate size to handle any container resizing
       leafletMapRef.current.invalidateSize();
     }
 
@@ -72,13 +70,11 @@ const Ticket = () => {
       leafletMapRef.current.removeControl(leafletMapRef.current._routing);
     }
 
-    // Chỉ thêm routing nếu có dữ liệu hợp lệ
     if (tripData && tripData.length > 0) {
       const trip = tripData[0]; // Lấy chuyến đầu tiên
 
       console.log("Setting up routing with coords:", trip);
 
-      // Kiểm tra xem có đủ thông tin tọa độ không
       if (trip && trip.departureLatitude && trip.departureLongtitude &&
         trip.destinationLatitude && trip.destinationLongtitude) {
 
@@ -113,20 +109,25 @@ const Ticket = () => {
     if (departurePoint && destinationPoint && date) {
       fetchTrips(departurePoint, destinationPoint, date);
     } else {
-      // If no search parameters, make sure map is hidden
       setShowMap(false);
     }
-  }, [location.search]); // Gọi lại khi query parameters thay đổi
+  }, [location.search]); 
 
-  // Cleanup when component unmounts
+
   useEffect(() => {
     return () => {
       if (leafletMapRef.current) {
+        if (leafletMapRef.current._routing) {
+          leafletMapRef.current.removeControl(leafletMapRef.current._routing);
+          leafletMapRef.current._routing = null;
+        }
+  
         leafletMapRef.current.remove();
         leafletMapRef.current = null;
       }
     };
   }, []);
+  
 
   // Handle custom search from Search component
   const handleSearch = (results) => {
