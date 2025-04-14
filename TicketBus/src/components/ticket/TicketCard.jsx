@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
 import { FaBus, FaStar } from 'react-icons/fa'
 import { MdOutlineChair } from 'react-icons/md'
@@ -57,12 +58,7 @@ const TicketCard = ({ icon: Icon, busName,departureLatitude,
                                     {availableSeats} seats
                                     </p>
                                </div>
-                               <div className="flex items-center gap-x-1 bg-neutral-200/50 rounded-full px-1.5 py-0.5">
-                                    <MdOutlineChair className='w-4 h-4 text-primary -rotate-90 dark:text-neutral-50'/>
-                                    <p className="text-xs text-neutral-600 font-normal dark:text-neutral-50">
-                                    {departureLatitude} seats
-                                    </p>
-                               </div>
+                             
                             </div>
 
 
@@ -118,7 +114,7 @@ const TicketCard = ({ icon: Icon, busName,departureLatitude,
                 </h1>
 
                 <Link to={`/bus-tickets/detail/${vehicleId}`} className="w-fit px-5 py-1.5 bg-primary dark:bg-primaryblue/50 dark:hover:bg-primaryblue dark:hover:text-neutral-950 hover:bg-transparent border-2  border-primary hover:border-primary rounded-xl text-sm font-normal text-neutral-50 flex items-center justify-center gap-x-2 hover:text-primary ease-in-out duration-300">
-                    Reserve Seat
+                    Đặt Vé Ngay
                 </Link>
             </div>
         </div>

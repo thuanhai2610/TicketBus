@@ -64,24 +64,8 @@ async verifyOtp(@Body('otp') otp: string) {
     async googleLogin(@Body() body: { credential: string }) {
         return this.authService.verifyGoogleCredential(body.credential);
     }
-    @Post('facebook-login')
-    @UseGuards(AuthGuard('facebook'))
-    async facebookLogin() {
+
     }
   
-    @Get('facebook/callback')
-    @UseGuards(AuthGuard('facebook'))
-    async facebookCallback(@Req() req, @Res() res: Response) {
-      const token = await this.authService.loginWithSocial(req.user);
-      // Redirect về frontend với access_token
-      return res.redirect(`http://localhost:3000/social-login-success?token=${token.access_token}`);
-    }
-    @Get('facebook-login-url')
-async getFacebookLoginUrl() {
-  const clientId = this.configService.get<string>('FACEBOOK_CLIENT_ID');
-  const redirectUri = 'http://localhost:3001/facebook/callback';
-  const scope = 'public_profile,email';
-  const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=code`;
-  return { authUrl };
-}
-}
+
+

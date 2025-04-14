@@ -44,87 +44,85 @@ const Register = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-primaryblue">
-            <div className="bg-white p-10 rounded-2xl shadow-2xl w-96 h-auto border border-gray-300 justify-end">
-                <h2 className="text-primary text-3xl font-semibold text-center mb-6">Sign Up</h2>
-                
-                <div className="my-6 flex items-center">
-                    <div className="flex-1 border-t border-gray-300"></div>
-                    <p className="mx-3 text-gray-500 text-sm">Or</p>
-                    <div className="flex-1 border-t border-gray-300"></div>
+        <div className="flex items-center justify-center min-h-screen bg-primaryblue dark:bg-transparent">
+            <div className="bg-white dark:bg-transparent p-10 rounded-2xl shadow-2xl w-96 h-auto border border-gray-300 justify-end">
+                <h2 className="text-primary text-3xl font-bold text-center mb-6 dark:text-neutral-50 uppercase">Đăng ký</h2>
+
+                <div className=" flex items-center">
                 </div>
-                
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-neutral-500">Username</label>
-                        <input 
-                            type="text" 
+                        <label className="block text-neutral-500 dark:text-neutral-200">Tên đăng nhập</label>
+                        <input
+                            type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                            className="w-full px-4 py-2 border rounded-lg dark:bg-transparent dark:text-neutral-100 dark:focus:ring-primaryblue/100 focus:outline-none focus:ring-2 focus:ring-primary"
                             required
                         />
                     </div>
                     <div>
-                        <label className="block text-neutral-500">Email Address</label>
-                        <input 
-                            type="email" 
+                        <label className="block text-neutral-500 dark:text-neutral-200">Địa chỉ Email</label>
+                        <input
+                            type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                            className="w-full px-4 py-2 border rounded-lg dark:bg-transparent dark:text-neutral-100 dark:focus:ring-primaryblue/100 focus:outline-none focus:ring-2 focus:ring-primary"
                             required
                         />
                     </div>
                     <div className="relative">
-                        <label className="block text-neutral-500">Password</label>
-                        <input 
+                        <label className="block text-neutral-500 dark:text-neutral-200">Mật khẩu</label>
+                        <input
                             type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-10"
+                            className="w-full px-4 py-2 border rounded-lg dark:bg-transparent dark:text-neutral-100 dark:focus:ring-primaryblue/100 focus:outline-none focus:ring-2 focus:ring-primary pr-10"
                             required
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-11 transform -translate-y-1/2 text-gray-500"
+                            className="absolute right-3 top-11 transform -translate-y-1/2 text-gray-500 dark:text-gray-300"
                         >
-                            {showPassword ? <FaRegEye  size={20} /> : <FaEyeSlash  size={20} />}
+                            {showPassword ? <FaRegEye size={18} /> : <FaEyeSlash size={18} />}
                         </button>
                     </div>
-                    
+
                     <div className="flex items-center">
-                        <input 
-                            type="checkbox" 
+                        <input
+                            type="checkbox"
                             checked={agreeTerms}
                             onChange={(e) => setAgreeTerms(e.target.checked)}
                             className="mr-2"
                         />
-                        <p className="text-sm text-neutral-500">
-                            Creating an account means you're okay with our 
-                            <span className="text-primary cursor-pointer"> Terms of Service</span>, 
-                            <span className="text-primary cursor-pointer"> Privacy Policy</span>, 
-                            and our default <span className="text-primary cursor-pointer"> Notification Settings</span>.
+                        <p className="text-sm text-neutral-500 dark:text-neutral-300">
+                            Việc tạo tài khoản đồng nghĩa với việc bạn đồng ý với
+                            <span className="text-primary cursor-pointer dark:text-primaryblue/100"> Điều khoản Dịch vụ</span>,
+                            <span className="text-primary cursor-pointer dark:text-primaryblue/100"> Chính sách Bảo mật</span>,
+                            và <span className="text-primary cursor-pointer dark:text-primaryblue/100"> Cài đặt Thông báo mặc định</span> của chúng tôi.
                         </p>
                     </div>
-                    
-                    <button 
+
+                    <button
                         type="submit"
                         className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primaryblue hover:text-primary transition duration-300"
                     >
-                        Create Account
+                        Đăng Ký
                     </button>
                 </form>
-                
-                <p className="text-center text-neutral-500 mt-4">
-                    Already a member?
-                    <Link to="/login" className="text-primary hover:underline ml-1">
-                        Sign in
+
+                <p className="text-center text-neutral-500 dark:text-neutral-300 mt-4">
+                    Đã có tài khoản?
+                    <Link to="/login" className="text-primary dark:text-neutral-50 font-bold underline hover:underline ml-1">
+                        Đăng nhập
                     </Link>
                 </p>
             </div>
         </div>
     );
+
 };
 
 export default Register;

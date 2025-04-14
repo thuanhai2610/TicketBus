@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "./components/navbar/Navbar";
@@ -28,12 +29,11 @@ import Employees from "./pages/admin/employee/Employee";
 import 'react-toastify/dist/ReactToastify.css';
 import TicketHistory from "./pages/profile/TicketHistory";
 import BlogDetail from "./pages/blog/BlogDetail";
-import VNPAY from "./pages/ticket/TicketVNPAY";
+import VNPAY from "./pages/ticket/invoice/TicketVNPAY";
 import QRCodeScanner from "./pages/ticket/qrcode/QRCodeScanner";
 import React from "react";
 import "./pages/ticket/qrcode/style.css";
 import 'leaflet/dist/leaflet.css';
-import SocialLoginSuccess from "./pages/login/SocialLoginSuccess";
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
@@ -75,7 +75,6 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/qr-scanner" element={<QRCodeScanner />} />
-            <Route path="/social-login-success" element={<SocialLoginSuccess />} />
             <Route path="/user/profile" element={<Profile />}>
               <Route path="" element={<div />} /> {/* Thông tin mặc định */}
               <Route path="edit" element={<UpdateProfile />} />
