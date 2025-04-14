@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -61,6 +62,7 @@ const TicketHistory = () => {
                     <h1 className="text-2xl font-bold text-gray-800 dark:text-neutral-50">Lịch sử mua vé</h1>
                     <p className="text-gray-500 dark:text-neutral-300">Theo dõi và quản lý quá trình lịch sử mua vé của bạn</p>
                 </div>
+                <div className="space-x-4">
                 <Link
                     to="/bus-tickets"
                     className="bg-primary hover:bg-primaryblue dark:hover:text-neutral-800 hover:text-neutral-950 text-white px-6 py-2 rounded-full shadow transition"
@@ -73,6 +75,7 @@ const TicketHistory = () => {
                     >
                   Hủy vé
                 </button>
+                </div>
             </div>
 
          

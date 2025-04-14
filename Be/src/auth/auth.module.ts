@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable prettier/prettier */
 // eslint-disable-next-line prettier/prettier
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -18,7 +19,6 @@ import { OtpModule } from 'src/otp/otp.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { PendingUsersModule } from 'src/pending-users/pending-users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { FacebookStrategy } from 'src/facebook/facebook.strategy';
 import { GoogleStrategy } from 'src/google/google.strategy';
 @Module ({
     imports: [ConfigModule.forRoot(),
@@ -36,7 +36,7 @@ import { GoogleStrategy } from 'src/google/google.strategy';
         MailerModule,
         PendingUsersModule
     ],
-    providers: [AuthService, LocalStrategy, JwtStrategy, JwtAuthGuard, FacebookStrategy, GoogleStrategy ],
+    providers: [AuthService, LocalStrategy, JwtStrategy, JwtAuthGuard, GoogleStrategy ],
     controllers: [AuthController],
     exports: [AuthService],
 
