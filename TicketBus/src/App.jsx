@@ -33,6 +33,7 @@ import QRCodeScanner from "./pages/ticket/qrcode/QRCodeScanner";
 import React from "react";
 import "./pages/ticket/qrcode/style.css";
 import 'leaflet/dist/leaflet.css';
+import SocialLoginSuccess from "./pages/login/SocialLoginSuccess";
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
@@ -74,7 +75,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/qr-scanner" element={<QRCodeScanner />} />
-         
+            <Route path="/social-login-success" element={<SocialLoginSuccess />} />
             <Route path="/user/profile" element={<Profile />}>
               <Route path="" element={<div />} /> {/* Thông tin mặc định */}
               <Route path="edit" element={<UpdateProfile />} />

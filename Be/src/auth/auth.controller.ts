@@ -13,10 +13,13 @@ import { Roles } from './roles.decorator';
 import { RegisterDto } from './dto/register.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Controller()
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,
+    private configService: ConfigService,
+  ) {}
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
@@ -73,5 +76,12 @@ async verifyOtp(@Body('otp') otp: string) {
       // Redirect về frontend với access_token
       return res.redirect(`http://localhost:3000/social-login-success?token=${token.access_token}`);
     }
-    
+    @Get('facebook-login-url')
+async getFacebookLoginUrl() {
+  const clientId = this.configService.get<string>('FACEBOOK_CLIENT_ID');
+  const redirectUri = 'http://localhost:3001/facebook/callback';
+  const scope = 'public_profile,email';
+  const authUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=code`;
+  return { authUrl };
+}
 }
