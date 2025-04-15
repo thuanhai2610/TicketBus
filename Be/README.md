@@ -32,6 +32,8 @@ $ npm install
 ```
 npm install passport-facebook @nestjs/passport passport ( khong được thên --force)
 npm i @nestjs/mapped-types
+npm install @nestjs-modules/mailer nodemailer
+ npm i @nestjs/schedule
 ## Compile and run the project
 
 ```bash

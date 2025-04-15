@@ -22,37 +22,30 @@ const Checkout = () => {
     address: '',
   });
   const navigate = useNavigate(); 
-    useEffect(() => {
-      const timeout = setTimeout(async () => {
-        if (!ticketId) return;
-    
-        try {
-          const token = localStorage.getItem('token');
-          if (!token) throw new Error('No token found. Please log in.');
-    
-          await axios.put(
-            `http://localhost:3001/tickets/${ticketId}`,
-            { status: 'Cancelled' },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-    
-          console.warn('Tự động hủy vé do quá hạn thanh toán.');
-          toast.error('Bạn đã chờ quá lâu. Vé đã bị huỷ.');
-          setTimeout(() => {
-            navigate('/bus-tickets'); 
-          }, 5000);
-        } catch (err) {
-          console.error('Lỗi khi tự động hủy vé:', err);
-        }
-      }, 5 * 60 * 1000); // 5 phút
-    
-      return () => clearTimeout(timeout); // Dọn dẹp nếu user rời trang
-    }, [ticketId]);
+  useEffect(() => {
+    // Hiển thị thông báo ngay khi vào trang
+    toast.info('Bạn có 5 phút để giữ ghế và thanh toán. Vui lòng hoàn tất trước khi hết giờ!', {
+      position: "top-center",
+      autoClose: 5000,
+    });
+
+    const timeout = setTimeout(() => {
+      if (!ticketId) return;
+
+      // Hiển thị thông báo khi hết 5 phút
+      toast.error('Bạn đã chờ quá lâu. Vé đã bị hủy.', {
+        position: "top-center",
+        autoClose: 5000,
+      });
+
+      // Chuyển hướng về trang bus-tickets sau 5 giây
+      setTimeout(() => {
+        navigate('/bus-tickets');
+      }, 5000);
+    }, 5 * 60 * 1000); // 5 phút
+
+    return () => clearTimeout(timeout); // Dọn dẹp nếu user rời trang
+  }, [ticketId, navigate]);
     
   return (
     <div>

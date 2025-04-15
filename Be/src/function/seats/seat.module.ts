@@ -7,6 +7,7 @@ import { SeatController } from './seat.controller';
 import { SeatService } from './seat.service';
 import { Company, CompanySchema } from '../companies/schemas/company.schema';
 import { VehicleModule } from '../vehicle/vehicle.module';
+import { SeatCleanupService } from './seat-cleanup.service';
 
 
 
@@ -17,7 +18,7 @@ import { VehicleModule } from '../vehicle/vehicle.module';
     ]),VehicleModule,
   ], 
   controllers: [SeatController],
-  providers: [SeatService, SeatRepository],
+  providers: [SeatService, SeatRepository, SeatCleanupService],
   exports: [SeatService, MongooseModule],
 })
 export class SeatModule {}

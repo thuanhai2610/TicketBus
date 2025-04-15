@@ -12,7 +12,7 @@ export class CreateSeatDto {
 
   @IsNotEmpty()
   @IsString()
-  tripId: string; // Added to match the Seat schema
+  tripId: string; 
 
   @IsNotEmpty()
   @IsString()

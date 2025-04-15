@@ -51,4 +51,7 @@ export class TripRepository {
     
     return deletedTrip;
   }
+  async findByTripId(tripId: string): Promise<Trip | null> {
+    return this.tripModel.findOne({ tripId }).exec();
+  }
 }

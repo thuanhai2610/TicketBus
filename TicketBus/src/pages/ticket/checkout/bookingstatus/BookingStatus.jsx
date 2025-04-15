@@ -153,7 +153,8 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
           }
         );
 
-        console.log('Ticket status updated to Paid:', updateTicketStatusResponse.data);
+        console.log('Ticket status updated to Paid:', updateTicketStatusResponse.data);  
+        console.log('Email sent successfully for ticket:', ticketId);
         const qrData = JSON.stringify({
           ticketId: ticketId,
           status: 'Paid',

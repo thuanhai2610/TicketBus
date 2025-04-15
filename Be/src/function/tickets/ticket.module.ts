@@ -10,6 +10,8 @@ import { Seat, SeatSchema } from '../seats/schemas/seat.schema';
 import { TripModule } from '../trip/trip.module';
 import { SeatModule } from '../seats/seat.module';
 import { VehicleModule } from '../vehicle/vehicle.module';
+import { MailModule } from './mail/mail.module';
+import { SeatService } from '../seats/seat.service';
 
 
 
@@ -18,10 +20,10 @@ import { VehicleModule } from '../vehicle/vehicle.module';
     MongooseModule.forFeature([{ name: Ticket.name, schema: TicketSchema },
        { name: Company.name, schema: CompanySchema }, 
        { name: Seat.name, schema: SeatSchema },
-    ]), TripModule, SeatModule, VehicleModule
+    ]), TripModule, SeatModule, VehicleModule, MailModule
   ],
   controllers: [TicketController],
-  providers: [TicketService, TicketRepository],
+  providers: [TicketService, TicketRepository, SeatService],
   exports: [TicketService, MongooseModule.forFeature([{ name: Ticket.name, schema: TicketSchema }]), TicketRepository, SeatModule],
 })
 export class TicketModule {}

@@ -11,13 +11,14 @@ import { CompaniesModule } from '../companies/company.module';
 import { TicketModule } from '../tickets/ticket.module';
 import { TripModule } from '../trip/trip.module';
 import { VehicleModule } from '../vehicle/vehicle.module';
+import { MailModule } from '../tickets/mail/mail.module';
 
 
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Payment.name, schema: PaymentSchema }   
-    ]), CompaniesModule, TicketModule, TripModule, VehicleModule
+    ]), CompaniesModule, TicketModule, TripModule, VehicleModule, MailModule
   ],
   controllers: [PaymentController],
   providers: [PaymentService, PaymentRepository, TicketService, TicketRepository],
