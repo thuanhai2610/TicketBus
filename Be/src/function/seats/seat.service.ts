@@ -82,6 +82,9 @@ export class SeatService {
     }
     
     seat.availabilityStatus = status;
+    if (status !== SeatAvailabilityStatus.BOOKED) {
+      seat.holdUntil = null;
+    }
     return seat.save();
   }
   
@@ -113,5 +116,59 @@ export class SeatService {
       available: unavailableSeats.length === 0,
       unavailableSeats
     };
+  }
+  async holdSeats(tripId: string, seatNumbers: string[], holdDurationMinutes: number = 5): Promise<void> {
+    const holdUntil = new Date();
+    holdUntil.setMinutes(holdUntil.getMinutes() + holdDurationMinutes);
+
+    for (const seatNumber of seatNumbers) {
+      const seat = await this.seatModel.findOne({ tripId, seatNumber }).exec();
+      if (!seat) {
+        throw new NotFoundException(`Seat ${seatNumber} not found for trip ${tripId}`);
+      }
+      if (seat.availabilityStatus !== SeatAvailabilityStatus.AVAILABLE) {
+        throw new BadRequestException(`Seat ${seatNumber} is not available`);
+      }
+
+      await this.seatModel
+        .findOneAndUpdate(
+          { tripId, seatNumber },
+          { availabilityStatus: SeatAvailabilityStatus.BOOKED, holdUntil, updatedAt: new Date() },
+          { new: true },
+        )
+        .exec();
+    }
+  }
+
+  async releaseSeats(tripId: string, seatNumbers: string[]): Promise<void> {
+    for (const seatNumber of seatNumbers) {
+      await this.seatModel
+        .findOneAndUpdate(
+          { tripId, seatNumber },
+          { availabilityStatus: SeatAvailabilityStatus.AVAILABLE, holdUntil: null, updatedAt: new Date() },
+          { new: true },
+        )
+        .exec();
+    }
+  }
+
+  async releaseExpiredSeats(): Promise<void> {
+    const now = new Date();
+    const expiredSeats = await this.seatModel
+      .find({
+        availabilityStatus: SeatAvailabilityStatus.BOOKED,
+        holdUntil: { $lte: now },
+      })
+      .exec();
+
+    for (const seat of expiredSeats) {
+      await this.seatModel
+        .findOneAndUpdate(
+          { _id: seat._id },
+          { availabilityStatus: SeatAvailabilityStatus.AVAILABLE, holdUntil: null, updatedAt: new Date() },
+          { new: true },
+        )
+        .exec();
+    }
   }
 }

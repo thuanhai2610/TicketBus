@@ -52,11 +52,9 @@ export class TicketService {
         `Seats ${unavailableSeats.map(seat => seat.seatNumber).join(', ')} are not available`
       );
     }
+    await this.seatService.holdSeats(createTicketDto.tripId, seatNumbers);
+    let ticketStatus: string = 'Ready'; 
   
-    // Initialize ticketStatus with a default value
-    let ticketStatus: string = 'Ready'; // Default status
-  
-    // Calculate the exact number of seats being booked for seat count update
     const seatCount = seatNumbers.length;
     console.log(`Booking ${seatCount} seats: ${seatNumbers.join(', ')}`);
   

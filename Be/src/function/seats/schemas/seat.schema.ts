@@ -30,7 +30,8 @@ export class Seat {
     default: SeatAvailabilityStatus.AVAILABLE 
   })
   availabilityStatus: SeatAvailabilityStatus;
-
+  @Prop({ type: Date })
+  holdUntil?: Date | null;
   @Prop({ required: true, type: Number })
   price: number;
 }

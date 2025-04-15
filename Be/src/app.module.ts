@@ -20,8 +20,9 @@ import { TripModule } from './function/trip/trip.module';
 import { TicketModule } from './function/tickets/ticket.module';
 import { SeatModule } from './function/seats/seat.module';
 import { PaymentModule } from './function/payments/payment.module';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
-  imports: [AuthModule, PendingUsersModule, ItemsModule, MongooseModule.forRoot('mongodb://localhost:27017/admin'),
+  imports: [AuthModule, PendingUsersModule,ScheduleModule.forRoot(), ItemsModule, MongooseModule.forRoot('mongodb://localhost:27017/admin'),
     ConfigModule.forRoot({
       isGlobal: true, 
       envFilePath: '.env', 
@@ -46,7 +47,7 @@ import { PaymentModule } from './function/payments/payment.module';
           strict: true,
         }
        }
-    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule, PaymentModule, 
+    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule, PaymentModule, MailerModule
   ],
 
   controllers: [AppController],

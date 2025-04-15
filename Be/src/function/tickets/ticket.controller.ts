@@ -5,13 +5,14 @@ import { SeatService } from '../seats/seat.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { SeatAvailabilityStatus } from '../seats/schemas/seat.schema';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { MailService } from './mail/mail.service';
 
 @Controller('tickets')
 export class TicketController {
   constructor(
     private readonly ticketsService: TicketService,
     private readonly tripService: TripService,
-    private readonly seatService: SeatService
+    private readonly seatService: SeatService,
   ) {}
 
   @Get(':ticketId')
@@ -70,7 +71,8 @@ async holdSeat(@Body() body: { tripId: string, seatNumber: string[], username: s
         status: ticket.status,
         ticketPrice: ticket.ticketPrice,
         seatNumber: ticket.seatNumber,
-        vehicleId: ticket.vehicleId
+        vehicleId: ticket.vehicleId,
+        holdUntil: new Date(new Date().getTime() + 5 * 60 * 1000).toISOString(),
       },
       paymentDetails: {
         amount: ticket.ticketPrice,

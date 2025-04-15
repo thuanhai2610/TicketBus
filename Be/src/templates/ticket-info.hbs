@@ -1,0 +1,20 @@
+<!-- src/mail/templates/ticket-info.hbs -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Thông tin vé</title>
+</head>
+<body>
+  <h2>Xin chào {{name}},</h2>
+  <p>Cảm ơn bạn đã đặt vé! Dưới đây là thông tin vé của bạn:</p>
+  <ul>
+    <li><strong>Chuyến đi:</strong> {{trip}}</li>
+    <li><strong>Ghế:</strong> {{seat}}</li>
+    <li><strong>Thời gian khởi hành:</strong> {{departureTime}}</li>
+    <li><strong>Mã vé:</strong> {{ticketCode}}</li>
+    <li><strong>Giá vé:</strong> {{price}} VND</li>
+  </ul>
+  <p>Vui lòng giữ email này để kiểm tra thông tin vé.</p>
+  <p>Trân trọng,<br/>Đội ngũ hỗ trợ</p>
+</body>
+</html>

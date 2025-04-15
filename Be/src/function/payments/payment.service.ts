@@ -11,13 +11,17 @@ import { PaymentRepository } from './payment.repsitory';
 import { Seat, SeatDocument } from '../seats/schemas/seat.schema';
 import * as querystring from 'querystring';
 import * as crypto from 'crypto';
+import { MailService } from '../tickets/mail/mail.service';
+import { TripRepository } from '../trip/trip.repsitory';
 
 @Injectable()
 export class PaymentService {
   constructor(
     private readonly paymentRepository: PaymentRepository,
+    private readonly tripRepository: TripRepository,
     private readonly ticketService: TicketService,
     private readonly vehicleService: VehicleService,
+    private readonly mailService: MailService,
     @InjectModel(Ticket.name) private ticketModel: Model<TicketDocument>,
     @InjectModel(Trip.name) private tripModel: Model<TripDocument>,
     @InjectModel(Seat.name) private seatModel: Model<SeatDocument>,
@@ -29,12 +33,10 @@ export class PaymentService {
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${dto.ticketId} not found`);
     }
-
     const paymentId = `PAYMENT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     let paymentUrl = '';
     let payment : any ;
     if (dto.paymentMethod === 'cash') {
-      // Handle Cash Payment
       payment = await this.paymentRepository.createPayment({
         paymentId,
         ticketId: dto.ticketId,
@@ -43,12 +45,13 @@ export class PaymentService {
         paymentMethod: 'cash',
         paymentStatus: 'completed', 
         paymentUrl,
-      });
+      }
+    );
 
-      // Update ticket and seat status for cash payment
       await this.processTicketAndSeats(ticket, payment);
+    await this.sendTicketEmailAfterPayment(ticket)
+
     } else if (dto.paymentMethod === 'vn_pay') {
-      // Handle VNPay Payment
       const vnpayUrl = process.env.VNPAY_URL;
       const tmnCode = process.env.VNPAY_TMN_CODE;
       const hashSecret = process.env.VNPAY_HASH_SECRET;
@@ -65,7 +68,7 @@ export class PaymentService {
         vnp_OrderType: '250000',
         vnp_Locale: 'vn',
         vnp_ReturnUrl: returnUrl,
-        vnp_IpAddr: '127.0.0.1', // Replace with actual client IP in production
+        vnp_IpAddr: '127.0.0.1', 
         vnp_CreateDate: this.formatDate(new Date()),
       };
 
@@ -83,11 +86,11 @@ export class PaymentService {
         companyId: dto.companyId,
         amount: dto.amount,
         paymentMethod: 'vn_pay',
-        paymentStatus: 'pending', // VNPay starts as pending
-        paymentUrl, // Store URL for frontend redirection
+        paymentStatus: 'pending', 
+        paymentUrl, 
       });
       const paymentObj = payment.toObject ? payment.toObject() : payment;
-      return { ...paymentObj, paymentUrl }; // Return payment with URL for VNPay
+      return { ...paymentObj, paymentUrl }; 
     } else {
       throw new NotFoundException(`Unsupported payment method: ${dto.paymentMethod}`);
     }
@@ -95,7 +98,6 @@ export class PaymentService {
     return payment;
   }
 
-  // Extracted logic for updating ticket and seats
   private async processTicketAndSeats(ticket: any, payment: PaymentDocument) {
     await this.ticketService.updateTicketStatus(payment.ticketId, 'Paid');
     const trip = await this.tripModel.findOne({ tripId: ticket.tripId }).exec();
@@ -117,8 +119,6 @@ export class PaymentService {
     console.log(`processTicketAndSeats called for ticket ${ticket.ticketId}, payment ${payment.paymentId}, method ${payment.paymentMethod}`);
     await this.vehicleService.updateSeatCount(trip.vehicleId, seatNumbers);
   }
-
-  // VNPay return handler
   async handleVnpayReturn(query: any): Promise<any> {
     const hashSecret = process.env.VNPAY_HASH_SECRET;
     const vnpParams = { ...query };
@@ -148,9 +148,9 @@ export class PaymentService {
       if (payment.paymentStatus === 'completed') {
         return { status: 'success', paymentId };
       }
-    
       await this.paymentRepository.updatePaymentStatus(paymentId, 'completed');
       const ticket = await this.ticketService.findTicketById(payment.ticketId);
+      await this.sendTicketEmailAfterPayment(ticket);
       await this.processTicketAndSeats(ticket, payment);
       return { status: 'success', paymentId };
     } else {
@@ -160,7 +160,45 @@ export class PaymentService {
     }
     
   } 
+  private async sendTicketEmailAfterPayment(ticket: TicketDocument): Promise<void> {
+    if (!ticket.email) {
+      console.warn(`Ticket ${ticket.ticketId} không có email, không gửi được email vé`);
+      return;
+    }
 
+    // Type assertion để TypeScript hiểu ticket.tripId là Trip
+    const trip = await this.tripRepository.findByTripId(ticket.tripId);
+    if (!trip) {
+      throw new NotFoundException(`Trip with ID ${ticket.tripId} not found`);
+    }
+    const formatDateTime = (dateString) => {
+      if (!dateString) return 'N/A';
+      
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Invalid Date';
+      
+      return date.toLocaleString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+
+    await this.mailService.sendTicketEmail(ticket.email, {
+      customerName: ticket.fullName || 'Khách hàng',
+      trip: trip
+        ? `${trip.departurePoint} - ${trip.destinationPoint}`
+        : 'Chuyến đi không xác định',
+      seat: ticket.seatNumber.join(', '),
+      departureTime:formatDateTime(
+        trip ? trip.departureTime : ticket.bookedAt
+      ),
+      ticketCode: ticket.ticketId,
+      price: ticket.ticketPrice,
+    });
+  }
   private formatDate(date: Date): string {
     return date.toISOString().replace(/[^0-9]/g, '').slice(0, 14);
   }
