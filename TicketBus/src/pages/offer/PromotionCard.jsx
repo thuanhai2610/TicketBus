@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 
-const PromotionCard = ({ promo, copiedCode, handleCopy }) => {
+const PromotionCard = ({ promo }) => {
+  const [copiedCode, setCopiedCode] = useState(null);
+
+  const handleCopy = async (code) => {
+    try {
+      // Sao chép mã vào clipboard
+      await navigator.clipboard.writeText(code);
+      // Cập nhật mã đã sao chép và hiển thị icon check
+      setCopiedCode(code);
+      
+      // Reset trạng thái sau 2 giây
+      setTimeout(() => setCopiedCode(null), 2000);
+    } catch (err) {
+      console.error("Không thể sao chép mã:", err);
+    }
+  };
+
   return (
     <div className="flex flex-col justify-between h-[200px] bg-white dark:bg-primaryblue/5 rounded-2xl shadow-md dark:shadow-lg hover:shadow-xl transition duration-300 p-6 text-left">
       <div>

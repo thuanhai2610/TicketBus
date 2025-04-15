@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import Logo from "../../assets/logo.png";
-import { FaBus, FaTicketAlt, FaUsers, FaCog, FaUserCircle,FaHome , FaMoneyBillAlt ,FaSignOutAlt, FaSignInAlt, FaStar, FaUser, FaCreditCard, FaBell, FaChevronDown, FaChevronRight } from "react-icons/fa";
+import { FaBus, FaTicketAlt, FaUsers, FaCog, FaUserCircle, FaHome, FaMoneyBillAlt, FaSignOutAlt, FaSignInAlt, FaStar, FaUser, FaCreditCard, FaBell, FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { MdOutlineLogout } from "react-icons/md";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
@@ -119,12 +119,12 @@ const AdminLayout = () => {
                   to="/admin"
                   className="flex items-center px-2 py-1.5 text-sm text-gray-200 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
                 >
-                  <FaHome  className="mr-3 h-4 w-4" />
+                  <FaHome className="mr-3 h-4 w-4" />
                   Trang chủ
                 </Link>
               </li>
               {/* Nhà xe with collapsible sub-menu */}
-              <li>
+              <li className=" border-transparent hover:border-gray-500">
                 <button
                   onClick={toggleTrips}
                   className="flex items-center w-full px-2 py-1.5 text-sm text-gray-200 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
@@ -139,7 +139,7 @@ const AdminLayout = () => {
                 </button>
                 {isTripsOpen && (
                   <ul className="mt-1 space-y-1 pl-6">
-                    <li>
+                    <li className="border-l-4 border-transparent hover:border-gray-500">
                       <Link
                         to="/admin/manage-trips"
                         className="flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
@@ -148,7 +148,7 @@ const AdminLayout = () => {
                         Quản lý chuyến
                       </Link>
                     </li>
-                    <li>
+                    <li className="border-l-4 border-transparent hover:border-gray-500">
                       <Link
                         to="/admin/manage-employees"
                         className="flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
@@ -160,6 +160,7 @@ const AdminLayout = () => {
                   </ul>
                 )}
               </li>
+
               {/* Đơn đặt vé with collapsible sub-menu */}
               <li>
                 <button
@@ -179,7 +180,7 @@ const AdminLayout = () => {
                     <li>
                       <Link
                         to="/admin/manage-tickets"
-                        className="flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                        className=" border-l-4 border-transparent hover:border-gray-500 flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
                       >
                         <FaTicketAlt className="mr-3 h-4 w-4" />
                         Vé đã bán
@@ -188,9 +189,9 @@ const AdminLayout = () => {
                     <li>
                       <Link
                         to="/admin/revenue"
-                        className="flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                        className="border-l-4 border-transparent hover:border-gray-500 flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
                       >
-                        <FaMoneyBillAlt  className="mr-3 h-4 w-4" />
+                        <FaMoneyBillAlt className="mr-3 h-4 w-4" />
                         Doanh thu
                       </Link>
                     </li>
@@ -254,7 +255,7 @@ const AdminLayout = () => {
                 <p className="text-xs text-gray-400 truncate">{email}</p>
               </div>
               <button onClick={handleLogout} className="text-red-400 hover:text-red-300">
-                <MdOutlineLogout  className="h-6 w-6" />
+                <MdOutlineLogout className="h-6 w-6" />
               </button>
             </div>
           ) : (

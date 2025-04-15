@@ -98,7 +98,7 @@ export default function RevenueChart({ chartHeight = 400 }) {
       setError(err);
       setLoading(false);
     }
-    
+
   };
 
   const handleViewChange = (newView) => {
@@ -141,7 +141,7 @@ export default function RevenueChart({ chartHeight = 400 }) {
           >
             Doanh thu tháng
           </button>
-        
+
         </div>
       </CardHeader>
       <CardContent>
@@ -152,13 +152,21 @@ export default function RevenueChart({ chartHeight = 400 }) {
             <XAxis dataKey="date" stroke="#9CA3AF" />
             <YAxis tickFormatter={formatYAxis} domain={[0, "auto"]} stroke="#9CA3AF" />
             <Tooltip formatter={formatVND} contentStyle={{ backgroundColor: "#1F2937", border: "none", color: "#fff" }} />
+            <defs>
+              <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#8c52ff" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="#00bf63" stopOpacity={0.6} />
+              </linearGradient>
+            </defs>
+
             <Area
               type="monotone"
               dataKey="revenue"
-              stroke="#60A5FA"
-              fill="#3B82F6"
-              fillOpacity={0.6}
+              stroke="#8c52ff"
+              fill="url(#colorRevenue)"
+              fillOpacity={1}
             />
+
           </AreaChart>
         </ResponsiveContainer>
 
