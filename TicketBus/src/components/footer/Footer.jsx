@@ -13,17 +13,16 @@ const Footer = () => {
     return (
         <div className='w-full h-auto bg-primary py-12'>
             <RootLayout className="space-y-10">
-                <div className="w-full grid grid-cols-5 gap-6">
+                <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
                     <div className="col-span-2 space-y-8 md:pr-10 pr-0">
                         <div className="space-y-3">
                             <Link to="/" className='flex items-center text-4xl text-primaryblue font-bold'>
                                 <img src={Logo} alt="Logo" className="h-12 w-12 mr-2" />
                                 Ticket<span className='text-neutral-950 dark:text-neutral-300'>Bus</span>
                             </Link>
-                            <p className="text-sm text-neutral-400 font-normal w-[75%]">
+                            <p className="text-sm text-neutral-400 font-normal w-full sm:w-[75%]">
                                 Bus Ticket Online là một nền tảng hiện đại giúp việc đặt vé xe buýt trở nên dễ dàng, nhanh chóng và tiện lợi.
                                 Với giao diện thân thiện, người dùng có thể tìm kiếm chuyến xe, đặt vé, thanh toán trực tuyến và theo dõi lịch trình một cách thuận tiện.
-
                             </p>
                         </div>
                         <div className="w-full flex items-center gap-x-5">
@@ -76,29 +75,23 @@ const Footer = () => {
                                 <FaGithub className="w-5 h-5 text-neutral-50" />
                             </a>
                         </div>
-
                     </div>
 
                     <div className="col-span-1 space-y-5">
                         <h1 className="text-lg text-neutral-100 font-semibold">CÁCH THỨC THANH TOÁN </h1>
-                        <div className="flex items-center gap-x-2 ">
-                            <img src={Cash} alt="MasterCard" className="w-fit h-16 object-contain justify-center items-center" />
-                            <img src={VNPay} alt="PayPal" className="w-fit h-16 object-contain" />
-                            <img src={CreditCardImg} alt="CreditCard" className="w-fit h-16 object-contain" />
-                        </div>
-                        <div className="flex items-center gap-x-2 ">
-                            <img src={Cash} alt="MasterCard" className="w-fit h-16 object-contain justify-center items-center" />
-                            <img src={VNPay} alt="PayPal" className="w-fit h-16 object-contain" />
-                            <img src={CreditCardImg} alt="CreditCard" className="w-fit h-16 object-contain" />
+                        <div className="flex items-center gap-x-2 flex-wrap">
+                            <img src={Cash} alt="MasterCard" className="w-16 h-16 object-contain" />
+                            <img src={VNPay} alt="PayPal" className="w-16 h-16 object-contain" />
+                            <img src={CreditCardImg} alt="CreditCard" className="w-16 h-16 object-contain" />
                         </div>
                     </div>
 
-                    <div className="col-span-1 space-y-5 ">
-                        <h1 className="text-lg text-neutral-100 font-semibold"> CÔNG TY TNHH TICKETBUS </h1>
-                        <div className="space-y-5 w-80">
-                            <p className="text-md text-neutral-100 font-bold"> VP ĐÀ NẴNG : <span className='font-normal'> 33 Xô Viết Nghệ Tĩnh, Hòa Cường Nam , Hải Châu , Đà Nẵng</span></p>
-                            <p className="text-md text-neutral-100 font-bold"> EMAIL :<span className='font-normal'> NhismdKhoaHaiz.@gmail.com</span></p>
-                            <p className="text-md text-neutral-100 font-bold"> PHONE : <span className='font-normal'>+84 8888-8888 </span></p>
+                    <div className="col-span-1 space-y-5">
+                        <h1 className="text-lg text-neutral-100 font-semibold">CÔNG TY TNHH TICKETBUS</h1>
+                        <div className="space-y-5 w-full">
+                            <p className="text-md text-neutral-100 font-bold">VP ĐÀ NẴNG: <span className='font-normal'>33 Xô Viết Nghệ Tĩnh, Hòa Cường Nam , Hải Châu , Đà Nẵng</span></p>
+                            <p className="text-md text-neutral-100 font-bold">EMAIL: <span className='font-normal'>NhismdKhoaHaiz.@gmail.com</span></p>
+                            <p className="text-md text-neutral-100 font-bold">PHONE: <span className='font-normal'>+84 8888-8888</span></p>
                         </div>
                     </div>
 
@@ -119,9 +112,8 @@ const Footer = () => {
 
                 <div className="w-full h-px bg-neutral-800/50" />
 
-                <div className="w-full flex items-center justify-center ">
-                    <p className="text-sm text-neutral-400 font-normal">2025&copy; NhismdKhoaHaiz. All rights reserved</p>
-
+                <div className="w-full flex items-center justify-center">
+                    <p className="text-sm text-neutral-400 font-normal">2025&copy; Nguyen Thuan Hai - Le Tran Thu Lieu - Do Tien Khoa</p>
                 </div>
             </RootLayout>
         </div>

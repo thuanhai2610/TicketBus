@@ -89,29 +89,12 @@ const Login = () => {
     };
     return (
         <GoogleOAuthProvider clientId={"1055268521864-uqrdrd5mpqbeskmqe28gb2kk37050t4b.apps.googleusercontent.com"}>
-            <div className="flex min-h-screen items-center justify-center bg-primaryblue">
-                <div className="bg-white p-10 rounded-2xl shadow-2xl w-96 border border-gray-300">
-                    <h2 className="text-primary text-3xl font-semibold text-center mb-6">Welcome Back</h2>
+            <div className="flex min-h-screen items-center justify-center bg-primaryblue dark:bg-transparent">
+                <div className="bg-white p-10 rounded-2xl shadow-2xl w-96 border border-gray-300 dark:bg-transparent">
+                    <h2 className="text-primary text-3xl font-semibold text-center mb-6 uppercase dark:text-neutral-50">đăng ký tài khoản</h2>
 
                     {error && <p className="text-primary text-center mb-4">{error}</p>}
                     <div className="space-y-4">
-
-                        <FacebookLogin
-                            appId="YOUR_FACEBOOK_APP_ID"
-                            autoLoad={false}
-                            callback={handleFacebookSuccess}
-                            onFailure={handleFacebookFailure}
-                            render={(renderProps) => (
-                                <button
-                                    onClick={renderProps.onClick}
-                                    disabled={socialLoading}
-                                    className="flex items-center justify-center w-full py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition duration-200"
-                                >
-                                    <FaFacebook className="mr-2" /> {socialLoading ? "Loading..." : "Log in with Facebook"}
-                                </button>
-                            )}
-                        />
-
               
                         <GoogleLogin
                             onSuccess={handleGoogleSuccess}
@@ -120,7 +103,7 @@ const Login = () => {
                                 <button
                                     onClick={renderProps.onClick}
                                     disabled={renderProps.disabled || socialLoading}
-                                    className="flex items-center justify-center w-full py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition duration-200"
+                                    className="flex items-center  justify-center w-full py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-primary hover:text-white transition duration-200"
                                 >
                                     <FcGoogle className="mr-2" /> {socialLoading ? "Loading..." : "Log in with Google"}
                                 </button>
@@ -131,45 +114,45 @@ const Login = () => {
 
                     <div className="my-6 flex items-center">
                         <div className="flex-1 border-t border-gray-300"></div>
-                        <p className="mx-3 text-gray-500 text-sm">Or</p>
+                        <p className="mx-3 text-gray-500 text-sm dark:text-neutral-400">Hoặc</p>
                         <div className="flex-1 border-t border-gray-300"></div>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label className="block text-neutral-500">Username</label>
+                            <label className="block text-neutral-500 dark:text-neutral-200">Tên Đăng Nhập</label>
                             <input
                                 type="text"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-transparent dark:focus:ring-slate-300"
                                 required
                             />
                         </div>
 
                         <div className="relative">
-                            <label className="block text-neutral-500">Password</label>
+                            <label className="block text-neutral-500 dark:text-neutral-200">Mật Khẩu</label>
                             <input
                                 type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-10"
+                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-10 dark:bg-transparent dark:focus:ring-slate-300"
                                 required
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-11 transform -translate-y-1/2 text-gray-500"
+                                className="absolute right-3 top-11 transform -translate-y-1/2 text-gray-500 dark:text-neutral-300"
                             >
-                                {showPassword ? <FaRegEye size={20} /> : <FaEyeSlash size={20} />}
+                                {showPassword ? <FaRegEye size={18} /> : <FaEyeSlash size={18} />}
                             </button>
                         </div>
 
-                        <div className="flex justify-between items-center text-sm text-gray-500">
+                        <div className="flex justify-between items-center text-sm text-gray-500 dark:text-neutral-300">
                             <label className="flex items-center">
-                                <input type="checkbox" className="mr-2" /> Keep me logged in
+                                <input type="checkbox" className="mr-2" /> Lưu Tài Khoản
                             </label>
-                            <Link to="/forgot-password" className="text-primary">Forgot Password?</Link>
+                            <Link to="/forgot-password" className="text-primary dark:text-neutral-200 underline font-bold">Quên Mật Khẩu?</Link>
                         </div>
 
                         <button
@@ -177,12 +160,12 @@ const Login = () => {
                             className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary transition"
                             disabled={isLoading}
                         >
-                            {isLoading ? "Logging in..." : "Log In"}
+                            {isLoading ? "Logging in..." : "Đăng Nhập"}
                         </button>
                     </form>
 
-                    <p className="text-center text-sm text-gray-500 mt-6">
-                        Need an account? <Link to="/register" className="text-primary font-medium">Sign Up</Link>
+                    <p className="text-center text-sm text-gray-500 mt-6 dark:text-neutral-300">
+                        Chưa Có Tài Khoản? <Link to="/register" className="text-primary font-bold dark:text-neutral-200 underline ">Đăng Ký </Link>
                     </p>
                 </div>
             </div>
