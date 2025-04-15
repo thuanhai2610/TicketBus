@@ -64,15 +64,23 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         throw new Error('Trip ID or Company ID is missing in trip information.');
       }
 
-      // Update ticket with passenger info before creating payment
       const updateTicketData = {
         email: passengerInfo.email,
         phone: passengerInfo.phone,
         fullName: passengerInfo.fullName,
         address: passengerInfo.address,
-        status: 'pending', // Set to Pending initially
+        status: 'Booked', 
       };
-
+      await axios.put(
+        `http://localhost:3001/tickets/${ticketId}`,
+        updateTicketData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const paymentData = {
         ticketId: ticketId,
@@ -125,19 +133,6 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
           throw new Error('Payment URL not provided by the server.');
         }
       } else if (paymentMethod === 'cash') {
-
-        const updatePaymentResponse = await axios.put(
-          `http://localhost:3001/payments/${ticketId}`,
-          { paymentStatus: 'completed' },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        console.log('Payment status updated to completed:', updatePaymentResponse.data);
         const updateTicketPayload = {
           ...updateTicketData,
           status: 'Paid',
@@ -152,7 +147,18 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
             },
           }
         );
+        const updatePaymentResponse = await axios.put(
+          `http://localhost:3001/payments/${ticketId}`,
+          { paymentStatus: 'completed' },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
+        console.log('Payment status updated to completed:', updatePaymentResponse.data);
         console.log('Ticket status updated to Paid:', updateTicketStatusResponse.data);  
         console.log('Email sent successfully for ticket:', ticketId);
         const qrData = JSON.stringify({
