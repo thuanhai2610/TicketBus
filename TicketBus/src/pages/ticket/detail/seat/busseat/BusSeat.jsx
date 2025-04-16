@@ -303,15 +303,15 @@ const fetchTripInfo = async (vehicleId) => {
 
   const getSeatName = (seat) => {
     if (seat.status === 'Booked') {
-      return 'text-yellow-500 cursor-not-allowed  dark:text-yellow-500'; // Ghế đã đặt
+      return 'text-yellow-500 cursor-not-allowed  dark:text-yellow-400'; // Ghế đã đặt
     }
     if (seat.status === 'Selected') {
-      return 'text-red-600 cursor-not-allowed  dark:text-red-600'; // Ghế đã chọn (sau thanh toán)
+      return 'text-red-600 cursor-not-allowed  dark:text-red-400'; // Ghế đã chọn (sau thanh toán)
     }
     if (selectedSeats.includes(seat.id)) {
-      return 'text-emerald-600 cursor-pointer  dark:text-emerald-500'; // Ghế đang được chọn tạm thời
+      return 'text-emerald-600 cursor-pointer  dark:text-emerald-400'; // Ghế đang được chọn tạm thời
     }
-    return 'text-neutral-500 cursor-pointer'; // Ghế còn trống
+    return 'text-neutral-500 cursor-pointer dark:text-neutral-500'; // Ghế còn trống
   };
 
   if (seatsLoading) {
@@ -435,19 +435,19 @@ const fetchTripInfo = async (vehicleId) => {
 
           <div className="w-full flex items-center justify-center gap-6 border-t border-neutral-200 pt-5">
             <div className="flex items-center gap-x-2">
-              <MdOutlineChair className="text-3xl text-neutral-500 -rotate-90  dark:text-neutral-50" />
+              <MdOutlineChair className="text-3xl text-neutral-500 -rotate-90  dark:text-neutral-500" />
               <p className="text-sm text-neutral-500 font-medium  dark:text-neutral-50">Ghế trống</p>
             </div>
             <div className="flex items-center gap-x-2">
-              <MdOutlineChair className="text-3xl text-yellow-500 -rotate-90  dark:text-yellow-500" />
+              <MdOutlineChair className="text-3xl text-yellow-500 -rotate-90  dark:text-yellow-400" />
               <p className="text-sm text-neutral-500 font-medium  dark:text-neutral-50">Đang đặt chỗ</p>
             </div>
             <div className="flex items-center gap-x-2">
-              <MdOutlineChair className="text-3xl text-red-600 -rotate-90  dark:text-red-600" />
+              <MdOutlineChair className="text-3xl text-red-600 -rotate-90  dark:text-red-400" />
               <p className="text-sm text-neutral-500 font-medium  dark:text-neutral-50">Đã đặt</p>
             </div>
             <div className="flex items-center gap-x-2">
-              <MdOutlineChair className="text-3xl text-emerald-600 -rotate-90" />
+              <MdOutlineChair className="text-3xl text-emerald-600 dark:text-emerald-400 -rotate-90" />
               <p className="text-sm text-neutral-500 font-medium  dark:text-neutral-50">Chọn chỗ</p>
             </div>
           </div>
@@ -458,7 +458,7 @@ const fetchTripInfo = async (vehicleId) => {
         <div className="w-full space-y-2">
           <div className="w-full flex items-center justify-between">
             <h1 className="text-lg text-neutral-600 font-bold uppercase  dark:text-neutral-50">Thông tin đặt chỗ</h1>
-            <Link to="/bus-tickets" className="text-sm text-primary font-normal  dark:text-neutral-50">
+            <Link to="/bus-tickets" className="text-sm text-primary font-bold underline uppercase  dark:text-neutral-50 ">
               Đổi chuyến
             </Link>
           </div>

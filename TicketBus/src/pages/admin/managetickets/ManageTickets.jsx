@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { FaBus, FaTicketAlt, FaUsers,FaMoneyBillWave } from "react-icons/fa";
-import PieChart from './PieChart'; 
+import { FaBus, FaTicketAlt, FaUsers, FaMoneyBillWave } from "react-icons/fa";
+import PieChart from './PieChart';
+import { LuTicketX, LuTicketSlash } from "react-icons/lu";
 
 
 import {
@@ -29,7 +30,7 @@ const ManageTickets = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState("pending");
+  const [selectedStatus, setSelectedStatus] = useState("completed");
 
   useEffect(() => {
     fetchTickets();
@@ -66,7 +67,7 @@ const ManageTickets = () => {
         failedTickets: categorizedTickets.failed.length,
         total: categorizedTickets.completed.reduce((sum, ticket) => sum + ticket.amount, 0),
       });
-      
+
 
       setTickets(categorizedTickets);
     } catch (err) {
@@ -90,16 +91,19 @@ const ManageTickets = () => {
             </tr>
           </thead>
           <tbody>
-            {ticketList.map((ticket) => (
-              <tr key={ticket._id} className="border-b border-gray-600">
-                <td className="py-2 px-4 text-blue-400">{ticket.ticketId}</td>
-                <td className="py-2 px-4">{ticket.amount ? formatVND(ticket.amount) : "N/A"}</td>
-                <td className="py-2 px-4">{new Date(ticket.createdAt).toLocaleDateString("vi-VN")}</td>
-                <td className={`py-2 px-4 ${getStatusColor(ticket.paymentStatus)}`}>
-                  {ticket.paymentStatus.toUpperCase()}
-                </td>
-              </tr>
-            ))}
+            {[...ticketList]
+              .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)) 
+              .map((ticket) => (
+                <tr key={ticket._id} className="border-b border-gray-600 max-h-screen overflow-y-auto">
+                  <td className="py-2 px-4 text-blue-400">{ticket.ticketId}</td>
+                  <td className="py-2 px-4">{ticket.amount ? formatVND(ticket.amount) : "N/A"}</td>
+                  <td className="py-2 px-4">{new Date(ticket.createdAt).toLocaleDateString("vi-VN")}</td>
+                  <td className={`py-2 px-4 ${getStatusColor(ticket.paymentStatus)}`}>
+                    {ticket.paymentStatus.toUpperCase()}
+                  </td>
+                </tr>
+              ))}
+
           </tbody>
         </table>
       ) : (
@@ -147,11 +151,11 @@ const ManageTickets = () => {
             </CardContent>
           </Card>
         </Link>
-       
+
         <Link to="">
           <Card className="bg-gray-800 border-gray-700 hover:bg-gray-700 transition">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <FaBus className="text-blue-500 text-2xl mr-3" />
+              <LuTicketSlash className="text-blue-500 text-2xl mr-3" />
               <CardTitle className="text-sm font-medium text-gray-400">
                 Vé Đang Chờ Xử Lý
               </CardTitle>
@@ -164,7 +168,7 @@ const ManageTickets = () => {
         <Link to="">
           <Card className="bg-gray-800 border-gray-700 hover:bg-gray-700 transition">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <FaUsers className="text-purple-500 text-2xl mr-3" />
+              <LuTicketX className="text-purple-500 text-2xl mr-3" />
               <CardTitle className="text-sm font-medium text-gray-400">
                 Vé Thanh Toán Thất Bại
               </CardTitle>
@@ -194,7 +198,7 @@ const ManageTickets = () => {
         <div className="col-span-1">
           <PieChart tickets={tickets} />
         </div>
-        
+
         {/* Line Chart Right */}
         <div className="col-span-2">
           <RevenueChart revenue={revenue} />
