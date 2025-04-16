@@ -59,7 +59,7 @@ const Search = () => {
         <div className="relative w-full">
           <FaMapMarkerAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-neutral-200 z-10" />
           <Select value={from} onValueChange={setFrom}>
-            <SelectTrigger className="pl-10 w-full bg-white dark:bg-transparent rounded-lg border border-gray-300 h-12 text-left text-gray-500">
+            <SelectTrigger className="pl-10 w-full bg-white dark:bg-transparent rounded-lg border border-gray-300 h-12 text-left text-gray-500 dark:text-gray-200">
               <SelectValue placeholder="Chọn điểm đi" />
             </SelectTrigger>
             <SelectContent>
@@ -86,7 +86,7 @@ const Search = () => {
         <div className="relative w-full">
           <FaMapMarkerAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-neutral-200 z-10" />
           <Select value={to} onValueChange={setTo}>
-            <SelectTrigger className="pl-10 w-full bg-white dark:bg-transparent rounded-lg border border-gray-300 h-12 text-left text-gray-500">
+            <SelectTrigger className="pl-10 w-full bg-white dark:bg-transparent rounded-lg border border-gray-300 h-12 text-left text-gray-500 dark:text-gray-200">
               <SelectValue placeholder="Chọn điểm đến" />
             </SelectTrigger>
             <SelectContent>

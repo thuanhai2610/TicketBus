@@ -91,7 +91,7 @@ const Login = () => {
         <GoogleOAuthProvider clientId={"1055268521864-uqrdrd5mpqbeskmqe28gb2kk37050t4b.apps.googleusercontent.com"}>
             <div className="flex min-h-screen items-center justify-center bg-primaryblue dark:bg-transparent">
                 <div className="bg-white p-10 rounded-2xl shadow-2xl w-96 border border-gray-300 dark:bg-transparent">
-                    <h2 className="text-primary text-3xl font-semibold text-center mb-6 uppercase dark:text-neutral-50">đăng ký tài khoản</h2>
+                    <h2 className="text-primary text-3xl font-semibold text-center mb-6 uppercase dark:text-neutral-50">đăng Nhập</h2>
 
                     {error && <p className="text-primary text-center mb-4">{error}</p>}
                     <div className="space-y-4">

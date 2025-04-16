@@ -459,7 +459,7 @@ const ManageTrips = () => {
         alignItems="center"
         mb={2}
       >
-        <Typography variant="h5" component="h2">
+        <Typography variant="h5" component="h2" className="font-bold uppercase">
           Quản lý Bến Xe
         </Typography>
         <Button
