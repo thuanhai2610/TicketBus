@@ -27,11 +27,11 @@ export class TripController {
     return this.tripService.update(id, updateTripDto);
   }
 
-  @Delete(':id')
+  @Delete(':tripId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  remove(@Param('id') id: string) {
-    return this.tripService.remove(id);
+  remove(@Param('tripId') tripId: string) {
+    return this.tripService.remove(tripId);
   }
    @Get()
    @UseGuards(JwtAuthGuard, RolesGuard)

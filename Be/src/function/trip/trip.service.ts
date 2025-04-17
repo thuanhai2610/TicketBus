@@ -218,8 +218,8 @@ export class TripService {
     return this.tripRepository.update(id, updateTripDto);
   }
 
-  remove(id: string): Promise<Trip> {
-    return this.tripRepository.remove(id);
+  remove(tripId: string): Promise<Trip> {
+    return this.tripRepository.remove(tripId);
   }
 
   async findByCompanyId(companyId: string): Promise<Trip[]> {
