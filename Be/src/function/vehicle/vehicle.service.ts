@@ -43,8 +43,8 @@ export class VehicleService {
     }
   }
 
-  update(id: string, updateVehicleDto: UpdateVehicleDto): Promise<Vehicle> {
-    return this.vehicleRepository.update(id, updateVehicleDto);
+  update(vehicleId: string, updateVehicleDto: UpdateVehicleDto): Promise<Vehicle> {
+    return this.vehicleRepository.update(vehicleId, updateVehicleDto);
   }
 
   remove(vehicleId: string): Promise<Vehicle> {

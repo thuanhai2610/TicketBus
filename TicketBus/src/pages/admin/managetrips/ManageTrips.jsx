@@ -82,7 +82,10 @@ const ManageTrips = () => {
     seatCount: "",
     availableSeats: "",
   });
-
+  const [openEditVehicleDialog, setOpenEditVehicleDialog] = useState(false);
+  const [editVehicle, setEditVehicle] = useState(null);
+  const [openEditTripDialog, setOpenEditTripDialog] = useState(false);
+  const [editTrip, setEditTrip] = useState(null);
   const handleCloseCreateVehicleDialog = () => {
     setOpenCreateVehicleDialog(false);
     setNewVehicle({
@@ -210,9 +213,6 @@ const ManageTrips = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
-      console.log("API Response:", response.data);
-
       const data = Array.isArray(response.data) ? response.data : [];
       setCompanies(data);
       setLoading(false);
@@ -567,6 +567,134 @@ const handleDeleteVehicle = async (vehicleId) => {
     });
   }
 }
+
+const handleUpdateVehicle = async () => {
+  try {
+    setIsSubmitting(true);
+    setFormErrors({});
+
+    if (
+      !editVehicle.lisencePlate ||
+      !editVehicle.vehicleType ||
+      isNaN(editVehicle.seatCount) ||
+      editVehicle.seatCount <= 0 ||
+      isNaN(editVehicle.availableSeats) ||
+      editVehicle.availableSeats < 0 ||
+      editVehicle.availableSeats > editVehicle.seatCount
+    ) {
+      throw new Error("Vui lòng điền đầy đủ và hợp lệ các trường");
+    }
+
+    const vehicleToSend = {
+      lisencePlate: editVehicle.lisencePlate,
+      vehicleType: editVehicle.vehicleType,
+      seatCount: Number(editVehicle.seatCount),
+      availableSeats: Number(editVehicle.availableSeats),
+    };
+
+    await axios.put(
+      `http://localhost:3001/vehicle/${vehicleId}`,
+      vehicleToSend,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    setOpenEditVehicleDialog(false);
+    setNotification({
+      open: true,
+      message: "Xe đã được cập nhật thành công",
+      severity: "success",
+    });
+    if (viewCompany) {
+      fetchVehicles(viewCompany.companyId);
+    }
+  } catch (error) {
+    console.error("Error updating vehicle:", error);
+    setNotification({
+      open: true,
+      message:
+        error.response?.data?.message ||
+        "Không thể cập nhật xe. Vui lòng thử lại sau.",
+      severity: "error",
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+const handleUpdateTrip = async () => {
+  try {
+    setIsSubmitting(true);
+    setFormErrors({});
+
+    const [depDay, depMonth, depYear] = editTrip.departureDate.split("-");
+    const [depHour, depMinute] = editTrip.departureHour.split(":");
+    const localDepartureDate = new Date(depYear, depMonth - 1, depDay, depHour, depMinute, 0);
+    const departureTime = localDepartureDate.toISOString();
+
+    const [arrDay, arrMonth, arrYear] = editTrip.arrivalDate.split("-");
+    const [arrHour, arrMinute] = editTrip.arrivalHour.split(":");
+    const localArrivalDate = new Date(arrYear, arrMonth - 1, arrDay, arrHour, arrMinute, 0);
+    const arrivalTime = localArrivalDate.toISOString();
+
+    const tripToSend = {
+      vehicleId: editTrip.vehicleId,
+      driverId: editTrip.driverId,
+      departurePoint: editTrip.departurePoint,
+      departureLatitude: Number(editTrip.departureLatitude),
+      departureLongtitude: Number(editTrip.departureLongtitude),
+      destinationPoint: editTrip.destinationPoint,
+      destinationLatitude: Number(editTrip.destinationLatitude),
+      destinationLongtitude: Number(editTrip.destinationLongtitude),
+      departureTime,
+      arrivalTime,
+      price: Number(editTrip.price),
+      status: editTrip.status,
+    };
+
+    const response = await axios.put(
+      `http://localhost:3001/trips/${tripId}`,
+      tripToSend,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    if (!response.data) {
+      setNotification({
+        open: true,
+        message: "Không thể cập nhật chuyến đi vì tài xế hoặc xe đã được phân công.",
+        severity: "warning",
+      });
+      return;
+    }
+
+    setOpenEditTripDialog(false);
+    setNotification({
+      open: true,
+      message: "Chuyến đi đã được cập nhật thành công",
+      severity: "success",
+    });
+    if (viewCompany) {
+      fetchTrips(viewCompany.companyId);
+    }
+  } catch (error) {
+    console.error("Error updating trip:", error);
+    setNotification({
+      open: true,
+      message:
+        error.response?.data?.message ||
+        "Không thể cập nhật chuyến đi. Vui lòng thử lại sau.",
+      severity: "error",
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" my={4}>
@@ -879,6 +1007,19 @@ const handleDeleteVehicle = async (vehicleId) => {
                                 >
                                   Xóa
                                 </Button>
+                                <Button
+          variant="outlined"
+          color="primary"
+          startIcon={<EditIcon />}
+          onClick={(e) => {
+            e.stopPropagation();
+            setEditVehicle(vehicle);
+            setOpenEditVehicleDialog(true);
+          }}
+          sx={{ mr: 1 }}
+        >
+          Chỉnh sửa
+        </Button>
                               </TableCell>
                           </TableRow>
                         ))}
@@ -977,6 +1118,25 @@ const handleDeleteVehicle = async (vehicleId) => {
                                 >
                                   Xóa
                                 </Button>
+                                <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<EditIcon />}
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditTrip({
+                ...trip,
+                departureDate: trip.departureTime.split("T")[0].split("-").reverse().join("-"),
+                departureHour: trip.departureTime.split("T")[1].slice(0, 5),
+                arrivalDate: trip.arrivalTime.split("T")[0].split("-").reverse().join("-"),
+                arrivalHour: trip.arrivalTime.split("T")[1].slice(0, 5),
+              });
+              setOpenEditTripDialog(true);
+            }}
+            sx={{ mr: 1 }}
+          >
+            Chỉnh sửa
+          </Button>
                               </TableCell>
                             </TableRow>
                           );
@@ -1350,7 +1510,357 @@ const handleDeleteVehicle = async (vehicleId) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Dialog
+  open={openEditVehicleDialog}
+  onClose={() => setOpenEditVehicleDialog(false)}
+  maxWidth="sm"
+  fullWidth
+>
+  <DialogTitle>Chỉnh sửa Xe</DialogTitle>
+  <DialogContent>
+    {editVehicle && (
+      <Box component="form" sx={{ mt: 2 }}>
+        <TextField
+          name="vehicleId"
+          label="ID xe"
+          fullWidth
+          margin="normal"
+          value={editVehicle.vehicleId}
+          disabled
+        />
+        <TextField
+          name="companyId"
+          label="ID công ty"
+          fullWidth
+          margin="normal"
+          value={editVehicle.companyId}
+          disabled
+        />
+        <TextField
+          name="lisencePlate"
+          label="Biển số xe"
+          fullWidth
+          margin="normal"
+          value={editVehicle.lisencePlate}
+          onChange={(e) =>
+            setEditVehicle({ ...editVehicle, lisencePlate: e.target.value })
+          }
+          required
+        />
+        <TextField
+          name="vehicleType"
+          label="Loại xe"
+          select
+          fullWidth
+          margin="normal"
+          value={editVehicle.vehicleType}
+          onChange={(e) =>
+            setEditVehicle({ ...editVehicle, vehicleType: e.target.value })
+          }
+          required
+        >
+          <MenuItem value="GIUONGNAM">GIUONGNAM</MenuItem>
+          <MenuItem value="NGOI">NGOI</MenuItem>
+        </TextField>
+        <TextField
+          name="seatCount"
+          label="Tổng số ghế"
+          type="number"
+          fullWidth
+          margin="normal"
+          value={editVehicle.seatCount}
+          onChange={(e) =>
+            setEditVehicle({ ...editVehicle, seatCount: Number(e.target.value) })
+          }
+          required
+          error={isNaN(editVehicle.seatCount) || editVehicle.seatCount <= 0}
+          helperText={
+            isNaN(editVehicle.seatCount) || editVehicle.seatCount <= 0
+              ? "Tổng số ghế phải là một số lớn hơn 0"
+              : ""
+          }
+          inputProps={{ min: 1 }}
+        />
+        <TextField
+          name="availableSeats"
+          label="Số ghế trống"
+          type="number"
+          fullWidth
+          margin="normal"
+          value={editVehicle.availableSeats}
+          onChange={(e) =>
+            setEditVehicle({
+              ...editVehicle,
+              availableSeats: Number(e.target.value),
+            })
+          }
+          required
+          error={
+            isNaN(editVehicle.availableSeats) ||
+            editVehicle.availableSeats < 0 ||
+            editVehicle.availableSeats > editVehicle.seatCount
+          }
+          helperText={
+            isNaN(editVehicle.availableSeats) || editVehicle.availableSeats < 0
+              ? "Số ghế trống phải là một số không âm"
+              : editVehicle.availableSeats > editVehicle.seatCount
+              ? "Số ghế trống không thể lớn hơn tổng số ghế"
+              : ""
+          }
+          inputProps={{ min: 0 }}
+        />
+      </Box>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setOpenEditVehicleDialog(false)} disabled={isSubmitting}>
+      Hủy
+    </Button>
+    <Button
+      onClick={handleUpdateVehicle}
+      variant="contained"
+      color="primary"
+      disabled={
+        isSubmitting ||
+        !editVehicle?.lisencePlate ||
+        !editVehicle?.vehicleType ||
+        isNaN(editVehicle?.seatCount) ||
+        editVehicle?.seatCount <= 0 ||
+        isNaN(editVehicle?.availableSeats) ||
+        editVehicle?.availableSeats < 0 ||
+        editVehicle?.availableSeats > editVehicle?.seatCount
+      }
+    >
+      {isSubmitting ? <CircularProgress size={24} /> : "Cập nhật"}
+    </Button>
+  </DialogActions>
+</Dialog>
 
+<Dialog
+  open={openEditTripDialog}
+  onClose={() => setOpenEditTripDialog(false)}
+  maxWidth="sm"
+  fullWidth
+>
+  <DialogTitle>Chỉnh sửa Chuyến Đi</DialogTitle>
+  <DialogContent>
+    {editTrip && (
+      <Box component="form" sx={{ mt: 2 }}>
+        <TextField
+          name="tripId"
+          label="ID chuyến đi"
+          fullWidth
+          margin="normal"
+          value={editTrip.tripId}
+          disabled
+        />
+        <TextField
+          name="vehicleId"
+          label="ID xe"
+          fullWidth
+          margin="normal"
+          value={editTrip.vehicleId}
+          onChange={(e) => setEditTrip({ ...editTrip, vehicleId: e.target.value })}
+          required
+        />
+        <TextField
+          name="companyId"
+          label="ID công ty"
+          fullWidth
+          margin="normal"
+          value={editTrip.companyId}
+          disabled
+        />
+        <TextField
+          name="driverId"
+          label="ID tài xế"
+          fullWidth
+          margin="normal"
+          value={editTrip.driverId}
+          onChange={(e) => setEditTrip({ ...editTrip, driverId: e.target.value })}
+          required
+        />
+        <TextField
+          name="departurePoint"
+          label="Điểm khởi hành"
+          select
+          fullWidth
+          margin="normal"
+          value={editTrip.departurePoint}
+          onChange={(e) => {
+            const coords = locationCoordinates[e.target.value];
+            setEditTrip({
+              ...editTrip,
+              departurePoint: e.target.value,
+              departureLatitude: coords?.lat || "",
+              departureLongtitude: coords?.lng || "",
+            });
+          }}
+          required
+        >
+          <MenuItem value="Đà Nẵng">Đà Nẵng</MenuItem>
+          <MenuItem value="Huế">Huế</MenuItem>
+          <MenuItem value="Quảng Ngãi">Quảng Ngãi</MenuItem>
+          <MenuItem value="Bình Định">Bình Định</MenuItem>
+          <MenuItem value="Phú Yên">Phú Yên</MenuItem>
+          <MenuItem value="Nha Trang">Nha Trang</MenuItem>
+        </TextField>
+        <TextField
+          name="destinationPoint"
+          label="Điểm đến"
+          select
+          fullWidth
+          margin="normal"
+          value={editTrip.destinationPoint}
+          onChange={(e) => {
+            const coords = locationCoordinates[e.target.value];
+            setEditTrip({
+              ...editTrip,
+              destinationPoint: e.target.value,
+              destinationLatitude: coords?.lat || "",
+              destinationLongtitude: coords?.lng || "",
+            });
+          }}
+          required
+        >
+          <MenuItem value="Đà Nẵng">Đà Nẵng</MenuItem>
+          <MenuItem value="Huế">Huế</MenuItem>
+          <MenuItem value="Quảng Ngãi">Quảng Ngãi</MenuItem>
+          <MenuItem value="Bình Định">Bình Định</MenuItem>
+          <MenuItem value="Phú Yên">Phú Yên</MenuItem>
+          <MenuItem value="Nha Trang">Nha Trang</MenuItem>
+        </TextField>
+        <TextField
+          name="departureDate"
+          label="Ngày khởi hành (DD-MM-YYYY)"
+          fullWidth
+          margin="normal"
+          value={editTrip.departureDate}
+          onChange={(e) => setEditTrip({ ...editTrip, departureDate: e.target.value })}
+          required
+          placeholder="05-04-2025"
+          inputProps={{ pattern: "\\d{2}-\\d{2}-\\d{4}" }}
+          error={!/^\d{2}-\d{2}-\d{4}$/.test(editTrip.departureDate)}
+          helperText={
+            !/^\d{2}-\d{2}-\d{4}$/.test(editTrip.departureDate)
+              ? "Phải có định dạng DD-MM-YYYY (ví dụ: 05-04-2025)"
+              : ""
+          }
+        />
+        <TextField
+          name="departureHour"
+          label="Giờ khởi hành (HH:MM)"
+          fullWidth
+          margin="normal"
+          value={editTrip.departureHour}
+          onChange={(e) => setEditTrip({ ...editTrip, departureHour: e.target.value })}
+          required
+          placeholder="10:00"
+          inputProps={{ pattern: "([0-1]?[0-9]|2[0-3]):[0-5][0-9]" }}
+          error={!/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.departureHour)}
+          helperText={
+            !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.departureHour)
+              ? "Phải có định dạng HH:MM (ví dụ: 10:00)"
+              : ""
+          }
+        />
+        <TextField
+          name="arrivalDate"
+          label="Ngày đến (DD-MM-YYYY)"
+          fullWidth
+          margin="normal"
+          value={editTrip.arrivalDate}
+          onChange={(e) => setEditTrip({ ...editTrip, arrivalDate: e.target.value })}
+          required
+          placeholder="05-04-2025"
+          inputProps={{ pattern: "\\d{2}-\\d{2}-\\d{4}" }}
+          error={!/^\d{2}-\d{2}-\d{4}$/.test(editTrip.arrivalDate)}
+          helperText={
+            !/^\d{2}-\d{2}-\d{4}$/.test(editTrip.arrivalDate)
+              ? "Phải có định dạng DD-MM-YYYY (ví dụ: 05-04-2025)"
+              : ""
+          }
+        />
+        <TextField
+          name="arrivalHour"
+          label="Giờ đến (HH:MM)"
+          fullWidth
+          margin="normal"
+          value={editTrip.arrivalHour}
+          onChange={(e) => setEditTrip({ ...editTrip, arrivalHour: e.target.value })}
+          required
+          placeholder="12:00"
+          inputProps={{ pattern: "([0-1]?[0-9]|2[0-3]):[0-5][0-9]" }}
+          error={!/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.arrivalHour)}
+          helperText={
+            !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.arrivalHour)
+              ? "Phải có định dạng HH:MM (ví dụ: 12:00)"
+              : ""
+          }
+        />
+        <TextField
+          name="price"
+          label="Giá vé"
+          type="number"
+          fullWidth
+          margin="normal"
+          value={editTrip.price}
+          onChange={(e) => setEditTrip({ ...editTrip, price: Number(e.target.value) })}
+          required
+          error={isNaN(editTrip.price) || editTrip.price <= 0}
+          helperText={
+            isNaN(editTrip.price) || editTrip.price <= 0
+              ? "Giá vé phải là một số lớn hơn 0"
+              : ""
+          }
+          inputProps={{ min: 1 }}
+        />
+        <TextField
+          name="status"
+          label="Trạng thái"
+          select
+          fullWidth
+          margin="normal"
+          value={editTrip.status}
+          onChange={(e) => setEditTrip({ ...editTrip, status: e.target.value })}
+          required
+        >
+          <MenuItem value="PENDING">PENDING</MenuItem>
+          <MenuItem value="COMPLETED">COMPLETED</MenuItem>
+          <MenuItem value="CANCELLED">CANCELLED</MenuItem>
+        </TextField>
+      </Box>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setOpenEditTripDialog(false)}>Hủy</Button>
+    <Button
+      onClick={handleUpdateTrip}
+      variant="contained"
+      color="primary"
+      disabled={
+        !editTrip?.vehicleId ||
+        !editTrip?.driverId ||
+        !editTrip?.departurePoint ||
+        !editTrip?.destinationPoint ||
+        !editTrip?.departureDate ||
+        !editTrip?.departureHour ||
+        !editTrip?.arrivalDate ||
+        !editTrip?.arrivalHour ||
+        !editTrip?.price ||
+        !editTrip?.status ||
+        !/^\d{2}-\d{2}-\d{4}$/.test(editTrip.departureDate) ||
+        !/^\d{2}-\d{2}-\d{4}$/.test(editTrip.arrivalDate) ||
+        !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.departureHour) ||
+        !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.arrivalHour) ||
+        isNaN(editTrip.price) ||
+        editTrip.price <= 0
+      }
+    >
+      Cập nhật
+    </Button>
+  </DialogActions>
+</Dialog>
       <Snackbar
         open={notification.open}
         autoHideDuration={6000}

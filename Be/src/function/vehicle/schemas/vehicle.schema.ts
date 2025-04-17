@@ -16,7 +16,7 @@ export class Vehicle {
     @Prop({required: true, type: Number, default: 32})
     seatCount: number;
     @Prop({required: true, type: Number, default: function () {
-      return this.seatCount || 32;
+      return this.seatCount || 37;
     },})
 availableSeats: number;
 }
