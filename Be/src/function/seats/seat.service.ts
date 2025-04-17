@@ -171,4 +171,19 @@ export class SeatService {
         .exec();
     }
   }
+  async deleteByTripId(tripId: string): Promise<{ deletedCount: number }> {
+    const seats = await this.seatModel.find({ tripId }).exec();
+    const vehicleId = seats.length > 0 ? seats[0].vehicleId : null;
+    const result = await this.seatModel.deleteMany({ tripId }).exec();
+  
+    if (vehicleId) {
+      const seatCount = await this.seatModel.countDocuments({ vehicleId }).exec();
+      await this.vehicleModel.updateOne(
+        { vehicleId },
+        { availableSeats: seatCount },
+      ).exec();
+    }
+  
+    return { deletedCount: result.deletedCount };
+  }
 }

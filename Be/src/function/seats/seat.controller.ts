@@ -41,4 +41,11 @@ export class SeatController {
   async findOne(@Param('seatId') seatId: string) {
     return this.seatsService.findOne(seatId);
   }
+  @Delete('trip/:tripId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async deleteByTripId(@Param('tripId') tripId: string) {
+    const result = await this.seatsService.deleteByTripId(tripId);
+    return { message: `Đã xóa ${result.deletedCount} ghế liên quan đến chuyến đi ${tripId}` };
+  }
 }

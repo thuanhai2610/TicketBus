@@ -15,7 +15,7 @@ export class Seat {
   @Prop({ required: true, type: String, ref: 'Vehicle' })
   seatId: string;
 
-  @Prop({ required: true, type: String, ref: 'Trip' })
+  @Prop({ required: true, type: String })
   tripId: string;
 
   @Prop({ required: true, type: String, ref: 'Vehicle' })

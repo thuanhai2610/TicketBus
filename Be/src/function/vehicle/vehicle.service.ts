@@ -47,8 +47,8 @@ export class VehicleService {
     return this.vehicleRepository.update(id, updateVehicleDto);
   }
 
-  remove(id: string): Promise<Vehicle> {
-    return this.vehicleRepository.remove(id);
+  remove(vehicleId: string): Promise<Vehicle> {
+    return this.vehicleRepository.remove(vehicleId);
   }
 
   async findByCompanyId(companyId: string): Promise<Vehicle[]> {

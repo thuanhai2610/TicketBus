@@ -42,11 +42,11 @@ export class TripRepository {
     return updatedTrip;
   }
 
-  async remove(id: string): Promise<Trip> {
-    const deletedTrip = await this.tripModel.findByIdAndDelete(id).exec();
+  async remove(tripId: string): Promise<Trip> {
+    const deletedTrip = await this.tripModel.findOneAndDelete({tripId}).exec();
     
     if (!deletedTrip) {
-      throw new NotFoundException(`Trip with ID ${id} not found`);
+      throw new NotFoundException(`Trip with ID ${tripId} not found`);
     }
     
     return deletedTrip;
