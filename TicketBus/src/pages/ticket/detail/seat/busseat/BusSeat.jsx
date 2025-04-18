@@ -121,15 +121,15 @@ const BusSeat = () => {
     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
     return `${hours}:${minutes}`;
   };
-  
+
   const departureTime = tripInfo?.departureTime ? formatTime(tripInfo.departureTime) : 'Unknown Time';
   const arrivalTime = tripInfo?.arrivalTime ? formatTime(tripInfo.arrivalTime) : 'Unknown Time';
 
-const fetchTripInfo = async (vehicleId) => {
+  const fetchTripInfo = async (vehicleId) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(`http://localhost:3001/trip/all`, {
-        params: { vehicleId, page: 1, limit: 10 }, 
+        params: { vehicleId, page: 1, limit: 10 },
 
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -211,7 +211,7 @@ const fetchTripInfo = async (vehicleId) => {
         vehicleId: vehicleId, // Include vehicleId in the payload
       };
 
-      console.log("Holding seats with payload:", payload);
+
 
       const response = await axios.post(
         'http://localhost:3001/tickets/hold-seat',
@@ -224,7 +224,7 @@ const fetchTripInfo = async (vehicleId) => {
         }
       );
 
-      console.log("Hold seats response:", response.data);
+
       const ticketId = response.data.ticket.ticketId;
       setSeatData((prevSeatData) =>
         prevSeatData.map((seat) =>
@@ -309,7 +309,7 @@ const fetchTripInfo = async (vehicleId) => {
       return 'text-red-600 cursor-not-allowed  dark:text-red-400'; // Ghế đã chọn (sau thanh toán)
     }
     if (selectedSeats.includes(seat.id)) {
-      return 'text-emerald-600 cursor-pointer  dark:text-emerald-400'; // Ghế đang được chọn tạm thời
+      return 'text-emerald-600 cursor-pointer dark:text-emerald-300'; // Ghế đang được chọn tạm thời
     }
     return 'text-neutral-500 cursor-pointer dark:text-neutral-500'; // Ghế còn trống
   };
@@ -473,7 +473,7 @@ const fetchTripInfo = async (vehicleId) => {
                 {tripInfo?.departurePoint || 'Unknown Departure'}{' '}
                 <span className="font-medium text-red-500">
 
-                {departureTime}
+                  {departureTime}
 
                   {/* ({tripInfo?.departureTime ? new Date(tripInfo.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown Time'}) */}
                 </span>
@@ -483,7 +483,7 @@ const fetchTripInfo = async (vehicleId) => {
                 {tripInfo?.destinationPoint || 'Unknown Destination'}{' '}
                 <span className="font-medium text-red-500">
 
-                {arrivalTime}
+                  {arrivalTime}
 
                   {/* ({tripInfo?.arrivalTime ? new Date(tripInfo.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown Time'}) */}
                 </span>
@@ -518,19 +518,19 @@ const fetchTripInfo = async (vehicleId) => {
         </div>
 
         <div className="w-full space-y-2">
-      
+
           <div className="flex items-center justify-between gap-x-4">
             <div className="flex gap-y-0.5 flex-col">
               <h1 className="text-lg text-neutral-700 font-bold  dark:text-neutral-50">Tổng tiền:</h1>
               <span className="text-xs text-neutral-500 font-normal  dark:text-neutral-300">(Bao gồm VAT)</span>
             </div>
-            <p className="text-base text-neutral-600 font-semibold  dark:text-neutral-50">
-              VND{' '}
+            <p className="text-base text-neutral-600 font-semibold dark:text-neutral-50">
               {selectedSeats.reduce((total, seatId) => {
                 const seat = seatData.find((seat) => seat.id === seatId);
                 return total + (seat ? seat.price : 0);
-              }, 0)}
+              }, 0).toLocaleString('vi-VN')} VNĐ
             </p>
+
           </div>
         </div>
 
