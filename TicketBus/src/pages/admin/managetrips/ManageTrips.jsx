@@ -1199,6 +1199,7 @@ const handleDeleteVehicle = async (vehicleId) => {
             color="primary"
             disabled={
               !newTrip.tripId ||
+
               !newTrip.vehicleId ||
               !newTrip.companyId ||
               !newTrip.driverId ||
@@ -1221,6 +1222,7 @@ const handleDeleteVehicle = async (vehicleId) => {
             Tạo
           </Button>
         </DialogActions>
+        
       </Dialog>
 
       <Dialog
