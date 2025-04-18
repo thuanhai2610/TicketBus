@@ -28,11 +28,11 @@ export class VehicleController {
   findOne(@Param('vehicleId') vehicleId: string) {
     return this.vehicleService.findOne(vehicleId);
   }
-  @Put(':id')
+  @Put(':vehicleId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  update(@Param('id') id: string, @Body() updateVehicleDto: UpdateVehicleDto) {
-    return this.vehicleService.update(id, updateVehicleDto);
+  update(@Param('vehicleId') vehicleId: string, @Body() updateVehicleDto: UpdateVehicleDto) {
+    return this.vehicleService.update(vehicleId, updateVehicleDto);
   }
 
   @Delete(':vehicleId')

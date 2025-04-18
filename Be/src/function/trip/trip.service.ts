@@ -214,8 +214,8 @@ export class TripService {
     return trip;
   }
 
-  update(id: string, updateTripDto: UpdateTripDto): Promise<Trip> {
-    return this.tripRepository.update(id, updateTripDto);
+  update(tripId: string, updateTripDto: UpdateTripDto): Promise<Trip> {
+    return this.tripRepository.update(tripId, updateTripDto);
   }
 
   remove(tripId: string): Promise<Trip> {

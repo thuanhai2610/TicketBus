@@ -30,13 +30,13 @@ export class TripRepository {
     return trip;
   }
 
-  async update(id: string, updateTripDto: UpdateTripDto): Promise<Trip> {
+  async update(tripId: string, updateTripDto: UpdateTripDto): Promise<Trip> {
     const updatedTrip = await this.tripModel
-      .findByIdAndUpdate(id, updateTripDto, { new: true })
+      .findOneAndUpdate({tripId}, updateTripDto, { new: true })
       .exec();
     
     if (!updatedTrip) {
-      throw new NotFoundException(`Trip with ID ${id} not found`);
+      throw new NotFoundException(`Trip with ID ${tripId} not found`);
     }
     
     return updatedTrip;
