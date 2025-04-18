@@ -282,7 +282,7 @@ const BusSeat = () => {
         return prevSelectedSeats.filter((seat) => seat !== seatId);
       } else {
         if (prevSelectedSeats.length >= 10) {
-          setErrorMessage("You can't select more than 10 seats.");
+          setErrorMessage("Bạn không thể chọn nhiều hơn 10 chỗ ngồi.");
           setShowError(true);
           return prevSelectedSeats;
         } else {
