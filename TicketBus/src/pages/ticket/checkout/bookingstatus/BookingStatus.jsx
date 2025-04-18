@@ -247,7 +247,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         throw new Error('No token found. Please log in.');
       }
 
-      console.log('Selected seats to be set to Available:', selectedSeats);
+
 
       // Update the ticket status to "Cancelled"
       const updateTicketResponse = await axios.put(
@@ -261,7 +261,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
         }
       );
 
-      console.log('Ticket status updated to Cancelled:', updateTicketResponse.data);
+
 
       // The backend (TicketService) will handle updating the seats to "Available" and incrementing the vehicle's availableSeats
 
@@ -306,7 +306,6 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
           },
         });
 
-        console.log('Fetched VehicleId:', response.data);
         setVehicleId(response.data);
       } catch (error) {
         console.error('Error fetching VehicleId:', error);
@@ -375,7 +374,7 @@ const BookingStatus = ({ tripInfo, selectedSeats, vehicleId, seatData, passenger
                 <span className="text-xs text-neutral-500 font-normal dark:text-neutral-300">(Bao gồm VAT)</span>
               </div>
               <p className="text-base text-neutral-600 font-semibold  dark:text-neutral-50">
-                VND {totalPrice.toLocaleString()}
+                 {totalPrice.toLocaleString()} VND
               </p>
             </div>
           </div>
