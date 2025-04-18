@@ -30,13 +30,13 @@ export class VehicleRepository {
     return vehicle;
   }
  
-  async update(id: string, updateVehicleDto: UpdateVehicleDto): Promise<Vehicle> {
+  async update(vehicleId: string, updateVehicleDto: UpdateVehicleDto): Promise<Vehicle> {
     const updatedVehicle = await this.vehicleModel
-      .findByIdAndUpdate(id, updateVehicleDto, { new: true })
+      .findOneAndUpdate({vehicleId}, updateVehicleDto, { new: true })
       .exec();
     
     if (!updatedVehicle) {
-      throw new NotFoundException(`Vehicle with ID ${id} not found`);
+      throw new NotFoundException(`Vehicle with ID ${vehicleId} not found`);
     }
     
     return updatedVehicle;

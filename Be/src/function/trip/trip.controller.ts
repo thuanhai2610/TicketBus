@@ -20,11 +20,11 @@ export class TripController {
     return this.tripService.create(createTripDto);
   }
 
-  @Put(':id')
+  @Put(':tripId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  update(@Param('id') id: string, @Body() updateTripDto: UpdateTripDto) {
-    return this.tripService.update(id, updateTripDto);
+  update(@Param('tripId') tripId: string, @Body() updateTripDto: UpdateTripDto) {
+    return this.tripService.update(tripId, updateTripDto);
   }
 
   @Delete(':tripId')
