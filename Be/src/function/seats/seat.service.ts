@@ -173,17 +173,23 @@ export class SeatService {
   }
   async deleteByTripId(tripId: string): Promise<{ deletedCount: number }> {
     const seats = await this.seatModel.find({ tripId }).exec();
-    const vehicleId = seats.length > 0 ? seats[0].vehicleId : null;
-    const result = await this.seatModel.deleteMany({ tripId }).exec();
-  
-    if (vehicleId) {
-      const seatCount = await this.seatModel.countDocuments({ vehicleId }).exec();
-      await this.vehicleModel.updateOne(
-        { vehicleId },
-        { availableSeats: seatCount },
-      ).exec();
+    if (seats.length === 0) {
+      return { deletedCount: 0 };
     }
-  
+    const vehicleId = seats[0].vehicleId;
+    const result = await this.seatModel.deleteMany({ tripId }).exec();
+    if (vehicleId) {
+      const vehicle = await this.vehicleModel.findOne({ vehicleId }).exec();
+      if (!vehicle) {
+        console.warn(`Vehicle with ID ${vehicleId} not found`);
+      } else {
+        await this.vehicleModel.updateOne(
+          { vehicleId },
+          { availableSeats: vehicle.seatCount },
+        ).exec();
+        console.log(`Reset availableSeats to ${vehicle.seatCount} for vehicleId: ${vehicleId}`);
+      }
+    }
     return { deletedCount: result.deletedCount };
   }
 }

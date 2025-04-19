@@ -9,6 +9,7 @@ export class UsersService {
         async findOne(username: string): Promise<UserDocument | null> {
                return this.userModel.findOne({username}).exec();
         }
+        
         async hashedPassword(password: string): Promise<string> {
             return bcrypt.hash(password, 10);
         }
@@ -54,7 +55,7 @@ export class UsersService {
               console.log('User validated successfully:', username);
               return user;
             }
-            console.log('Invalid credentials for user:', username);
+            throw new BadRequestException('Invalid credentials for user:', username);
             return null;
           }
         async updateEmailVerified(userId: string, isEmailVerified: boolean): Promise<void> {

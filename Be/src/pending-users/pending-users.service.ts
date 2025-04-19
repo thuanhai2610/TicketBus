@@ -8,37 +8,36 @@ export class PendingUsersService {
     constructor(@InjectModel(PendingUser.name) private pendingUserModel: Model<PendingUserDocument>) {}
 
     async create(
-        username: string,
-        hashedPassword: string,
-        email: string,
-        role: string = 'user',
-        isEmailVerified: boolean = false,
-      ): Promise<PendingUserDocument> {
-        try {
-          // Check for existing pending user
-          const existingPendingUser = await this.pendingUserModel
-            .findOne({ username })
-            .exec();
-          if (existingPendingUser) {
-            console.log('Pending user already exists:', username);
-            throw new BadRequestException('Pending user already exists');
-          }
+      username: string,
+      hashedPassword: string,
+      email: string,
+      role: string = 'user',
+      isEmailVerified: boolean = false,      
+    ): Promise<PendingUserDocument> {
+      try {
+        const update = {
+          username,
+          password: hashedPassword,
+          email,
+          role,
+          isEmailVerified,
+          createdAt: new Date(),
+        };
     
-          const newPendingUser = new this.pendingUserModel({
-            username,
-            password: hashedPassword,
-            email,
-            role,
-            isEmailVerified,
-          });
-          const savedPendingUser = await newPendingUser.save();
-          console.log('Pending user created:', savedPendingUser._id);
-          return savedPendingUser;
-        } catch (error) {
-          console.error('Error creating pending user:', error);
-          throw new BadRequestException('Failed to create pending user: ' + error.message);
-        }
+        const savedPendingUser = await this.pendingUserModel.findOneAndUpdate(
+          { username },
+          update,
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+    
+        console.log('Pending user created or updated:', savedPendingUser._id);
+        return savedPendingUser;
+      } catch (error) {
+        console.error('Error creating/updating pending user:', error);
+        throw new BadRequestException('Failed to create or update pending user: ' + error.message);
       }
+    }
+    
 
     async findById(id: string): Promise<PendingUserDocument | null> {
         const userId = new Types.ObjectId(id);

@@ -9,6 +9,6 @@ import { PendingUsersService } from './pending-users.service';
         MongooseModule.forFeature([{ name: PendingUser.name, schema: PendingUserSchema }]),
     ],
     providers: [PendingUsersService],
-    exports: [PendingUsersService],
+    exports: [PendingUsersService, MongooseModule],
 })
 export class PendingUsersModule {}
