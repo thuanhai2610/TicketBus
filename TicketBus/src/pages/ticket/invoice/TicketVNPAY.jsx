@@ -23,6 +23,7 @@ const TicketVNPAY = () => {
   const [tripDetails, setTripDetails] = useState(null);
   const [vehicleDetails, setVehicleDetails] = useState(null);
     const [qrCodeData, setQrCodeData] = useState(null);
+    const navigate = useNavigate();
   
   useEffect(() => {
     const fetchPaymentData = async () => {
@@ -39,9 +40,12 @@ const TicketVNPAY = () => {
             },
           }
         );
-
         setPaymentData(paymentResponse.data);
-
+        if (paymentResponse.data.code === '24') {
+          setError('Thanh toán không thành công. Vui lòng thử lại.');
+          navigate('/');
+          return;
+        }
         // Step 2: If paymentId exists, fetch ticket data
         if (paymentResponse.data.paymentId) {
           const ticketResponse = await axios.get(

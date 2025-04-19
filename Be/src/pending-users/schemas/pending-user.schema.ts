@@ -5,7 +5,7 @@ export type PendingUserDocument = PendingUser & Document;
 
 @Schema()
 export class PendingUser {
-    @Prop({ required: true, unique: true })
+    @Prop({ required: true })
     username: string;
 
     @Prop({ required: true })

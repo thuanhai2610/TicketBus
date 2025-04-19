@@ -35,7 +35,12 @@ const Login = () => {
                 username,
                 password,
             });
-            const { access_token, role } = response.data;
+            const { success, access_token, role } = response.data;
+            if (success === false) {
+                alert(message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+                setError(message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+                return;
+              }
             localStorage.setItem("token", access_token);
             localStorage.setItem("username", username);
             if (role === "admin") {
@@ -45,7 +50,7 @@ const Login = () => {
             }
             window.location.reload();
         } catch (error) {
-            const errorMessage = error.response?.data?.message || "Login failed. Please check your credentials.";
+            const errorMessage = error.response?.data?.message || "Đăng nhập lỗi, vui lòng kiểm tra lại thông tin đăng nhập.";
             setError(errorMessage);
         } finally {
             setIsLoading(false);

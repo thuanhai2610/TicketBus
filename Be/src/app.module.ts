@@ -21,6 +21,7 @@ import { TicketModule } from './function/tickets/ticket.module';
 import { SeatModule } from './function/seats/seat.module';
 import { PaymentModule } from './function/payments/payment.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { OtpModule } from './otp/otp.module';
 @Module({
   imports: [AuthModule, PendingUsersModule,ScheduleModule.forRoot(), ItemsModule, MongooseModule.forRoot('mongodb://localhost:27017/admin'),
     ConfigModule.forRoot({
@@ -47,7 +48,7 @@ import { ScheduleModule } from '@nestjs/schedule';
           strict: true,
         }
        }
-    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule, PaymentModule, MailerModule
+    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule, PaymentModule, MailerModule, OtpModule
   ],
 
   controllers: [AppController],

@@ -20,7 +20,6 @@ const Ticket = () => {
   const mapRef = useRef(null);
   const leafletMapRef = useRef(null);
 
-  // Hàm gọi API để tìm kiếm chuyến xe
   const fetchTrips = async (from, to, date) => {
     try {
       const response = await fetch(
@@ -29,14 +28,8 @@ const Ticket = () => {
       if (!response.ok) throw new Error("Không thể tìm kiếm chuyến xe, vui lòng thử lại");
       const data = await response.json();
       setTrips(data);
-      console.log("API response data:", data);
-
-      // Show the map when we have data
       setShowMap(data && data.length > 0);
-
-      // Ngay sau khi nhận được data, cập nhật bản đồ
       if (data && data.length > 0) {
-        // Give a small delay to ensure the map container is visible before initializing
         setTimeout(() => updateMap(data), 100);
       }
     } catch (error) {
@@ -72,9 +65,6 @@ const Ticket = () => {
 
     if (tripData && tripData.length > 0) {
       const trip = tripData[0]; // Lấy chuyến đầu tiên
-
-      console.log("Setting up routing with coords:", trip);
-
       if (trip && trip.departureLatitude && trip.departureLongtitude &&
         trip.destinationLatitude && trip.destinationLongtitude) {
 

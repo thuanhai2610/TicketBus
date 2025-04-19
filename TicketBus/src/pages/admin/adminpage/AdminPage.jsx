@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaTicketAlt, FaBus, FaUsers, FaMoneyBillWave } from "react-icons/fa";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -23,88 +13,90 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import RevenueChart from "../RevenueChart"; 
+import RevenueChart from "../RevenueChart";
 
 const AdminPage = () => {
-
   const [trips, setTrips] = useState([]);
   const [revenue, setRevenue] = useState({ total: 0, totalTickets: 0 });
   const [totalTrips, setTotalTrips] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
-  useEffect(() => {
-    const fetchTrips = async () => {
-      try {
-        const token = localStorage.getItem("token");
+  const fetchTrips = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-        const tripRes = await axios.get("http://localhost:3001/trip/all", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        
-        const enrichedTrips = await Promise.all(
-          tripRes.data.map(async (trip) => {
-            try {
-              const vehicleRes = await axios.get(
-                `http://localhost:3001/vehicle/${trip.vehicleId}`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
+      const tripRes = await axios.get("http://localhost:3001/trip/all", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-              return {
-                ...trip,
-                seatCount: vehicleRes.data.seatCount,
-                availableSeats: vehicleRes.data.availableSeats,
-              };
-            } catch (vehicleErr) {
-              console.warn(
-                `Không thể lấy thông tin vehicle cho trip ${trip.tripId}`,
-                vehicleErr
-              );
-              return {
-                ...trip,
-                seatCount: "/",
-                availableSeats: "/",
-              };
-            }
-          })
-        );
-        const totalTripRes = await axios.get("http://localhost:3001/trip/total", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      const enrichedTrips = await Promise.all(
+        tripRes.data.map(async (trip) => {
+          try {
+            const vehicleRes = await axios.get(
+              `http://localhost:3001/vehicle/${trip.vehicleId}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+
+            return {
+              ...trip,
+              seatCount: vehicleRes.data.seatCount,
+              availableSeats: vehicleRes.data.availableSeats,
+            };
+          } catch {
+            return {
+              ...trip,
+              seatCount: "/",
+              availableSeats: "/",
+            };
+          }
+        })
+      );
+
+      const totalTripRes = await axios.get("http://localhost:3001/trip/total", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setTotalTrips(totalTripRes.data.totalTrips);
+      setTrips(enrichedTrips);
+    } catch (err) {
+      console.error("Lỗi fetch trip hoặc vehicle:", err);
+    }
+  };
+  const STATUS_LABELS = {
+    PENDING: "Đang chờ...",
+    IN_PROGRESS: "Đang chạy",
+    COMPLETED: "Hoàn thành",
+    CANCELLED: "Đã hủy"
+  };
   
-        // Set totalTrips từ API
-        setTotalTrips(totalTripRes.data.totalTrips);
-        setTrips(enrichedTrips);
-      } catch (err) {
-        console.error("Lỗi fetch trip hoặc vehicle:", err);
-      }
-    };
-   
+  useEffect(() => {
     fetchTrips();
   }, []);
+
   useEffect(() => {
     const fetchRevenue = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:3001/payments/revenues/total", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.get(
+          "http://localhost:3001/payments/revenues/total",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setRevenue({
           total: res.data.total,
-          totalTickets: res.data.totalTickets
+          totalTickets: res.data.totalTickets,
         });
-   
       } catch (error) {
         console.error("Lỗi khi lấy doanh thu:", error);
       }
     };
-   
+
     fetchRevenue();
   }, []);
   useEffect(() => {
@@ -116,15 +108,35 @@ const AdminPage = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-  
+
         setTotalUsers(res.data.totalUsers);
       } catch (error) {
         console.error("Lỗi khi lấy tổng số người dùng:", error);
       }
     };
-  
+
     fetchTotalUsers();
   }, []);
+  const updateTripStatus = async (tripId, newStatus) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.put(
+        `http://localhost:3001/trip/${tripId}`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert(`Cập nhật trạng thái thành công: ${newStatus}`);
+      await fetchTrips();
+    } catch (err) {
+      console.error("Lỗi khi cập nhật trạng thái:", err);
+      alert("Cập nhật thất bại. Vui lòng thử lại.");
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-900 text-white max-h-screen overflow-y-auto">
       <h2 className="text-2xl font-semibold mb-6">Bảng điều khiển</h2>
@@ -153,7 +165,9 @@ const AdminPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{revenue.total.toLocaleString("vi-VN")}đ</div>
+              <div className="text-2xl font-bold">
+                {revenue.total.toLocaleString("vi-VN")}đ
+              </div>
             </CardContent>
           </Card>
         </Link>
@@ -195,7 +209,10 @@ const AdminPage = () => {
         <TabsList className="bg-gray-800 border-gray-700">
           <TabsTrigger value="past-performance">Tuyến đi</TabsTrigger>
         </TabsList>
-        <TabsContent value="past-performance" className="overflow-y-auto max-h-96">
+        <TabsContent
+          value="past-performance"
+          className="overflow-y-auto max-h-96"
+        >
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
               <CardTitle className="text-lg">Chuyến xe gần đây</CardTitle>
@@ -231,14 +248,54 @@ const AdminPage = () => {
                       <TableCell>
                         {trip.price?.toLocaleString("vi-VN")}đ
                       </TableCell>
-                      <TableCell
-                        className={
-                          trip.status === "Đang chạy"
-                            ? "text-red-500"
-                            : "text-green-500"
-                        }
-                      >
-                        {trip.status}
+                      <TableCell className="flex items-center space-x-2">
+                        <span
+                          className={
+                            trip.status === "CANCELLED" 
+                            ? "text-red-500" 
+                              :trip.status === "IN_PROGRESS"
+                             ? "text-blue-500" 
+                             : trip.status === "PENDING"
+                              ? "text-yellow-500"
+                              : "text-green-500"
+                            
+                              
+                          }
+                        >
+                         {STATUS_LABELS[trip.status] || trip.status}
+                        </span>
+
+                        {trip.status === "PENDING" && (
+                          <Button
+                            className="text-xs bg-blue-500 hover:bg-blue-600"
+                            onClick={() =>
+                              updateTripStatus(trip.tripId, "IN_PROGRESS")
+                            }
+                          >
+                            Bắt đầu
+                          </Button>
+                        )}
+
+                        {trip.status === "IN_PROGRESS" && (
+                          <>
+                            <Button
+                              className="text-xs bg-green-500 hover:bg-green-600"
+                              onClick={() =>
+                                updateTripStatus(trip.tripId, "COMPLETED")
+                              }
+                            >
+                              Hoàn thành
+                            </Button>
+                            <Button
+                              className="text-xs bg-red-500 hover:bg-red-600"
+                              onClick={() =>
+                                updateTripStatus(trip.tripId, "CANCELLED")
+                              }
+                            >
+                              Hủy
+                            </Button>
+                          </>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

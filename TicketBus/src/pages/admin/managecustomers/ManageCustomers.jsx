@@ -100,7 +100,6 @@ const ManageCustomers = () => {
                             alt={`${user.username}'s avatar`}
                             className="w-10 h-10 rounded-full border border-primary object-cover"
                             onError={(e) => {
-                              console.error("Avatar load error, using default icon");
                               e.target.style.display = 'none';
                               const parent = e.target.parentNode;
                               if (parent) {

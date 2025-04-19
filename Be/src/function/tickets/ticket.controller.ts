@@ -132,6 +132,7 @@ async updateTicket(
           departurePoint: trip?.departurePoint || null,
           destinationPoint: trip?.destinationPoint || null,
           departureTime: trip?.departureTime || null,
+          status: trip?.status,
         };
       })
     );
