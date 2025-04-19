@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Request, UseGuards, Body, Get, Headers, HttpCode, HttpStatus, Req, Res } from '@nestjs/common';
+import { Controller, Post, Request, UseGuards, Body, Get, Headers, HttpCode, HttpStatus, Req, Res, HttpException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -14,6 +14,7 @@ import { RegisterDto } from './dto/register.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { VerifyOtpDto } from 'src/otp/verify-dto';
 
 @Controller()
 export class AuthController {
@@ -22,6 +23,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
+  @HttpCode(200)
   async register(@Body() registerDto: RegisterDto) {
     const { username, password, email, role } = registerDto;
     return this.authService.register(username, password, email, role ?? 'user');
@@ -38,9 +40,11 @@ export class AuthController {
 }
 
 @Post('verify-otp')
-async verifyOtp(@Body('otp') otp: string) {
-    return this.authService.verifyOtp(otp);
+async verifyOtp(@Body() body: { otp: string, userId: string }) {
+  console.log('Received body:', body);
+  return this.authService.verifyOtp(body.otp, body.userId);
 }
+
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
@@ -51,9 +55,26 @@ async verifyOtp(@Body('otp') otp: string) {
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  async forgotPassword(@Body() forgotPasswordDto: { email: string }) {
-      return this.authService.forgotPassword(forgotPasswordDto.email);
+  async forgotPassword(@Body('email') email: string) {
+    if (!email) {
+      throw new HttpException('Email là bắt buộc', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const result = await this.authService.forgotPassword(email);
+      return {
+        success: true,
+        userId: result.userId,
+        message: result.message || 'OTP sent successfully',
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Không thể gửi OTP',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
+
 
   @Post('change-password')
     @HttpCode(HttpStatus.OK)

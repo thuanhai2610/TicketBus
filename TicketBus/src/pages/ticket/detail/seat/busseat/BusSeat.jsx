@@ -74,7 +74,7 @@ const BusSeat = () => {
         },
       });
       if (!response.data || response.data.length === 0) {
-        setSeatsError("No seats found for this vehicle.");
+        setSeatsError("Không tìm thấy ghế cho chuyến xe này.");
         setSeatData([]);
         return;
       }
@@ -82,7 +82,7 @@ const BusSeat = () => {
       const seats = response.data.map((seat) => ({
         id: seat.seatNumber,
         status: seat.availabilityStatus.charAt(0).toUpperCase() + seat.availabilityStatus.slice(1).toLowerCase(),
-        price: seat.price || 100000,
+        price: seat.price ,
       }));
 
       // Define the expected order of seat IDs
@@ -133,7 +133,7 @@ const BusSeat = () => {
 
         headers: { Authorization: `Bearer ${token}` },
       });
-
+console.log(response.data)
       const trips = Array.isArray(response.data) ? response.data : response.data?.trips || [];
 
       // Lọc chuyến theo vehicleId

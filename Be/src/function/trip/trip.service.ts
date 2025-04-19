@@ -214,8 +214,18 @@ export class TripService {
     return trip;
   }
 
-  update(tripId: string, updateTripDto: UpdateTripDto): Promise<Trip> {
-    return this.tripRepository.update(tripId, updateTripDto);
+  async update(tripId: string, updateTripDto: UpdateTripDto): Promise<Trip> {
+    const updateTrip = this.tripRepository.update(tripId, updateTripDto);
+    if (updateTripDto.price !== undefined) {
+      const result = await this.seatModel
+        .updateMany(
+          { tripId },
+          { $set: { price: updateTripDto.price } },
+        )
+        .exec();
+      console.log(`Updated ${result.modifiedCount} seats for tripId: ${tripId}`);
+    }
+    return updateTrip;
   }
 
   remove(tripId: string): Promise<Trip> {

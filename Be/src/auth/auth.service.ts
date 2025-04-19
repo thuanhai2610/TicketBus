@@ -60,7 +60,7 @@ export class AuthService {
   
       if (!user.emailVerified) {
         console.log('Email not verified for user:', user.username);
-        throw new BadRequestException('Please verify your email before logging in');
+        throw new BadRequestException('Đăng nhập lỗi, kiểm tra lại thông tin đăng nhập.');
       }
   
       if (accessToken && typeof accessToken === 'string') {
@@ -88,8 +88,7 @@ export class AuthService {
         role: user.role,
       };
     } catch (error) {
-      console.error('Login error:', error);
-      throw new BadRequestException(error.message || 'Login failed');
+      throw new BadRequestException(error.message);
     }
   }
   async register(
@@ -99,22 +98,15 @@ export class AuthService {
     role: string = 'user',
   ) {
     try {
-      console.log('Starting registration:', { username, email, role });
-  
-      const existingUser = await this.usersService.findOne(username);
-      if (existingUser) {
-        console.log('Username already exists in users:', username);
-        throw new BadRequestException('Username already exists');
-      }
-      const existingPendingUser = await this.pendingUsersService.findByUsername(username);
-      if (existingPendingUser) {
-        console.log('Username already exists in pendingUsers:', username);
-        throw new BadRequestException('Username already exists (pending verification)');
-      }
-  
+      const existringUserEmail = await this.usersService.findByEmail(email);
+      const existUsername = await this.usersService.findOne(username);
+      if (existringUserEmail) {
+        throw new BadRequestException('Đã có email này rồi');
+      }   if (existUsername) {
+        throw new BadRequestException('Đã có username này rồi');
+      } 
       if (!email) {
-        console.log('Email is missing');
-        throw new BadRequestException('Email is required');
+        throw new BadRequestException('Bắt buộc phải có Email');
       }
   
       const hashedPassword = await this.usersService.hashedPassword(password);
@@ -125,7 +117,7 @@ export class AuthService {
         hashedPassword,
         email,
         role,
-        false, // isEmailVerified
+        false, 
       );
       console.log('Pending user created:', pendingUser._id);
   
@@ -147,71 +139,60 @@ export class AuthService {
       throw new BadRequestException(error.message || 'Registration failed');
     }
   }
-  async verifyOtp(otp: string) {
+  async verifyOtp(otp: string, userId: string) {
     try {
-      console.log('Verifying OTP:', otp);
+      console.log('Verifying OTP for userId:', userId, 'with otp:', otp);
   
-      // Find OTP record
-      const otpRecord = await this.otpService.findByOtp(otp);
+      // Find the OTP record based on the OTP value and userId
+      const otpRecord = await this.otpService.findByOtpAndUserId(otp, userId);
+      
       if (!otpRecord) {
-        console.log('OTP not found:', otp);
-        const expiredOtpRecord = await this.otpService.findByOtpWithoutExpiration(otp);
-        if (expiredOtpRecord) {
-          console.log('OTP exists but is expired:', expiredOtpRecord);
-          throw new BadRequestException('The OTP has expired. Please request a new one.');
-        }
-        throw new BadRequestException('Invalid OTP. Please try again.');
+        console.log('OTP not found for the given userId and otp:', otp, userId);
+  
+       throw new BadRequestException('Không tìm thấy mã hoặc mã sai')
       }
-      console.log('OTP record found:', otpRecord);
+      const otpUserId = new Types.ObjectId(otpRecord.userId);
   
-      const userId = new Types.ObjectId(otpRecord.userId);
-  
-      // Check pendingUsers for registration
-      const pendingUser = await this.pendingUsersService.findPendingUserById(userId.toString());
+      const pendingUser = await this.pendingUsersService.findPendingUserById(otpUserId.toString());
       if (pendingUser) {
         console.log('Pending user found:', pendingUser);
-  
-        // Create user with pre-hashed password
         const user = await this.usersService.create(
           pendingUser.username,
           pendingUser.password,
           pendingUser.email,
           pendingUser.role,
-          true, // emailVerified
-          true, // isHashed
+          true, 
+          true, 
         );
         console.log('User created from pending user:', user._id);
-  
-        // Clean up
-        await this.pendingUsersService.delete(userId.toString());
-        console.log('Pending user deleted:', userId);
-        await this.otpService.delete(userId.toString(), otp);
+        await this.pendingUsersService.delete(otpUserId.toString());
+        console.log('Pending user deleted:', otpUserId);
+        await this.otpService.delete(otpUserId.toString(), otp);
         console.log('OTP deleted:', otp);
   
         return { message: 'Email verified successfully. You can now log in.' };
       }
-  
-      // Check users for password reset
-      const user = await this.usersService.findById(userId.toString());
+      const user = await this.usersService.findById(otpUserId.toString());
       if (!user) {
-        console.log('User not found for userId:', userId);
-        await this.otpService.delete(userId.toString(), otp);
+        console.log('User not found for userId:', otpUserId);
+        await this.otpService.delete(otpUserId.toString(), otp);
         throw new BadRequestException('User not found. Please register again.');
       }
       console.log('User found:', user);
-  
-      await this.otpService.delete(userId.toString(), otp);
+      await this.otpService.delete(otpUserId.toString(), otp);
       console.log('OTP deleted:', otp);
   
       return {
         message: 'OTP verified successfully. You can now change your password.',
-        userId: userId.toString(),
+        userId: otpUserId.toString(),
       };
     } catch (error) {
       console.error('OTP verification error:', error);
       throw new BadRequestException(error.message || 'OTP verification failed');
     }
   }
+  
+  
   async forgotPassword(email: string) {
     try {
       console.log('Starting forgot password process for email:', email);
@@ -219,42 +200,19 @@ export class AuthService {
       const user = await this.usersService.findByEmail(email);
       if (!user) {
         console.log('User not found for email:', email);
-        throw new BadRequestException(
-          'Email not found. Please register first.',
-        );
+        throw new BadRequestException('Không tìm thấy email.');
       }
       console.log('User found:', user);
-
-      const otp = randomInt(100000, 999999).toString();
-      console.log('Generated OTP for password reset:', otp);
-      const otpRecord = await this.otpService.create(user._id.toString(), otp);
-      console.log(
-        'OTP saved to database for user:',
-        user._id,
-        'OTP record:',
-        otpRecord,
-      );
-
-      await this.mailerService.sendMail({
-        to: user.email,
-        subject: 'Reset your password',
-        template: './reset-password',
-        context: {
-          name: user.username,
-          otp,
-        },
-      });
-      console.log('Password reset email sent successfully to:', user.email);
-
+      await this.otpService.resendOtp(user._id.toString(), true);
+      console.log('OTP sent for password reset for user:', user._id);
       return {
         message: 'OTP sent to your email for password reset.',
-        userId: user._id,
+        userId: user._id.toString(),
       };
     } catch (error) {
       console.error('Error during forgot password process:', error);
       const errorMessage =
-        error.message ||
-        'Unknown error occurred during forgot password process';
+        error.message || 'Unknown error occurred during forgot password process';
       throw new BadRequestException(errorMessage);
     }
   }
@@ -274,7 +232,7 @@ export class AuthService {
 
       return {
         message:
-          'Password changed successfully. You can now log in with your new password.',
+          'Mật khẩu đã thay đổi. Bạn có thể đăng nhập lại!',
       };
     } catch (error) {
       console.error('Error during password change:', error);

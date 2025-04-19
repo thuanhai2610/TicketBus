@@ -43,18 +43,57 @@ const TicketHistory = () => {
     const cancelTicket = async () => {
         const ticketId = prompt("Nhập mã vé bạn muốn hủy:");
         if (!ticketId) return;
-
-        try {
-            await axios.put(`http://localhost:3001/tickets/${ticketId}`, {
-                status: "Cancelled"
-            });
-            alert("Hủy vé thành công!");
-            fetchTickets(); // Refresh danh sách vé
-        } catch (error) {
-            console.error("Hủy vé thất bại:", error);
-            alert("Không thể hủy vé. Vui lòng kiểm tra lại mã vé.");
+    
+        // tìm vé trong danh sách tickets đã fetch
+        const ticket = tickets.find(t => t._doc.ticketId === ticketId);
+    
+        if (!ticket) {
+            alert("Không tìm thấy vé với mã đã nhập.");
+            return;
+        }
+        switch (ticket.status) {
+            case "PENDING":
+                try {
+                    await axios.put(`http://localhost:3001/tickets/${ticketId}`, {
+                        status: "Cancelled"
+                    });
+                    alert("Hủy vé thành công!");
+                    fetchTickets();
+                } catch (error) {
+                    console.error("Lỗi khi hủy vé:", error);
+                    alert("Hủy vé thất bại. Vui lòng thử lại.");
+                }
+                break;
+            case "IN_PROGRESS":
+                alert("Xe đang tiến hành. Bạn không thể hủy vé.");
+                break;
+            case "COMPLETED":
+                alert("Tuyến xe đã đến nơi. Bạn không thể hủy vé.");
+                break;
+            case "CANCELLED":
+                alert("Vé này đã bị hủy từ trước.");
+                break;
+            default:
+                alert("Trạng thái không xác định.");
         }
     };
+    
+    const renderStatusBadge = (status) => {
+        const baseClasses = "px-3 py-1 rounded-full text-xs font-semibold";
+        switch (status) {
+          case "PENDING":
+            return <span className={`${baseClasses} bg-yellow-100 text-yellow-800`}>Đang chờ...</span>;
+          case "IN_PROGRESS":
+            return <span className={`${baseClasses} bg-blue-100 text-blue-800`}>Xe đang đi</span>;
+          case "COMPLETED":
+            return <span className={`${baseClasses} bg-green-100 text-green-800`}>Đã hoàn thành</span>;
+          case "CANCELLED":
+            return <span className={`${baseClasses} bg-red-100 text-red-800`}>Đã hủy</span>;
+          default:
+            return <span className={`${baseClasses} bg-gray-100 text-gray-800`}>{status}</span>;
+        }
+      };
+      
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-6">
@@ -89,6 +128,8 @@ const TicketHistory = () => {
                             <th className="p-3 border">Ngày đi</th>
                             <th className="p-3 border">Số tiền</th>
                             <th className="p-3 border">Trạng thái</th>
+                            <th className="p-3 border">Trạng thái chuyến đi</th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -100,6 +141,9 @@ const TicketHistory = () => {
                                     <td className="p-3 border">{formatDateTime(ticket.departureTime)}</td>
                                     <td className="p-3 border" >{formatVND(ticket._doc.ticketPrice)}</td>
                                     <td className="p-3 border">{ticket._doc.status}</td>
+                                    <td className="p-3 border">{renderStatusBadge(ticket.status)}</td>
+
+
                                 </tr>
                             ))
                         ) : (

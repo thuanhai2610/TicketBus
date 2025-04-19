@@ -15,7 +15,7 @@ imports: [MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),Ser
   }), ],
 
 providers: [UsersService, UsersRepository],
-exports: [UsersService],
+exports: [UsersService, MongooseModule],
 controllers: [UserController]
 
 })
