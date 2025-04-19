@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import {
@@ -435,13 +436,13 @@ const ManageTrips = () => {
         [name]: value,
         ...(name === "departurePoint"
           ? {
-              departureLatitude: coords.lat,
-              departureLongtitude: coords.lng,
-            }
+            departureLatitude: coords.lat,
+            departureLongtitude: coords.lng,
+          }
           : {
-              destinationLatitude: coords.lat,
-              destinationLongtitude: coords.lng,
-            }),
+            destinationLatitude: coords.lat,
+            destinationLongtitude: coords.lng,
+          }),
       }));
     } else {
       setNewTrip((prev) => ({
@@ -594,6 +595,7 @@ const ManageTrips = () => {
         severity: "error",
       });
     }
+
   };
 
   const handleUpdateVehicle = async () => {
@@ -621,6 +623,7 @@ const ManageTrips = () => {
       };
 
       await axios.put(
+
         `http://localhost:3001/vehicle/${editVehicle.vehicleId}`,
         vehicleToSend,
         {
@@ -631,6 +634,7 @@ const ManageTrips = () => {
       );
 
       setOpenEditVehicleDialog(false);
+
       setNotification({
         open: true,
         message: "Xe đã được cập nhật thành công",
@@ -659,26 +663,12 @@ const ManageTrips = () => {
 
       const [depDay, depMonth, depYear] = editTrip.departureDate.split("-");
       const [depHour, depMinute] = editTrip.departureHour.split(":");
-      const localDepartureDate = new Date(
-        depYear,
-        depMonth - 1,
-        depDay,
-        depHour,
-        depMinute,
-        0
-      );
+      const localDepartureDate = new Date(depYear, depMonth - 1, depDay, depHour, depMinute, 0);
       const departureTime = localDepartureDate.toISOString();
 
       const [arrDay, arrMonth, arrYear] = editTrip.arrivalDate.split("-");
       const [arrHour, arrMinute] = editTrip.arrivalHour.split(":");
-      const localArrivalDate = new Date(
-        arrYear,
-        arrMonth - 1,
-        arrDay,
-        arrHour,
-        arrMinute,
-        0
-      );
+      const localArrivalDate = new Date(arrYear, arrMonth - 1, arrDay, arrHour, arrMinute, 0);
       const arrivalTime = localArrivalDate.toISOString();
 
       const tripToSend = {
@@ -780,25 +770,15 @@ const ManageTrips = () => {
         </Button>
       </Box>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} className="rounded-lg shadow-lg">
         <Table sx={{ minWidth: 650 }} aria-label="companies table">
           <TableHead>
-            <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
-              <TableCell>
-                <strong>ID</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Tên công ty</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Số điện thoại</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Địa chỉ</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Hành động</strong>
-              </TableCell>
+            <TableRow >
+              <TableCell >ID</TableCell>
+              <TableCell >Tên Bến Xe</TableCell>
+              <TableCell >Số Điện Thoại</TableCell>
+              <TableCell >Địa Chỉ</TableCell>
+              <TableCell >Chỉnh Sửa</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -806,18 +786,13 @@ const ManageTrips = () => {
               companies.map((company) => (
                 <TableRow
                   key={company._id || company.companyId}
-                  sx={{
-                    "&:hover": {
-                      backgroundColor: "#f9f9f9",
-                      cursor: "pointer",
-                    },
-                  }}
+                  className="hover:bg-primaryblue hover:text-black transition-all duration-200 cursor-pointer"
                   onClick={() => handleOpenViewDialog(company)}
                 >
-                  <TableCell>{company.companyId}</TableCell>
-                  <TableCell>{company.companyName}</TableCell>
-                  <TableCell>{company.phone}</TableCell>
-                  <TableCell>{company.address}</TableCell>
+                  <TableCell className="text-white">{company.companyId}</TableCell>
+                  <TableCell className="text-white">{company.companyName}</TableCell>
+                  <TableCell className="text-white">{company.phone}</TableCell>
+                  <TableCell className="text-white">{company.address}</TableCell>
                   <TableCell>
                     <Button
                       variant="outlined"
@@ -827,6 +802,7 @@ const ManageTrips = () => {
                         e.stopPropagation();
                         handleOpenEditDialog(company);
                       }}
+                      className="border-white text-black hover:bg-blue-400"
                     >
                       Chỉnh sửa
                     </Button>
@@ -836,7 +812,10 @@ const ManageTrips = () => {
             ) : (
               <TableRow>
                 <TableCell colSpan={5} align="center">
-                  <Typography variant="body1" sx={{ py: 2 }}>
+                  <Typography
+                    variant="body1"
+                    className="text-white py-4"
+                  >
                     Không có dữ liệu công ty nào
                   </Typography>
                 </TableCell>
@@ -846,18 +825,14 @@ const ManageTrips = () => {
         </Table>
       </TableContainer>
 
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Thêm công ty mới</DialogTitle>
+
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Thêm Bến Xe Mới</DialogTitle>
         <DialogContent>
           <Box component="form" sx={{ mt: 2 }}>
             <TextField
               name="companyId"
-              label="ID công ty"
+              label="ID Bến Xe"
               fullWidth
               margin="normal"
               value={newCompany.companyId}
@@ -866,7 +841,7 @@ const ManageTrips = () => {
             />
             <TextField
               name="companyName"
-              label="Tên công ty"
+              label="Tên Bến Xe"
               fullWidth
               margin="normal"
               value={newCompany.companyName}
@@ -875,7 +850,7 @@ const ManageTrips = () => {
             />
             <TextField
               name="phone"
-              label="Số điện thoại"
+              label="Số Điện Thoại"
               fullWidth
               margin="normal"
               value={newCompany.phone}
@@ -923,7 +898,7 @@ const ManageTrips = () => {
             <Box component="form" sx={{ mt: 2 }}>
               <TextField
                 name="companyId"
-                label="ID công ty"
+                label="ID Bến Xe"
                 fullWidth
                 margin="normal"
                 value={editCompany.companyId}
@@ -989,16 +964,16 @@ const ManageTrips = () => {
             <>
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body1">
-                  <strong>ID công ty:</strong> {viewCompany.companyId}
+                  <strong>ID Bến Xe:</strong> {viewCompany.companyId}
                 </Typography>
                 <Typography variant="body1">
-                  <strong>Tên công ty:</strong> {viewCompany.companyName}
+                  <strong>Tên Bến Xe:</strong> {viewCompany.companyName}
                 </Typography>
                 <Typography variant="body1">
-                  <strong>Số điện thoại:</strong> {viewCompany.phone}
+                  <strong>Số Điện Thoại:</strong> {viewCompany.phone}
                 </Typography>
                 <Typography variant="body1">
-                  <strong>Địa chỉ:</strong> {viewCompany.address}
+                  <strong>Địa Chỉ:</strong> {viewCompany.address}
                 </Typography>
               </Box>
 
@@ -1218,22 +1193,10 @@ const ManageTrips = () => {
                                     e.stopPropagation();
                                     setEditTrip({
                                       ...trip,
-                                      departureDate: trip.departureTime
-                                        .split("T")[0]
-                                        .split("-")
-                                        .reverse()
-                                        .join("-"),
-                                      departureHour: trip.departureTime
-                                        .split("T")[1]
-                                        .slice(0, 5),
-                                      arrivalDate: trip.arrivalTime
-                                        .split("T")[0]
-                                        .split("-")
-                                        .reverse()
-                                        .join("-"),
-                                      arrivalHour: trip.arrivalTime
-                                        .split("T")[1]
-                                        .slice(0, 5),
+                                      departureDate: trip.departureTime.split("T")[0].split("-").reverse().join("-"),
+                                      departureHour: trip.departureTime.split("T")[1].slice(0, 5),
+                                      arrivalDate: trip.arrivalTime.split("T")[0].split("-").reverse().join("-"),
+                                      arrivalHour: trip.arrivalTime.split("T")[1].slice(0, 5),
                                     });
                                     setOpenEditTripDialog(true);
                                   }}
@@ -1379,7 +1342,7 @@ const ManageTrips = () => {
               }
               helperText={
                 newTrip.departureHour &&
-                !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.departureHour)
+                  !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.departureHour)
                   ? "Phải có định dạng HH:MM (ví dụ: 10:00)"
                   : ""
               }
@@ -1421,7 +1384,7 @@ const ManageTrips = () => {
               }
               helperText={
                 newTrip.arrivalHour &&
-                !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.arrivalHour)
+                  !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.arrivalHour)
                   ? "Phải có định dạng HH:MM (ví dụ: 12:00)"
                   : ""
               }
@@ -1472,6 +1435,7 @@ const ManageTrips = () => {
             color="primary"
             disabled={
               !newTrip.tripId ||
+
               !newTrip.vehicleId ||
               !newTrip.companyId ||
               !newTrip.driverId ||
@@ -1496,6 +1460,7 @@ const ManageTrips = () => {
             Tạo
           </Button>
         </DialogActions>
+
       </Dialog>
 
       <Dialog
@@ -1563,7 +1528,7 @@ const ManageTrips = () => {
               }
               helperText={
                 newVehicle.seatCount !== "" &&
-                (isNaN(newVehicle.seatCount) || newVehicle.seatCount <= 0)
+                  (isNaN(newVehicle.seatCount) || newVehicle.seatCount <= 0)
                   ? "Tổng số ghế phải là một số lớn hơn 0"
                   : ""
               }
@@ -1587,13 +1552,12 @@ const ManageTrips = () => {
               }
               helperText={
                 newVehicle.availableSeats !== "" &&
-                (isNaN(newVehicle.availableSeats) ||
-                  newVehicle.availableSeats < 0)
+                  (isNaN(newVehicle.availableSeats) || newVehicle.availableSeats < 0)
                   ? "Số ghế trống phải là một số không âm"
                   : newVehicle.seatCount &&
                     newVehicle.availableSeats > newVehicle.seatCount
-                  ? "Số ghế trống không thể lớn hơn tổng số ghế"
-                  : ""
+                    ? "Số ghế trống không thể lớn hơn tổng số ghế"
+                    : ""
               }
               inputProps={{ min: 0 }}
             />
@@ -1662,10 +1626,8 @@ const ManageTrips = () => {
                 margin="normal"
                 value={editVehicle.lisencePlate}
                 onChange={(e) =>
-                  setEditVehicle({
-                    ...editVehicle,
-                    lisencePlate: e.target.value,
-                  })
+                  setEditVehicle({ ...editVehicle, lisencePlate: e.target.value })
+
                 }
                 required
               />
@@ -1677,10 +1639,7 @@ const ManageTrips = () => {
                 margin="normal"
                 value={editVehicle.vehicleType}
                 onChange={(e) =>
-                  setEditVehicle({
-                    ...editVehicle,
-                    vehicleType: e.target.value,
-                  })
+                  setEditVehicle({ ...editVehicle, vehicleType: e.target.value })
                 }
                 required
               >
@@ -1695,15 +1654,11 @@ const ManageTrips = () => {
                 margin="normal"
                 value={editVehicle.seatCount}
                 onChange={(e) =>
-                  setEditVehicle({
-                    ...editVehicle,
-                    seatCount: Number(e.target.value),
-                  })
+                  setEditVehicle({ ...editVehicle, seatCount: Number(e.target.value) })
                 }
                 required
-                error={
-                  isNaN(editVehicle.seatCount) || editVehicle.seatCount <= 0
-                }
+                error={isNaN(editVehicle.seatCount) || editVehicle.seatCount <= 0}
+
                 helperText={
                   isNaN(editVehicle.seatCount) || editVehicle.seatCount <= 0
                     ? "Tổng số ghế phải là một số lớn hơn 0"
@@ -1731,12 +1686,11 @@ const ManageTrips = () => {
                   editVehicle.availableSeats > editVehicle.seatCount
                 }
                 helperText={
-                  isNaN(editVehicle.availableSeats) ||
-                  editVehicle.availableSeats < 0
+                  isNaN(editVehicle.availableSeats) || editVehicle.availableSeats < 0
                     ? "Số ghế trống phải là một số không âm"
                     : editVehicle.availableSeats > editVehicle.seatCount
-                    ? "Số ghế trống không thể lớn hơn tổng số ghế"
-                    : ""
+                      ? "Số ghế trống không thể lớn hơn tổng số ghế"
+                      : ""
                 }
                 inputProps={{ min: 0 }}
               />
@@ -1744,10 +1698,7 @@ const ManageTrips = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => setOpenEditVehicleDialog(false)}
-            disabled={isSubmitting}
-          >
+          <Button onClick={() => setOpenEditVehicleDialog(false)} disabled={isSubmitting}>
             Hủy
           </Button>
           <Button
@@ -1794,9 +1745,7 @@ const ManageTrips = () => {
                 fullWidth
                 margin="normal"
                 value={editTrip.vehicleId}
-                onChange={(e) =>
-                  setEditTrip({ ...editTrip, vehicleId: e.target.value })
-                }
+                onChange={(e) => setEditTrip({ ...editTrip, vehicleId: e.target.value })}
                 required
               />
               <TextField
@@ -1813,9 +1762,7 @@ const ManageTrips = () => {
                 fullWidth
                 margin="normal"
                 value={editTrip.driverId}
-                onChange={(e) =>
-                  setEditTrip({ ...editTrip, driverId: e.target.value })
-                }
+                onChange={(e) => setEditTrip({ ...editTrip, driverId: e.target.value })}
                 required
               />
               <TextField
@@ -1874,9 +1821,7 @@ const ManageTrips = () => {
                 fullWidth
                 margin="normal"
                 value={editTrip.departureDate}
-                onChange={(e) =>
-                  setEditTrip({ ...editTrip, departureDate: e.target.value })
-                }
+                onChange={(e) => setEditTrip({ ...editTrip, departureDate: e.target.value })}
                 required
                 placeholder="05-04-2025"
                 inputProps={{ pattern: "\\d{2}-\\d{2}-\\d{4}" }}
@@ -1893,21 +1838,14 @@ const ManageTrips = () => {
                 fullWidth
                 margin="normal"
                 value={editTrip.departureHour}
-                onChange={(e) =>
-                  setEditTrip({ ...editTrip, departureHour: e.target.value })
-                }
+                onChange={(e) => setEditTrip({ ...editTrip, departureHour: e.target.value })}
                 required
                 placeholder="10:00"
                 inputProps={{ pattern: "([0-1]?[0-9]|2[0-3]):[0-5][0-9]" }}
-                error={
-                  !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(
-                    editTrip.departureHour
-                  )
-                }
+                error={!/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.departureHour)}
                 helperText={
-                  !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(
-                    editTrip.departureHour
-                  )
+                  !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.departureHour)
+
                     ? "Phải có định dạng HH:MM (ví dụ: 10:00)"
                     : ""
                 }
@@ -1918,9 +1856,8 @@ const ManageTrips = () => {
                 fullWidth
                 margin="normal"
                 value={editTrip.arrivalDate}
-                onChange={(e) =>
-                  setEditTrip({ ...editTrip, arrivalDate: e.target.value })
-                }
+                onChange={(e) => setEditTrip({ ...editTrip, arrivalDate: e.target.value })}
+
                 required
                 placeholder="05-04-2025"
                 inputProps={{ pattern: "\\d{2}-\\d{2}-\\d{4}" }}
@@ -1937,21 +1874,14 @@ const ManageTrips = () => {
                 fullWidth
                 margin="normal"
                 value={editTrip.arrivalHour}
-                onChange={(e) =>
-                  setEditTrip({ ...editTrip, arrivalHour: e.target.value })
-                }
+                onChange={(e) => setEditTrip({ ...editTrip, arrivalHour: e.target.value })}
                 required
                 placeholder="12:00"
                 inputProps={{ pattern: "([0-1]?[0-9]|2[0-3]):[0-5][0-9]" }}
-                error={
-                  !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(
-                    editTrip.arrivalHour
-                  )
-                }
+                error={!/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.arrivalHour)}
                 helperText={
-                  !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(
-                    editTrip.arrivalHour
-                  )
+                  !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.arrivalHour)
+
                     ? "Phải có định dạng HH:MM (ví dụ: 12:00)"
                     : ""
                 }
@@ -1963,9 +1893,7 @@ const ManageTrips = () => {
                 fullWidth
                 margin="normal"
                 value={editTrip.price}
-                onChange={(e) =>
-                  setEditTrip({ ...editTrip, price: Number(e.target.value) })
-                }
+                onChange={(e) => setEditTrip({ ...editTrip, price: Number(e.target.value) })}
                 required
                 error={isNaN(editTrip.price) || editTrip.price <= 0}
                 helperText={
@@ -1982,9 +1910,8 @@ const ManageTrips = () => {
                 fullWidth
                 margin="normal"
                 value={editTrip.status}
-                onChange={(e) =>
-                  setEditTrip({ ...editTrip, status: e.target.value })
-                }
+                onChange={(e) => setEditTrip({ ...editTrip, status: e.target.value })}
+
                 required
               >
                 <MenuItem value="PENDING">PENDING</MenuItem>
@@ -2013,9 +1940,8 @@ const ManageTrips = () => {
               !editTrip?.status ||
               !/^\d{2}-\d{2}-\d{4}$/.test(editTrip.departureDate) ||
               !/^\d{2}-\d{2}-\d{4}$/.test(editTrip.arrivalDate) ||
-              !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(
-                editTrip.departureHour
-              ) ||
+              !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.departureHour) ||
+
               !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.arrivalHour) ||
               isNaN(editTrip.price) ||
               editTrip.price <= 0

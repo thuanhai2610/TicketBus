@@ -5,15 +5,6 @@ import axios from "axios";
 import { FaUserCircle } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
 
 const UpdateProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -107,6 +98,7 @@ const UpdateProfile = () => {
       reader.readAsDataURL(file);
     }
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -313,7 +305,7 @@ const UpdateProfile = () => {
         </div>
 
         {/* Submit button and messages */}
-        <div className="flex justify-end">
+        <div className="flex justify-end space-x-4">
           <button
             type="submit"
             className="bg-primary text-white px-6 py-2 rounded-full hover:bg-primaryblue dark:hover:text-neutral-950 hover:text-neutral-950"
@@ -321,6 +313,14 @@ const UpdateProfile = () => {
           >
             {loading ? "Đang cập nhật..." : "Cập nhật"}
           </button>
+{/* 
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600 dark:hover:text-neutral-950 hover:text-neutral-950"
+          >
+            Hủy
+          </button> */}
         </div>
 
         {successMsg && (
@@ -330,6 +330,7 @@ const UpdateProfile = () => {
         {error && (
           <div className="text-red-600 text-sm mt-2">{error}</div>
         )}
+
       </form>
 
 
