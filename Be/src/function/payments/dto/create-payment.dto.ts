@@ -1,5 +1,5 @@
 // payments/dto/create-payment.dto.ts
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 enum PaymentMethod {
   CASH = 'cash',
@@ -33,5 +33,8 @@ export class CreatePaymentDto {
   tripId: string;
   cretedAt: Date;
   paymentUrl?: string;
+  @IsString()
+  @IsOptional()
+  couponCode?: string;
 }
 

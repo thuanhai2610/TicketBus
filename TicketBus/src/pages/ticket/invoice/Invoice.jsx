@@ -17,9 +17,6 @@ const Invoice = () => {
   const navigate = useNavigate();
   const [ticket, setTicket] = useState(null);
   const [fetchError, setFetchError] = useState(null);
-  const mapRef = useRef(null);
-  const leafletMapRef = useRef(null);
-
   // Extract data from state
   const {
     lisencePlate,
@@ -29,7 +26,7 @@ const Invoice = () => {
     totalPrice,
     passengerInfo,
     vehicleId,
-    qrCodeData } = location.state || {};
+    qrCodeData,finalAmount } = location.state || {};
   useEffect(() => {
     const fetchTicket = async () => {
       if (!ticketId) {
@@ -109,6 +106,7 @@ const Invoice = () => {
               vehicleId={vehicleId || '79D1-72778'}
               totalPrice={totalPrice || 500000}
               bookedAt={ticket?.bookedAt}
+              finalAmount= {finalAmount}
             />
             {/* Right side company */}
             <CompanyInvoice

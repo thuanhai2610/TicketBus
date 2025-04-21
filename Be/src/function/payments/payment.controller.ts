@@ -56,7 +56,7 @@ export class PaymentController {
   async handleVnpayReturn(@Query() query: any) {
     const result = await this.paymentsService.handleVnpayReturn(query);
     if (result.status === 'success') {
-      return { message: 'Payment successful', paymentId: result.paymentId };
+      return { message: 'Payment successful', paymentId: result.paymentId,  finalAmount: result.finalAmount, };
     } else {
       return { message: 'Payment failed', code: result.message };
     }

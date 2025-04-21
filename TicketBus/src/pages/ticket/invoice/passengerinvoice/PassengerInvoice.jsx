@@ -21,7 +21,7 @@ const PassengerInvoice = ({
     departureTime,
     arrivalTime,
     qrCodeData,
-
+    finalAmount,
     bookedAt,
     lisencePlate }
 
@@ -102,11 +102,11 @@ const PassengerInvoice = ({
                         <div className="space-y-4 flex items-center justify-center flex-col">
                             <div className="space-y-1 text-center">
                                 <p className="text-base text-neutral-600 font-normal">
-                                    Total Price:
+                                    Tổng tiền:
                                 </p>
 
                                 <h1 className="text-xl text-neutral-600 font-bold">
-                                    {Number(totalPrice).toLocaleString("vi-VN")} VNĐ
+                                    {Number(finalAmount).toLocaleString("vi-VN")} VNĐ
                                 </h1>
                             </div>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import bg from '../../../assets/homebg.jpg'; // Đảm bảo bạn đã import ảnh đúng cách
+import bg from '../../../assets/homebg.jpg'; 
 
 const Testimonial = () => {
   return (
