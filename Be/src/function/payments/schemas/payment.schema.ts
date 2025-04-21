@@ -53,12 +53,13 @@ PaymentSchema.pre('save', async function (next) {
   }
 
   // Kiểm tra amount có khớp với ticketPrice không
-  if (payment.amount !== ticket.ticketPrice) {
-    const error = new Error(
-      `Payment amount (${payment.amount}) does not match ticket price (${ticket.ticketPrice})`,
-    );
-    return next(error);
-  }
+  // if (payment.amount !== ticket.ticketPrice) {
+  //   const error = new Error(
+  //     `Payment amount (${payment.amount}) does not match ticket price (${ticket.ticketPrice})`,
+  //   );
+  //   return next(error);
+  // }
 
   next();
-});
+}
+);

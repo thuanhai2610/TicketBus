@@ -2,43 +2,47 @@ import React, { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 
 const PromotionCard = ({ promo }) => {
-  const [copiedCode, setCopiedCode] = useState(null);
+  const [copied, setCopied] = useState(false);
 
-  const handleCopy = async (code) => {
-    try {
-      // Sao chép mã vào clipboard
-      await navigator.clipboard.writeText(code);
-      // Cập nhật mã đã sao chép và hiển thị icon check
-      setCopiedCode(code);
-      
-      // Reset trạng thái sau 2 giây
-      setTimeout(() => setCopiedCode(null), 2000);
-    } catch (err) {
-      console.error("Không thể sao chép mã:", err);
-    }
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(promo.code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
+  // Tạo tiêu đề tự động dựa theo discountType
+  const title =
+    promo.discountType === 'percentage'
+      ? `Giảm ${promo.discountValue}%`
+      : `Giảm ${promo.discountValue.toLocaleString()} VND`;
+
+  // Format ngày hết hạn
+  const expiresText = promo.expiresAt
+    ? new Date(promo.expiresAt).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      })
+    : 'Không giới hạn';
+
   return (
-    <div className="flex flex-col justify-between h-[200px] bg-white dark:bg-primaryblue/5 rounded-2xl shadow-md dark:shadow-lg hover:shadow-xl transition duration-300 p-6 text-left">
+    <div className="flex flex-col justify-between h-[240px] bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6">
       <div>
-        <h2 className="text-xl font-semibold text-primary dark:text-neutral-100 mb-2">
-          {promo.title}
-        </h2>
-        <p className="text-gray-700 dark:text-gray-300 mb-4 text-sm">{promo.description}</p>
+        <h2 className="text-xl font-semibold text-primary mb-2">{title}</h2>
+        <p className="text-gray-700 mb-2 text-sm">{promo.description}</p>
+        <p className="text-xs text-gray-500">Hết hạn: {expiresText}</p>
       </div>
-      <div className="flex items-center justify-between bg-blue-100 dark:bg-gray-800 rounded-md px-4 py-2">
-        <span className="text-blue-700 dark:text-blue-300 font-bold">
-          Mã: {promo.code}
-        </span>
+
+      <div className="flex items-center justify-between bg-blue-50 rounded-md px-4 py-2 mt-4">
+        <span className="font-bold text-blue-700">Mã: {promo.code}</span>
         <button
-          onClick={() => handleCopy(promo.code)}
-          className={`transition ${copiedCode === promo.code
-              ? 'text-green-600 dark:text-green-400'
-              : 'text-primary dark:text-blue-500 hover:text-blue-800 dark:hover:text-blue-400'
-            }`}
+          onClick={handleCopy}
+          className={`transition ${
+            copied ? 'text-green-600' : 'text-primary hover:text-blue-800'
+          }`}
           title="Sao chép mã"
         >
-          {copiedCode === promo.code ? <Check size={18} /> : <Copy size={18} />}
+          {copied ? <Check size={18} /> : <Copy size={18} />}
         </button>
       </div>
     </div>

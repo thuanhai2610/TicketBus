@@ -12,16 +12,18 @@ import { TicketModule } from '../tickets/ticket.module';
 import { TripModule } from '../trip/trip.module';
 import { VehicleModule } from '../vehicle/vehicle.module';
 import { MailModule } from '../tickets/mail/mail.module';
+import { CouponService } from '../coupons/coupon.service';
+import { CouponModule } from '../coupons/coupon.module';
 
 
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Payment.name, schema: PaymentSchema }   
-    ]), CompaniesModule, TicketModule, TripModule, VehicleModule, MailModule
+    ]), CompaniesModule, TicketModule, TripModule, VehicleModule, MailModule, CouponModule
   ],
   controllers: [PaymentController],
-  providers: [PaymentService, PaymentRepository, TicketService, TicketRepository],
+  providers: [PaymentService, PaymentRepository, TicketService, TicketRepository, CouponService],
   exports: [PaymentService],
 })
 export class PaymentModule {}

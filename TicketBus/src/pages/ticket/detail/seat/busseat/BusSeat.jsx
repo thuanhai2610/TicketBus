@@ -48,7 +48,6 @@ const BusSeat = () => {
 
       setUsername(fetchedUsername);
     } catch (error) {
-      console.error("Error fetching username:", error);
       if (error.response?.status === 401) {
         handleLogout();
       } else {
@@ -104,11 +103,10 @@ const BusSeat = () => {
       });
       setSeatData(sortedSeats);
     } catch (error) {
-      console.error("Error fetching seats:", error);
       if (error.response?.status === 401) {
         handleLogout();
       } else {
-        setSeatsError(error.response?.data?.message || 'Failed to fetch seats. Please try again.');
+        setSeatsError(error.response?.data?.message || 'Bạn cần đăng nhập để đặt ghế.');
         setSeatData([]);
       }
     } finally {
@@ -133,10 +131,7 @@ const BusSeat = () => {
 
         headers: { Authorization: `Bearer ${token}` },
       });
-console.log(response.data)
       const trips = Array.isArray(response.data) ? response.data : response.data?.trips || [];
-
-      // Lọc chuyến theo vehicleId
       const matchingTrip = trips.find((trip) => trip.vehicleId === vehicleId);
 
       if (matchingTrip) {
@@ -149,7 +144,7 @@ console.log(response.data)
           departureTime: matchingTrip.departureTime,
           arrivalTime: matchingTrip.arrivalTime,
         });
-        return matchingTrip.tripId; // Trả về tripId để sử dụng trong fetchSeats
+        return matchingTrip.tripId; 
       } else {
         setTripError("No trip found for this vehicle.");
         setTripInfo({
@@ -248,7 +243,7 @@ console.log(response.data)
       });
     } catch (error) {
       console.error("Error holding seats:", error);
-      let errorMsg = error.response?.data?.message || "Failed to hold seats. Please try again.";
+      let errorMsg = error.response?.data?.message || "Lỗi khi đặt ghế, hãy đặt lại.";
       if (error.response?.status === 401) {
         handleLogout();
         return;
@@ -274,7 +269,6 @@ console.log(response.data)
 
   const handleSeatClick = (seatId) => {
     const seat = seatData.find((seat) => seat.id === seatId);
-    // Không cho phép chọn ghế đã "Booked" hoặc "Selected"
     if (!seat || seat.status === 'Booked' || seat.status === 'Selected') return;
 
     setSelectedSeats((prevSelectedSeats) => {

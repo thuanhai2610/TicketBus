@@ -13,6 +13,7 @@ import * as querystring from 'querystring';
 import * as crypto from 'crypto';
 import { MailService } from '../tickets/mail/mail.service';
 import { TripRepository } from '../trip/trip.repsitory';
+import { CouponService } from '../coupons/coupon.service';
 
 @Injectable()
 export class PaymentService {
@@ -22,6 +23,7 @@ export class PaymentService {
     private readonly ticketService: TicketService,
     private readonly vehicleService: VehicleService,
     private readonly mailService: MailService,
+    private readonly couponService: CouponService,
     @InjectModel(Ticket.name) private ticketModel: Model<TicketDocument>,
     @InjectModel(Trip.name) private tripModel: Model<TripDocument>,
     @InjectModel(Seat.name) private seatModel: Model<SeatDocument>,
@@ -33,6 +35,27 @@ export class PaymentService {
     if (!ticket) {
       throw new NotFoundException(`Ticket with ID ${dto.ticketId} not found`);
     }
+    let finalAmount = dto.amount;
+
+if (dto.couponCode) {
+  const coupon = await this.couponService.findByCode(dto.couponCode);
+  if (!coupon) {
+    throw new BadRequestException(`Coupon code ${dto.couponCode} không tồn tại`);
+  }
+  if (coupon.expiresAt && new Date() > new Date(coupon.expiresAt)) {
+    throw new BadRequestException('Coupon đã hết hạn');
+  }
+  const discount =
+    coupon.discountType === 'percentage'
+      ? (dto.amount * coupon.discountValue) / 100
+      : coupon.discountValue;
+
+  // Áp dụng giảm, nhưng không cho xuống âm
+  finalAmount = Math.max(dto.amount - discount, 0);
+}
+
+    
+    
     const paymentId = `PAYMENT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     let paymentUrl = '';
     let payment : any ;
@@ -41,7 +64,7 @@ export class PaymentService {
         paymentId,
         ticketId: dto.ticketId,
         companyId: dto.companyId,
-        amount: dto.amount,
+        amount: finalAmount,
         paymentMethod: 'cash',
         paymentStatus: 'completed', 
         paymentUrl,
@@ -61,7 +84,7 @@ export class PaymentService {
         vnp_Version: '2.1.0',
         vnp_Command: 'pay',
         vnp_TmnCode: tmnCode,
-        vnp_Amount: dto.amount * 100 ,
+        vnp_Amount: finalAmount * 100 ,
         vnp_CurrCode: 'VND',
         vnp_TxnRef: paymentId,
         vnp_OrderInfo: `Thanhtoanve${dto.ticketId}`,
@@ -84,7 +107,7 @@ export class PaymentService {
         paymentId,
         ticketId: dto.ticketId,
         companyId: dto.companyId,
-        amount: dto.amount,
+        amount: finalAmount,
         paymentMethod: 'vn_pay',
         paymentStatus: 'pending', 
         paymentUrl, 
@@ -144,15 +167,15 @@ export class PaymentService {
     }
 
     if (vnpParams['vnp_ResponseCode'] === '00') {
-
+      const finalAmount = payment.amount;
       if (payment.paymentStatus === 'completed') {
-        return { status: 'success', paymentId };
+        return { status: 'success', paymentId, finalAmount };
       }
       await this.paymentRepository.updatePaymentStatus(paymentId, 'completed');
       const ticket = await this.ticketService.findTicketById(payment.ticketId);
       await this.sendTicketEmailAfterPayment(ticket);
       await this.processTicketAndSeats(ticket, payment);
-      return { status: 'success', paymentId };
+      return { status: 'success', paymentId, finalAmount  };
     } else {
       await this.paymentRepository.updatePaymentStatus(paymentId, 'failed');
       return { status: 'failed', message: vnpParams['vnp_ResponseCode'] };

@@ -24,14 +24,13 @@ const TicketVNPAY = () => {
   const [vehicleDetails, setVehicleDetails] = useState(null);
     const [qrCodeData, setQrCodeData] = useState(null);
     const navigate = useNavigate();
-  
+    const [finalAmount, setFinalAmount] = useState(null);
+
   useEffect(() => {
     const fetchPaymentData = async () => {
       try {
-        // Step 1: Get query parameters from URL and fetch payment data
         const urlParams = new URLSearchParams(window.location.search);
         const queryString = urlParams.toString();
-
         const paymentResponse = await axios.get(
           `http://localhost:3001/payments/vnpay/return?${queryString}`,
           {
@@ -40,6 +39,7 @@ const TicketVNPAY = () => {
             },
           }
         );
+        setFinalAmount(paymentResponse.data.finalAmount);
         setPaymentData(paymentResponse.data);
         if (paymentResponse.data.code === '24') {
           setError('Thanh toán không thành công. Vui lòng thử lại.');
@@ -61,14 +61,12 @@ const TicketVNPAY = () => {
           setTicketData(ticketResponse.data);
           if (ticketResponse.data.ticketId) {
             // Step 3: Fetch ticket details using ticketId
-            console.log('Fetching ticket details with ticketId:', ticketResponse.data.ticketId);
             const ticketDetailsResponse = await axios.get(
               `http://localhost:3001/tickets/vn-pay/details?ticketId=${ticketResponse.data.ticketId}`,
               {
                 headers: { 'Content-Type': 'application/json' },
               }
             );
-            console.log('Ticket details response:', ticketDetailsResponse.data);
             setTicketDetails(ticketDetailsResponse.data);
             if (ticketDetailsResponse.data.tripId) {
                 // Step 4: Fetch trip details using tripId
@@ -79,18 +77,14 @@ const TicketVNPAY = () => {
                     headers: { 'Content-Type': 'application/json' },
                   }
                 );
-                console.log('Trip details response:', tripDetailsResponse.data);
                 setTripDetails(tripDetailsResponse.data);
                 if (tripDetailsResponse.data.vehicleId) {
-                    // Step 5: Fetch vehicle details using vehicleId
-                    console.log('Fetching vehicle details with vehicleId:', tripDetailsResponse.data.vehicleId);
                     const vehicleDetailsResponse = await axios.get(
                       `http://localhost:3001/vehicle/get/details?vehicleId=${tripDetailsResponse.data.vehicleId}`,
                       {
                         headers: { 'Content-Type': 'application/json' },
                       }
                     );
-                    console.log('Vehicle details response:', vehicleDetailsResponse.data);
                     setVehicleDetails(vehicleDetailsResponse.data);
                     const qrData = JSON.stringify({
                       ticketId: ticketDetailsResponse.data.ticketId,
@@ -164,6 +158,7 @@ const TicketVNPAY = () => {
               vehicleId={vehicleDetails?.vehicleId || 'Không xác định'}
               totalPrice={ticketDetails.ticketPrice}
               bookedAt={ticketDetails?.bookedAt}
+              finalAmount={finalAmount}
             />
   
             {/* Phần phải: Công ty */}
