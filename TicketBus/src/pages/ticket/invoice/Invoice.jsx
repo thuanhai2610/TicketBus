@@ -45,8 +45,6 @@ const Invoice = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        console.log('Fetched ticket:', response.data);
         setTicket(response.data);
       } catch (error) {
         console.error('Error fetching ticket:', error);
@@ -124,6 +122,7 @@ const Invoice = () => {
               arrivalTime={tripInfo?.arrivalTime || '04:10 PM'}
               vehicleId={vehicleId || '79D1-72778'}
               totalPrice={totalPrice || 500000}
+              finalAmount= {finalAmount}
               billStatus="Bill Paid"
             />
 

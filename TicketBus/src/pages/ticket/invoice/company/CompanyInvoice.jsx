@@ -6,14 +6,11 @@ const CompanyInvoice = ( {totalPrice,
     passengerName,
     totalSeats,
     totalPassengers,
-    pickupStation,
     departurePoint,
     destinationPoint,
     departureTime,
-    arrivalTime,
-    vehicleId,
     bookedAt,
-    passengerInfo,
+ finalAmount,
 ticketId}) => { 
         const formatTime = (dateString) => {
         const date = new Date(dateString);
@@ -64,7 +61,7 @@ ticketId}) => {
                 Tổng Hành Khách: {totalPassengers}
             </p>
             <p className="text-sm text-neutral-600 font-normal">
-                Tổng Tiền : {Number(totalPrice).toLocaleString("vi-VN")} VNĐ
+                Tổng Tiền : {Number(finalAmount).toLocaleString("vi-VN")} VNĐ
             </p>
         </div>
       
