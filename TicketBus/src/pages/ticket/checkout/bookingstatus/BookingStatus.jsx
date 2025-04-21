@@ -109,10 +109,6 @@ const BookingStatus = ({
         paymentMethod: paymentMethod,
         paymentStatus: "pending",
       };
-
-      console.log("Sending payment data:", paymentData, updateTicketData);
-
-      // Create payment
       const paymentResponse = await fetch("http://localhost:3001/payments", {
         method: "POST",
         headers: {
@@ -128,7 +124,6 @@ const BookingStatus = ({
       }
 
       const paymentResult = await paymentResponse.json();
-      console.log("Payment created:", paymentResult);
       setPaymentId(paymentResult.paymentId);
       if (paymentMethod === "vn_pay") {
         const updateTicketPayload = {
@@ -177,16 +172,6 @@ const BookingStatus = ({
             },
           }
         );
-
-        console.log(
-          "Payment status updated to completed:",
-          updatePaymentResponse.data
-        );
-        console.log(
-          "Ticket status updated to Paid:",
-          updateTicketStatusResponse.data
-        );
-        console.log("Email sent successfully for ticket:", ticketId);
         const qrData = JSON.stringify({
           ticketId: ticketId,
           status: "Paid",

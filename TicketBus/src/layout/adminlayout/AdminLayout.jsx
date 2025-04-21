@@ -195,6 +195,15 @@ const AdminLayout = () => {
                         Doanh thu
                       </Link>
                     </li>
+                    <li>
+                      <Link
+                        to="/admin/discount"
+                        className="border-l-4 border-transparent hover:border-gray-500 flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                      >
+                        <FaMoneyBillAlt className="mr-3 h-4 w-4" />
+                        Giảm giá
+                      </Link>
+                    </li>
                   </ul>
                 )}
               </li>

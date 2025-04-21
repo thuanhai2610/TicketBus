@@ -11,7 +11,6 @@ import { FaPhone } from 'react-icons/fa'
 
 const PassengerInvoice = ({
     ticketId,
-    totalPrice,
     passengerName,
     totalSeats,
     totalPassengers,

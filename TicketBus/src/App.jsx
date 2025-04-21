@@ -34,6 +34,7 @@ import QRCodeScanner from "./pages/ticket/qrcode/QRCodeScanner";
 import React from "react";
 import "./pages/ticket/qrcode/style.css";
 import 'leaflet/dist/leaflet.css';
+import Discount from "./pages/admin/Discout";
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
@@ -99,6 +100,8 @@ function App() {
               <Route path="manage-employees" element={<Employees />} />
               <Route path="settings" element={<Settings />} />
               <Route path="revenue" element={<RevenueChart />} />
+              <Route path="discount" element={<Discount />} />
+
             </Route>
           </Routes>
         </main>

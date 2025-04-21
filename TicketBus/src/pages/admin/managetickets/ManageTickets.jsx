@@ -203,6 +203,7 @@ const ManageTickets = () => {
         <div className="col-span-2">
           <RevenueChart revenue={revenue} />
         </div>
+        
       </div>
       {/* Buttons to switch between ticket statuses */}
       <div className="mb-4 flex space-x-2 overflow-y-auto">

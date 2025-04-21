@@ -156,6 +156,7 @@ const AdminPage = () => {
             </CardContent>
           </Card>
         </Link>
+        
         <Link to="/admin/revenue">
           <Card className="bg-gray-800 border-gray-700 hover:bg-gray-700 transition">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
