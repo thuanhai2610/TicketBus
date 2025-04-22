@@ -26,15 +26,15 @@ const PromotionCard = ({ promo }) => {
     : 'Không giới hạn';
 
   return (
-    <div className="flex flex-col justify-between h-[240px] bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6">
+    <div className="flex flex-col justify-between h-[240px] bg-white rounded-2xl shadow-md hover:shadow-xl shadow-slate-400 transition p-6">
       <div>
         <h2 className="text-xl font-semibold text-primary mb-2">{title}</h2>
-        <p className="text-gray-700 mb-2 text-sm">{promo.description}</p>
-        <p className="text-xs text-gray-500">Hết hạn: {expiresText}</p>
+        <p className="text-gray-700 mb-2 text-2xl">{promo.description}</p>
+        <p className="text-sm text-gray-500">Hết hạn: {expiresText}</p>
       </div>
 
       <div className="flex items-center justify-between bg-blue-50 rounded-md px-4 py-2 mt-4">
-        <span className="font-bold text-blue-700">Mã: {promo.code}</span>
+        <span className="font-bold text-blue-700 uppercase">Mã: {promo.code}</span>
         <button
           onClick={handleCopy}
           className={`transition ${

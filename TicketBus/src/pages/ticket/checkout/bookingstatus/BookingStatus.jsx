@@ -463,7 +463,7 @@ const BookingStatus = ({
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
                 placeholder="Nhập mã..."
-                className="flex-1 p-2 border rounded-md text-sm"
+                className="flex-1 p-2 border rounded-md text-sm uppercase"
               />
               <button
                 onClick={handleApplyCoupon}
@@ -474,7 +474,7 @@ const BookingStatus = ({
               </button>
             </div>
             {discountInfo && (
-              <div className="text-sm text-green-700 font-medium">
+              <div className="text-sm text-green-700 font-medium uppercase">
                 Mã <strong>{discountInfo.code}</strong> đã được áp dụng: Giảm{" "}
                 <strong>
                   {discountInfo.discount != null
