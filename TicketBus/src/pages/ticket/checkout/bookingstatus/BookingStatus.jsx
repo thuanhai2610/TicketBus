@@ -31,8 +31,7 @@ const BookingStatus = ({
   const [couponCode, setCouponCode] = useState("");
   const [discountInfo, setDiscountInfo] = useState(null);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
-  const finalAmount = discountInfo?.finalAmount || totalPrice;
-
+  const finalAmount = discountInfo?.finalAmount != null ? discountInfo.finalAmount : totalPrice;
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     const hours = String(date.getUTCHours()).padStart(2, "0");
@@ -278,9 +277,6 @@ const BookingStatus = ({
           },
         }
       );
-
-      // The backend (TicketService) will handle updating the seats to "Available" and incrementing the vehicle's availableSeats
-
       setPaymentId(null);
 
       navigate(`/bus-tickets/detail/${vehicleId}`, {
@@ -371,7 +367,10 @@ const BookingStatus = ({
         code: couponCode,
         amount: totalPrice,
       });
-
+      const { success } = response.data;
+      if (success === false) {
+        setError("Mã giảm giá không tồn tại ");
+      }
       setDiscountInfo(response.data);
     } catch (err) {
       console.error("Error applying coupon:", err);
@@ -477,7 +476,11 @@ const BookingStatus = ({
             {discountInfo && (
               <div className="text-sm text-green-700 font-medium">
                 Mã <strong>{discountInfo.code}</strong> đã được áp dụng: Giảm{" "}
-                <strong>{discountInfo.discount.toLocaleString()} VND</strong>
+                <strong>
+                  {discountInfo.discount != null
+                    ? `${discountInfo.discount.toLocaleString()} VND`
+                    : "Không xác định"}
+                </strong>
               </div>
             )}
           </div>
