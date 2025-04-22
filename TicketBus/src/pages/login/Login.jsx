@@ -1,12 +1,14 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook, FaGithub, FaDiscord, FaApple, FaRegEye, FaEyeSlash } from "react-icons/fa";
+import { FaRegEye, FaEyeSlash } from "react-icons/fa";
 // import { FaSquareTwitter } from "react-icons/fa6";
 import axios from "axios";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
+import bgLogin from "../../assets/bgLogin.jpg"
+
 
 const Login = () => {
     const [username, setUsername] = useState("");
@@ -40,7 +42,7 @@ const Login = () => {
                 alert(message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
                 setError(message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
                 return;
-              }
+            }
             localStorage.setItem("token", access_token);
             localStorage.setItem("username", username);
             if (role === "admin") {
@@ -94,13 +96,16 @@ const Login = () => {
     };
     return (
         <GoogleOAuthProvider clientId={"1055268521864-uqrdrd5mpqbeskmqe28gb2kk37050t4b.apps.googleusercontent.com"}>
-            <div className="flex min-h-screen items-center justify-center bg-primaryblue dark:bg-transparent">
-                <div className="bg-white p-10 rounded-2xl shadow-2xl w-96 border border-gray-300 dark:bg-transparent">
+            <div
+                className="flex min-h-screen items-center justify-center bg-cover bg-center dark:bg-transparent"
+                style={{backgroundImage: `url(${bgLogin})` }}
+            >
+                <div className="bg-white p-10 mt-10 rounded-2xl shadow-2xl shadow-primary dark:shadow-xl dark:shadow-slate-200 w-96 border border-gray-300 dark:bg-primary">
                     <h2 className="text-primary text-3xl font-semibold text-center mb-6 uppercase dark:text-neutral-50">đăng Nhập</h2>
 
                     {error && <p className="text-primary text-center mb-4">{error}</p>}
                     <div className="space-y-4">
-              
+
                         <GoogleLogin
                             onSuccess={handleGoogleSuccess}
                             onError={handleGoogleFailure}
@@ -119,7 +124,7 @@ const Login = () => {
 
                     <div className="my-6 flex items-center">
                         <div className="flex-1 border-t border-gray-300"></div>
-                        <p className="mx-3 text-gray-500 text-sm dark:text-neutral-400">Hoặc</p>
+                        <p className="mx-3 text-gray-500 text-sm dark:text-neutral-200">Hoặc</p>
                         <div className="flex-1 border-t border-gray-300"></div>
                     </div>
 
@@ -162,7 +167,7 @@ const Login = () => {
 
                         <button
                             type="submit"
-                            className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary transition"
+                            className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary transition dark:bg-slate-500"
                             disabled={isLoading}
                         >
                             {isLoading ? "Logging in..." : "Đăng Nhập"}

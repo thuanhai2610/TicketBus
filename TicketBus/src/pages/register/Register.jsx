@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
+import bgRegister from "../../assets/bgRegister.jpg"
 import {
   FaFacebook,
   FaGithub,
@@ -101,8 +101,10 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-primaryblue dark:bg-transparent">
-      <div className="bg-white dark:bg-transparent p-10 rounded-2xl shadow-2xl w-96 h-auto border border-gray-300 justify-end">
+    <div className="flex items-center justify-center min-h-screen bg-primaryblue dark:bg-transparent"
+    style={{backgroundImage: `url(${bgRegister})` }}>
+      <div className="bg-white dark:bg-primary p-10 rounded-2xl shadow-2xl shadow-primary dark:shadow-xl dark:shadow-slate-200 w-96 h-auto border border-gray-300 justify-end"
+       >
         <h2 className="text-primary text-3xl font-bold text-center mb-6 dark:text-neutral-50 uppercase">
           Đăng ký
         </h2>
@@ -215,7 +217,7 @@ const Register = () => {
 
           <button
             type="submit"
-            className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primaryblue hover:text-primary transition duration-300"
+            className="w-full bg-primary dark:bg-slate-500 text-white py-2 rounded-lg hover:bg-primaryblue hover:text-primary transition duration-300"
           >
             Đăng Ký
           </button>
