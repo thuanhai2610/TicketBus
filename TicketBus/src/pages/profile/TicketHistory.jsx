@@ -122,7 +122,7 @@ const TicketHistory = () => {
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white border dark:bg-transparent">
                     <thead>
-                        <tr className="bg-gray-100 text-left text-sm font-semibold text-gray-700 dark:bg-transparent dark:text-neutral-50">
+                        <tr className="bg-gray-100 text-center text-sm font-semibold text-gray-700 dark:bg-transparent dark:text-neutral-50">
                             <th className="p-3 border">Mã vé</th>
                             <th className="p-3 border">Tuyến đường</th>
                             <th className="p-3 border">Ngày đi</th>
@@ -135,13 +135,13 @@ const TicketHistory = () => {
                     <tbody>
                         {tickets.length > 0 ? (
                             tickets.map((ticket, idx) => (
-                                <tr key={idx} className="text-sm border-t hover:bg-gray-50 dark:text-neutral-50">
+                                <tr key={idx} className="text-sm text-center border-t hover:bg-gray-50 dark:text-neutral-50">
                                     <td className="p-3 border">{ticket._doc.ticketId}</td>
                                     <td className="p-3 border">{ticket.departurePoint} → {ticket.destinationPoint}</td>
-                                    <td className="p-3 border">{formatDateTime(ticket.departureTime)}</td>
+                                    <td className="p-3 border text-center">{formatDateTime(ticket.departureTime)}</td>
                                     <td className="p-3 border" >{formatVND(ticket._doc.ticketPrice)}</td>
-                                    <td className="p-3 border">{ticket._doc.status}</td>
-                                    <td className="p-3 border">{renderStatusBadge(ticket.status)}</td>
+                                    <td className="p-3 border text-center">{ticket._doc.status}</td>
+                                    <td className="p-2 w-32">{renderStatusBadge(ticket.status)}</td>
 
 
                                 </tr>

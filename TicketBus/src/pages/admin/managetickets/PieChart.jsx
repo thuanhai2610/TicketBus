@@ -53,7 +53,7 @@ const PieChart = ({ tickets }) => {
                     ctx.fillStyle = "#fff";
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
-                    ctx.fillText("100%", width / 2, height / 2);
+                    ctx.fillText("", width / 2, height / 2);
                     ctx.restore();
                 },
             }

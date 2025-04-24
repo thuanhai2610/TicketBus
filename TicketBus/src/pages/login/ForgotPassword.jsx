@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import bgLogin from "../../assets/bgLogin.jpg"
 import axios from "axios";
 
 function ForgotPassword() {
@@ -166,7 +167,8 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-cover bg-center bg-primaryblue dark:bg-transparent">
+    <div className="flex min-h-screen items-center justify-center bg-cover bg-center bg-primaryblue dark:bg-transparent"
+    style={{backgroundImage: `url(${bgLogin})` }}>
       <div className="bg-white p-10 rounded-2xl shadow-2xl w-96 border border-gray-300 dark:bg-transparent">
         {!otpSent ? (
           <>

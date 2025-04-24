@@ -94,7 +94,7 @@ function App() {
               </ProtectedRoute>
             }>
               <Route index element={<AdminPage />} />
-              <Route path="manage-trips" element={<ManageTrips />} />
+              <Route path="manage-trips" element={<ManageTrips />} />z
               <Route path="manage-tickets" element={<ManageTickets />} />
               <Route path="manage-customers" element={<ManageCustomers />} />
               <Route path="manage-employees" element={<Employees />} />
