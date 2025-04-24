@@ -9,15 +9,10 @@ const QRCodeScanner = () => {
   const handleScan = (result) => {
     if (result) {
       try {
-        // QR code was successfully scanned
         setIsScanning(false);
-        
-        // Check if result is already an object or string
         let ticketData;
         if (typeof result === 'string') {
-          // Handle both normal JSON and the format seen in the Google search
           if (result.includes('ticket In')) {
-            // Parse the special format from the Google search
             const parsedData = {};
             const pairs = result.match(/(\w+)\s*:\s*([^,}]+)/g);
             if (pairs) {
@@ -28,7 +23,6 @@ const QRCodeScanner = () => {
             }
             ticketData = parsedData;
           } else {
-            // Try regular JSON parsing
             ticketData = JSON.parse(result);
           }
         } else {

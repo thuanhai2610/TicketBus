@@ -90,8 +90,6 @@ export class TripService {
       );
       return null;
     }
-
-    // Convert departureDate
     const departureDateParts = createTripDto.departureDate.split('-');
     if (departureDateParts.length !== 3) {
       console.log('Invalid departureDate format:', createTripDto.departureDate);
