@@ -51,8 +51,8 @@ const Offer = () => {
   return (
     <div className="pt-40 pb-12 px-4 md:px-10">
       <div className="max-w-6xl mx-auto text-center">
-        <h1 className="text-4xl font-extrabold text-primary mb-4">🎉 Ưu Đãi Đặc Biệt 🎉</h1>
-        <p className="text-lg text-gray-600 mb-10">
+        <h1 className="text-4xl font-extrabold text-primary mb-4 dark:text-neutral-50">🎉 Ưu Đãi Đặc Biệt 🎉</h1>
+        <p className="text-lg text-gray-600 mb-10 dark:text-neutral-200">
           Nhanh tay đặt vé để nhận những khuyến mãi cực hấp dẫn!
         </p>
 
