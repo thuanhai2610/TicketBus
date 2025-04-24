@@ -23,7 +23,8 @@ import { PaymentModule } from './function/payments/payment.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { OtpModule } from './otp/otp.module';
 @Module({
-  imports: [AuthModule, PendingUsersModule,ScheduleModule.forRoot(), ItemsModule, MongooseModule.forRoot('mongodb://localhost:27017/admin'),
+  imports: [AuthModule, PendingUsersModule,ScheduleModule.forRoot(), ItemsModule,
+     MongooseModule.forRoot('mongodb://localhost:27017/admin'),
     ConfigModule.forRoot({
       isGlobal: true, 
       envFilePath: '.env', 

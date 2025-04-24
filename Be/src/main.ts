@@ -15,7 +15,6 @@ async function bootstrap() {
   });
   app.use(express.urlencoded({ extended: true }));
   app.useGlobalFilters(new AllExceptionsFilter());
-  // Serve static files from the uploads directory
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   app.useGlobalPipes(new ValidationPipe());

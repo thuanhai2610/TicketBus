@@ -40,7 +40,6 @@ const Trips = () => {
     const [editTrip, setEditTrip] = useState(null);
     const [openCreateTripDialog, setOpenCreateTripDialog] = useState(false);
     const [openEditTripDialog, setOpenEditTripDialog] = useState(false);
-
     const locationCoordinates = {
         "Đà Nẵng": { lat: 16.05676, lng: 108.17257 },
         Huế: { lat: 16.45266, lng: 107.60618 },
@@ -212,20 +211,19 @@ const Trips = () => {
         }
     };
 
+    
     const handleUpdateTrip = async () => {
         try {
             setIsSubmitting(true);
-
-            const [depDay, depMonth, depYear] = editTrip.departureDate.split("-");
-            const [depHour, depMinute] = editTrip.departureHour.split(":");
-            const localDepartureDate = new Date(depYear, depMonth - 1, depDay, depHour, depMinute, 0);
-            const departureTime = localDepartureDate.toISOString();
-
-            const [arrDay, arrMonth, arrYear] = editTrip.arrivalDate.split("-");
-            const [arrHour, arrMinute] = editTrip.arrivalHour.split(":");
-            const localArrivalDate = new Date(arrYear, arrMonth - 1, arrDay, arrHour, arrMinute, 0);
-            const arrivalTime = localArrivalDate.toISOString();
-
+    
+            const formatISOWithoutTimezone = (dateStr, timeStr) => {
+                const [day, month, year] = dateStr.split("-");
+                return `${year}-${month}-${day}T${timeStr}:00Z`;
+            };
+    
+            const departureTime = formatISOWithoutTimezone(editTrip.departureDate, editTrip.departureHour);
+            const arrivalTime = formatISOWithoutTimezone(editTrip.arrivalDate, editTrip.arrivalHour);
+    
             const tripToSend = {
                 vehicleId: editTrip.vehicleId,
                 driverId: editTrip.driverId,
@@ -235,13 +233,13 @@ const Trips = () => {
                 destinationPoint: editTrip.destinationPoint,
                 destinationLatitude: Number(editTrip.destinationLatitude),
                 destinationLongtitude: Number(editTrip.destinationLongtitude),
-                departureTime,
-                arrivalTime,
+                departureTime, // ← đây là string
+                arrivalTime,   // ← đây cũng là string
                 price: Number(editTrip.price),
                 status: editTrip.status,
             };
-
-            const response = await axios.put(
+    
+            await axios.put(
                 `http://localhost:3001/trip/${editTrip.tripId}`,
                 tripToSend,
                 {
@@ -250,37 +248,26 @@ const Trips = () => {
                     },
                 }
             );
-
-            if (!response.data) {
-                setNotification({
-                    open: true,
-                    message:
-                        "Không thể cập nhật chuyến đi vì tài xế hoặc xe đã được phân công.",
-                    severity: "warning",
-                });
-                return;
-            }
-
-            setOpenEditTripDialog(false);
+    
             setNotification({
                 open: true,
                 message: "Chuyến đi đã được cập nhật thành công",
                 severity: "success",
             });
+            setOpenEditTripDialog(false);
             fetchTrips(selectedCompanyId);
         } catch (error) {
-            console.error("Error updating trip:", error);
             setNotification({
                 open: true,
-                message:
-                    error.response?.data?.message ||
-                    "Không thể cập nhật chuyến đi. Vui lòng thử lại sau.",
+                message: error.response?.data?.message || "Có lỗi xảy ra",
                 severity: "error",
             });
         } finally {
             setIsSubmitting(false);
         }
     };
+    
+    
 
     const handleDeleteTrip = async (tripId) => {
         try {
@@ -726,7 +713,7 @@ const Trips = () => {
                                                 : ""
                                         }
                                         onChange={(e) => {
-                                            const rawValue = e.target.value.replace(/\D/g, ""); // loại bỏ mọi ký tự không phải số
+                                            const rawValue = e.target.value.replace(/\D/g, "");
                                             setNewTrip((prev) => ({
                                                 ...prev,
                                                 price: rawValue,
