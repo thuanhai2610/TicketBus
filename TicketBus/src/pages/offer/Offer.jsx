@@ -6,11 +6,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const Offer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [page, setPage] = useState(1);
   const limit = 6;
 

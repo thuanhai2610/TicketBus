@@ -1,12 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-
-
 import { FaCircleCheck } from 'react-icons/fa6'
-import { IoCloseCircle } from 'react-icons/io5'
 import { QRCodeCanvas } from 'qrcode.react';
 import BusImg from '../../../../assets/logoxanh.png'
-import QrCode from '../../../../assets/qrcode.jpg'
 import { FaPhone } from 'react-icons/fa'
 
 const PassengerInvoice = ({

@@ -53,13 +53,11 @@ const ManageTickets = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
       const categorizedTickets = {
         completed: response.data.filter((ticket) => ticket.paymentStatus === "completed"),
         failed: response.data.filter((ticket) => ticket.paymentStatus === "failed"),
         pending: response.data.filter((ticket) => ticket.paymentStatus === "pending"),
       };
-
       setRevenue({
         totalTickets: response.data.length,
         completedTickets: categorizedTickets.completed.length,

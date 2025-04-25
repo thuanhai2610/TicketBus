@@ -4,12 +4,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const Trips = () => {
-    const [formErrors, setFormErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [openTripDialog, setOpenTripDialog] = useState(true);
     const [notification, setNotification] = useState({
         open: false,
         message: "",

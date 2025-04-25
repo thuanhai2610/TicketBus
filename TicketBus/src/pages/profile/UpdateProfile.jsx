@@ -147,6 +147,7 @@ const UpdateProfile = () => {
 
       setTimeout(() => {
         navigate("/user/profile")
+    window.location.reload();
       }, 1000);
     } catch (error) {
       console.error("Error updating profile:", error);

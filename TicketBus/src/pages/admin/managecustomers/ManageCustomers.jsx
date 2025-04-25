@@ -13,27 +13,20 @@ const ManageCustomers = () => {
     const fetchUsers = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        // Gọi API /user/all với Bearer Token trong header
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/all`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        // Xử lý avatar URLs cho tất cả users
         const usersWithAvatars = response.data.map(user => {
           if (user.avatar) {
             if (user.avatar.startsWith('http')) {
-              // Nếu avatar là URL đầy đủ, sử dụng trực tiếp
               return { ...user, avatarUrl: user.avatar };
             } else {
-              // Nếu avatar là đường dẫn tương đối, thêm base URL
               return { ...user, avatarUrl: `${import.meta.env.VITE_API_URL}${user.avatar}` };
             }
           } else {
-            // Nếu không có avatar, đặt avatarUrl thành rỗng
             return { ...user, avatarUrl: '' };
           }
         });
@@ -59,9 +52,9 @@ const ManageCustomers = () => {
 
 
   const formatDate = (date) => {
-    if (!date) return "N/A"; // Nếu không có ngày, trả về giá trị mặc định
+    if (!date) return "N/A"; 
     const parsedDate = new Date(date);
-    if (isNaN(parsedDate.getTime())) return "Invalid Date"; // Kiểm tra nếu ngày hợp lệ
+    if (isNaN(parsedDate.getTime())) return "Invalid Date"; 
     return parsedDate.toISOString().split("T")[0];
   }
   return (
