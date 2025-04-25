@@ -96,7 +96,11 @@ const UpdateProfile = () => {
       reader.readAsDataURL(file);
     }
   };
-
+  const handleCancel = () => {
+    navigate(-1); // quay lại trang trước
+    // hoặc navigate("/dashboard"); // nếu muốn chuyển tới trang cụ thể
+  };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -128,7 +132,7 @@ const UpdateProfile = () => {
         formDataToSend.append("avatar", selectedFile);
       }
 
-      const response = await axios.post(
+    await axios.post(
         `${import.meta.env.VITE_API_URL}/user/update-profile`,
         formDataToSend,
         {
@@ -142,7 +146,7 @@ const UpdateProfile = () => {
       setSuccessMsg("Cập nhật thông tin thành công!");
 
       setTimeout(() => {
-        window.location.reload();
+        navigate("/user/profile")
       }, 1000);
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -311,14 +315,15 @@ const UpdateProfile = () => {
           >
             {loading ? "Đang cập nhật..." : "Cập nhật"}
           </button>
-{/* 
+
           <button
             type="button"
+
             onClick={handleCancel}
             className="bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600 dark:hover:text-neutral-950 hover:text-neutral-950"
           >
             Hủy
-          </button> */}
+          </button>
         </div>
 
         {successMsg && (
