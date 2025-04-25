@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { FaRegEye, FaEyeSlash } from "react-icons/fa";
-// import { FaSquareTwitter } from "react-icons/fa6";
 import axios from "axios";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import bgLogin from "../../assets/bgLogin.jpg"
@@ -86,13 +85,6 @@ const Login = () => {
     const handleGoogleFailure = () => {
         setError("Google login failed. Please try again.");
         setSocialLoading(false);
-    };
-    const handleFacebookSuccess = (response) => {
-        console.log("Facebook login success:", response);
-    };
-
-    const handleFacebookFailure = (error) => {
-        console.error("Facebook login failed:", error);
     };
     return (
         <GoogleOAuthProvider clientId={"1055268521864-uqrdrd5mpqbeskmqe28gb2kk37050t4b.apps.googleusercontent.com"}>

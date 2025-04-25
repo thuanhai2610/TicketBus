@@ -16,7 +16,6 @@ const Employees = () => {
   });
   const [message, setMessage] = useState("");
   const [showForm, setShowForm] = useState(false);
-
   const token = localStorage.getItem("token");
 
   const handleChange = (e) => {

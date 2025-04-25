@@ -2,14 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import bgRegister from "../../assets/bgRegister.jpg"
 import {
-  FaFacebook,
-  FaGithub,
-  FaDiscord,
-  FaApple,
   FaRegEye,
   FaEyeSlash,
 } from "react-icons/fa";
-import { FaSquareTwitter } from "react-icons/fa6";
 import axios from "axios";
 const Register = () => {
   const [agreeTerms, setAgreeTerms] = useState(false);

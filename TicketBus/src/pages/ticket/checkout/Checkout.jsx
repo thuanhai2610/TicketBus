@@ -9,7 +9,6 @@ import PassengerData from './passengerdata/PassengerData';
 import BookingStatus from './bookingstatus/BookingStatus';
 import { useNavigate, useLocation} from 'react-router-dom';
 import { useEffect } from 'react';
-import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
