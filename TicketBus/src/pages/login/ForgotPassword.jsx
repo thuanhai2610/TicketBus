@@ -16,7 +16,7 @@ function ForgotPassword() {
   const [error, setError] = useState("");
   const [resendMessage, setResendMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(0); // Thêm trạng thái đếm ngược gửi lại OTP
+  const [resendCooldown, setResendCooldown] = useState(0); 
   const inputRefs = useRef([]);
   const navigate = useNavigate();
   const [showNewPassword, setShowNewPassword] = useState(false);

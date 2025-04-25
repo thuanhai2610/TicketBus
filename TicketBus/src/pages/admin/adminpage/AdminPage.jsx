@@ -24,7 +24,7 @@ const AdminPage = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const tripRes = await axios.get("http://localhost:3001/trip/all", {
+      const tripRes = await axios.get(`${import.meta.env.VITE_API_URL}/trip/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
