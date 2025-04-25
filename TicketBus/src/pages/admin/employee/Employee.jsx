@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from 'react-toastify';
@@ -35,9 +36,9 @@ const Employees = () => {
         toast.warning(response.data?.message || "DriverId đã tồn tại!");
         return;
       }
-  
+
       toast.success("Tài xế đã được thêm thành công!");
-  
+
       setFormData({
         driverName: "",
         phone: "",
@@ -52,9 +53,10 @@ const Employees = () => {
         toast.warning(error.response?.data?.message || "Dữ liệu không hợp lệ");
       } else {
         toast.error("Đã xảy ra lỗi khi thêm tài xế.");
-      } }
+      }
+    }
   };
-  
+
 
   const fetchDrivers = async () => {
     try {
@@ -116,16 +118,9 @@ const Employees = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-6 text-white">
-      {!showForm && (
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        >
-          Thêm tài xế
-        </button>
-      )}
+    <div className="w-full mx-auto text-white">
 
+      <h2 className="text-3xl font-bold mb-4 uppercase">quản lí danh sách tài xế</h2>
       {showForm && (
         <form
           onSubmit={editingDriver ? handleUpdate : handleSubmit}
@@ -201,42 +196,93 @@ const Employees = () => {
       {message && <p className="mt-4 text-sm text-center text-green-400">{message}</p>}
 
       <div className="p-4">
-        <h2 className="text-2xl font-bold mb-4">Danh sách Tài xế</h2>
+
+        {!showForm && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-emerald-500 hover:bg-emerald-700 text-white px-4 py-2 mb-6 rounded flex justify-end text-end"
+          >
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 4v16m8-8H4"
+              ></path>
+            </svg>
+            Thêm tài xế
+          </button>
+        )}
         {loading ? (
           <p>Đang tải...</p>
         ) : (
-          <table className="min-w-full table-auto border-collapse border border-gray-700 text-white">
+          <table className="min-w-full table-auto border-collapse border border-gray-700 shadow-lg shadow-neutral-400 text-white">
             <thead className="bg-gray-800">
               <tr>
-                <th className="border border-gray-700 px-4 py-2">Tên tài xế</th>
-                <th className="border border-gray-700 px-4 py-2">SĐT</th>
-                <th className="border border-gray-700 px-4 py-2">Địa chỉ</th>
-                <th className="border border-gray-700 px-4 py-2">Mã tài xế</th>
-                <th className="border border-gray-700 px-4 py-2">Mã công ty</th>
-                <th className="border border-gray-700 px-4 py-2">Hành động</th>
+                <th className="  px-4 py-2">Tên tài xế</th>
+                <th className="  px-4 py-2">SĐT</th>
+                <th className="  px-4 py-2">Địa chỉ</th>
+                <th className="  px-4 py-2">Mã tài xế</th>
+                <th className="  px-4 py-2">Mã công ty</th>
+                <th className="  px-4 py-2">Hành động</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-500">
               {drivers.map((driver) => (
                 <tr key={driver.driverId} className="text-center">
-                  <td className="border border-gray-700 px-4 py-2">{driver.driverName}</td>
-                  <td className="border border-gray-700 px-4 py-2">{driver.phone}</td>
-                  <td className="border border-gray-700 px-4 py-2">{driver.address}</td>
-                  <td className="border border-gray-700 px-4 py-2">{driver.driverId}</td>
-                  <td className="border border-gray-700 px-4 py-2">{driver.companyId}</td>
-                  <td className="border border-gray-700 px-4 py-2 space-x-2">
-                    <button
-                      onClick={() => handleEdit(driver)}
-                      className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded"
-                    >
-                      Sửa
-                    </button>
+                  <td className=" px-4 py-2">{driver.driverName}</td>
+                  <td className=" px-4 py-2">{driver.phone}</td>
+                  <td className="  px-4 py-2">{driver.address}</td>
+                  <td className="  px-4 py-2">{driver.driverId}</td>
+                  <td className="  px-4 py-2">{driver.companyId}</td>
+                  <td className="px-2 py-4 text-sm flex space-x-2 justify-center ">
                     <button
                       onClick={() => handleDelete(driver.driverId)}
-                      className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded"
+                      className="border border-red-500 text-red-500 px-3 py-1 rounded flex items-center hover:bg-red-500 hover:text-white"
                     >
+                      <svg
+                        className="w-4 h-4 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        ></path>
+                      </svg>
                       Xóa
                     </button>
+                    <button
+                      onClick={() => handleEdit(driver)}
+                      className="border border-blue-500 text-blue-500 px-3 py-1 rounded flex items-center hover:bg-blue-500 hover:text-white"
+                    >
+                      <svg
+                        className="w-4 h-4 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        ></path>
+                      </svg>
+                      Sửa
+                    </button>
+
                   </td>
                 </tr>
               ))}

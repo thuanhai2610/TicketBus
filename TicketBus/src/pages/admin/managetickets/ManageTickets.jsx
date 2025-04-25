@@ -129,7 +129,7 @@ const ManageTickets = () => {
   return (
     <div className="p-4 bg-gray-900 max-h-screen overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-white uppercase">Quản Lý vé đã bán</h2>
+        <h2 className="text-3xl font-bold text-white uppercase">Quản Lý vé đã bán</h2>
       </div>
 
       {/* Loading state */}
