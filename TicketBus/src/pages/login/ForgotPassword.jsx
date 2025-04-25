@@ -48,7 +48,7 @@ function ForgotPassword() {
       setIsLoading(true);
       setError("");
       setResendMessage("");
-      const response = await axios.post("http://localhost:3001/forgot-password", { email });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/forgot-password`, { email });
       const { success, userId, message } = response.data;
       if (success === false) {
         setError(message || "Không tìm thấy email. Vui lòng kiểm tra lại.");
@@ -72,7 +72,7 @@ function ForgotPassword() {
       setIsLoading(true);
       setError("");
       setResendMessage("");
-      const response = await axios.post("http://localhost:3001/otp/resend", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/otp/resend`, {
         userId,
         isForgotPassword: true, // Thêm tham số này để backend truy vấn từ users
       });
@@ -101,7 +101,7 @@ function ForgotPassword() {
       setIsLoading(true);
       setError("");
       setResendMessage("");
-      const response = await axios.post("http://localhost:3001/verify-otp", { otp: otpCode, userId });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/verify-otp`, { otp: otpCode, userId });
       const { success, message } = response.data;
       if (!success) {
         setError(message || "Mã OTP không hợp lệ. Vui lòng thử lại.");
@@ -153,7 +153,7 @@ function ForgotPassword() {
     try {
       setIsLoading(true);
       setError("");
-      const response = await axios.post("http://localhost:3001/change-password", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/change-password`, {
         userId,
         newPassword,
       });

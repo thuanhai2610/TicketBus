@@ -31,7 +31,7 @@ const SearchResult = ({ trips }) => { // Nhận prop trips từ Ticket
 
       for (const vehicleId of uniqueVehicleIds) {
         try {
-          const response = await axios.get(`http://localhost:3001/vehicle/${vehicleId}`, {
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/vehicle/${vehicleId}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },

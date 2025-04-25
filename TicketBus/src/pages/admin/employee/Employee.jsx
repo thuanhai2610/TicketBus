@@ -29,7 +29,7 @@ const Employees = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3001/drivers", formData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/drivers`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data === null || response.data.success === false) {
@@ -60,7 +60,7 @@ const Employees = () => {
 
   const fetchDrivers = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/drivers/all", {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/drivers/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDrivers(res.data);
@@ -95,7 +95,7 @@ const Employees = () => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`http://localhost:3001/drivers/${editingDriver}`, formData, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/drivers/${editingDriver}`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchDrivers();
@@ -108,7 +108,7 @@ const Employees = () => {
   const handleDelete = async (driverId) => {
     if (!window.confirm("Bạn chắc chắn muốn xóa tài xế này?")) return;
     try {
-      await axios.delete(`http://localhost:3001/drivers/${driverId}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/drivers/${driverId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchDrivers();

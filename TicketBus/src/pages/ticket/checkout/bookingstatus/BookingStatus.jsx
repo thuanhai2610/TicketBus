@@ -90,7 +90,7 @@ const BookingStatus = ({
         status: "Booked",
       };
       await axios.put(
-        `http://localhost:3001/tickets/${ticketId}`,
+        `${import.meta.env.VITE_API_URL}/tickets/${ticketId}`,
         updateTicketData,
         {
           headers: {
@@ -108,7 +108,7 @@ const BookingStatus = ({
         paymentMethod: paymentMethod,
         paymentStatus: "pending",
       };
-      const paymentResponse = await fetch("http://localhost:3001/payments", {
+      const paymentResponse = await fetch(`${import.meta.env.VITE_API_URL}/payments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -131,7 +131,7 @@ const BookingStatus = ({
         };
 
         await axios.put(
-          `http://localhost:3001/tickets/${ticketId}`,
+          `${import.meta.env.VITE_API_URL}/tickets/${ticketId}`,
           updateTicketPayload,
           {
             headers: {
@@ -152,7 +152,7 @@ const BookingStatus = ({
           status: "Paid",
         };
         const updateTicketStatusResponse = await axios.put(
-          `http://localhost:3001/tickets/${ticketId}`,
+          `${import.meta.env.VITE_API_URL}/tickets/${ticketId}`,
           updateTicketPayload,
           {
             headers: {
@@ -162,7 +162,7 @@ const BookingStatus = ({
           }
         );
         const updatePaymentResponse = await axios.put(
-          `http://localhost:3001/payments/${ticketId}`,
+          `${import.meta.env.VITE_API_URL}/payments/${ticketId}`,
           { paymentStatus: "completed" },
           {
             headers: {
@@ -268,7 +268,7 @@ const BookingStatus = ({
 
       // Update the ticket status to "Cancelled"
       const updateTicketResponse = await axios.put(
-        `http://localhost:3001/tickets/${ticketId}`,
+        `${import.meta.env.VITE_API_URL}/tickets/${ticketId}`,
         { status: "Cancelled" },
         {
           headers: {
@@ -328,7 +328,7 @@ const BookingStatus = ({
         }
 
         const response = await axios.get(
-          `http://localhost:3001/vehicle/${vehicleId}`,
+          `${import.meta.env.VITE_API_URL}/vehicle/${vehicleId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -363,7 +363,7 @@ const BookingStatus = ({
     setError(null);
 
     try {
-      const response = await axios.post("http://localhost:3001/coupons/apply", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/coupons/apply`, {
         code: couponCode,
         amount: totalPrice,
       });

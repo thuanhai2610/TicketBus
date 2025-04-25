@@ -20,7 +20,7 @@ const Discount = () => {
 
   const fetchCoupons = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/coupons");
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/coupons`);
       setCoupons(res.data);
     } catch (error) {
       console.error("Lỗi khi tải danh sách mã:", error);
@@ -47,9 +47,9 @@ const Discount = () => {
 
     try {
       if (editingId) {
-        await axios.put(`http://localhost:3001/coupons/${editingId}`, payload);
+        await axios.put(`${import.meta.env.VITE_API_URL}/coupons/${editingId}`, payload);
       } else {
-        await axios.post("http://localhost:3001/coupons", payload);
+        await axios.post(`${import.meta.env.VITE_API_URL}/coupons`, payload);
       }
 
       await fetchCoupons();
@@ -84,7 +84,7 @@ const Discount = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc muốn xoá mã này không?")) {
       try {
-        await axios.delete(`http://localhost:3001/coupons/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/coupons/${id}`);
         await fetchCoupons();
       } catch (error) {
         console.error("Lỗi khi xoá mã:", error);

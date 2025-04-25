@@ -14,7 +14,6 @@ const Profile = () => {
 
     const location = useLocation();
     const navigate = useNavigate();
-    const BACKEND_URL = "http://localhost:3001";
 
     const isMainProfilePage = location.pathname === "/user/profile";
 
@@ -33,14 +32,14 @@ const Profile = () => {
 
             const fetchProfile = async () => {
                 try {
-                    const response = await axios.get(`${BACKEND_URL}/user/profile`, {
+                    const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
 
                     const avatar = response.data.avatar
                         ? response.data.avatar.startsWith("http")
                             ? response.data.avatar
-                            : `${BACKEND_URL}${response.data.avatar}`
+                            : `${import.meta.env.VITE_API_URL}${response.data.avatar}`
                         : null;
 
                     const dobDate = response.data.dob ? new Date(response.data.dob) : null;

@@ -16,8 +16,6 @@ const UpdateProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const BACKEND_URL = "http://localhost:3001";
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -33,7 +31,7 @@ const UpdateProfile = () => {
 
         const fetchProfile = async () => {
           try {
-            const response = await axios.get(`${BACKEND_URL}/user/profile`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile`, {
               headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -131,7 +129,7 @@ const UpdateProfile = () => {
       }
 
       const response = await axios.post(
-        `${BACKEND_URL}/user/update-profile`,
+        `${import.meta.env.VITE_API_URL}/user/update-profile`,
         formDataToSend,
         {
           headers: {
@@ -162,7 +160,7 @@ const UpdateProfile = () => {
     if (!avatarPath) return null;
     return avatarPath.startsWith('data:image/') || avatarPath.startsWith('http')
       ? avatarPath
-      : `${BACKEND_URL}${avatarPath}`;
+      : `${import.meta.env.VITE_API_URL}${avatarPath}`;
   };
 
   if (loading && !profile) {

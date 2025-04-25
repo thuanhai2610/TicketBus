@@ -23,7 +23,7 @@ const Ticket = () => {
   const fetchTrips = async (from, to, date) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/trip/search?departurePoint=${encodeURIComponent(from)}&destinationPoint=${encodeURIComponent(to)}&date=${date}`
+        `${import.meta.env.VITE_API_URL}/trip/search?departurePoint=${encodeURIComponent(from)}&destinationPoint=${encodeURIComponent(to)}&date=${date}`
       );
       if (!response.ok) throw new Error("Không thể tìm kiếm chuyến xe, vui lòng thử lại");
       const data = await response.json();

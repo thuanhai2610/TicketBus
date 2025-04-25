@@ -33,7 +33,7 @@ const Vehicles = () => {
     const fetchCompanies = async () => {
         try {
             setLoading(true);
-            const response = await axios.get("http://localhost:3001/companies", {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/companies`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
@@ -54,7 +54,7 @@ const Vehicles = () => {
             setVehiclesLoading(true);
             setVehiclesError(null);
             const response = await axios.get(
-                `http://localhost:3001/vehicle?companyId=${companyId}`,
+                `${import.meta.env.VITE_API_URL}/vehicle?companyId=${companyId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -122,7 +122,7 @@ const Vehicles = () => {
             }
 
             const companyResponse = await axios.get(
-                `http://localhost:3001/companies?companyId=${newVehicle.companyId}`,
+                `${import.meta.env.VITE_API_URL}/companies?companyId=${newVehicle.companyId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -145,7 +145,7 @@ const Vehicles = () => {
                 seatCount: seatCountNum,
                 availableSeats: availableSeatsNum,
             };
-            await axios.post(`http://localhost:3001/vehicle`, vehicleToSend, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/vehicle`, vehicleToSend, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
@@ -212,7 +212,7 @@ const Vehicles = () => {
             };
 
             await axios.put(
-                `http://localhost:3001/vehicle/${editVehicle.vehicleId}`,
+                `${import.meta.env.VITE_API_URL}/vehicle/${editVehicle.vehicleId}`,
                 vehicleToSend,
                 {
                     headers: {
@@ -244,7 +244,7 @@ const Vehicles = () => {
 
     const handleDeleteVehicle = async (vehicleId) => {
         try {
-            await axios.delete(`http://localhost:3001/vehicle/${vehicleId}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/vehicle/${vehicleId}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },

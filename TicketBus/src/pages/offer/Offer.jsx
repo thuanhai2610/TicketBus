@@ -24,7 +24,7 @@ const Offer = () => {
   useEffect(() => {
     const fetchCoupons = async () => {
       try {
-        const res = await axios.get('http://localhost:3001/coupons');
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/coupons`);
         setPromotions(res.data);
       } catch (err) {
         console.error(err);

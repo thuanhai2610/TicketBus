@@ -8,7 +8,6 @@ const ManageCustomers = () => {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem('token');
-  const API_BASE_URL = 'http://localhost:3001';
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -17,7 +16,7 @@ const ManageCustomers = () => {
 
       try {
         // Gọi API /user/all với Bearer Token trong header
-        const response = await axios.get(`${API_BASE_URL}/user/all`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/all`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -31,7 +30,7 @@ const ManageCustomers = () => {
               return { ...user, avatarUrl: user.avatar };
             } else {
               // Nếu avatar là đường dẫn tương đối, thêm base URL
-              return { ...user, avatarUrl: `${API_BASE_URL}${user.avatar}` };
+              return { ...user, avatarUrl: `${import.meta.env.VITE_API_URL}${user.avatar}` };
             }
           } else {
             // Nếu không có avatar, đặt avatarUrl thành rỗng
