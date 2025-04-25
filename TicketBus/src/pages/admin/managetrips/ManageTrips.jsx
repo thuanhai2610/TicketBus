@@ -8,7 +8,7 @@ const ManageTrips = () => {
 
   return (
     <div className="bg-gray-900 text-white min-h-screen p-4">
-      <h2 className="font-bold uppercase mb-4 text-xl">
+      <h2 className="font-bold uppercase mb-4 text-3xl">
         Quản lý Hệ thống Bến Xe
       </h2>
 

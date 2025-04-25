@@ -125,18 +125,21 @@ export default function RevenueChart({ chartHeight = 400 }) {
   if (error) return <p className="text-red-500">Lỗi: {error.message}</p>;
 
   return (
-    <>
+    <>  
+  <h2 className="p-6 font-bold uppercase text-3xl">
+      Quản lý Doanh Thu
+    </h2>
       <CardHeader>
-        <CardTitle>Doanh thu theo thời gian</CardTitle>
-        <div className="flex space-x-2 mt-2">
+
+        <div className="flex space-x-2">
           <button
-            className={`px-3 py-1 rounded text-sm ${view === "daily" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}
+            className={`px-3 py-1 rounded text-sm ${view === "daily" ? "bg-primaryblue text-neutral-950" : "bg-transparent text-gray-50 border"}`}
             onClick={() => handleViewChange("daily")}
           >
             Doanh thu ngày
           </button>
           <button
-            className={`px-3 py-1 rounded text-sm ${view === "monthly" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}
+            className={`px-3 py-1 rounded text-sm ${view === "monthly" ? "bg-primaryblue text-neutral-950" : "bg-transparent border text-gray-50"}`}
             onClick={() => handleViewChange("monthly")}
           >
             Doanh thu tháng

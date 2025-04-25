@@ -26,10 +26,10 @@ const PromotionCard = ({ promo }) => {
     : 'Không giới hạn';
 
   return (
-    <div className="flex flex-col justify-between h-[240px] dark:bg-slate-800 bg-white rounded-2xl shadow-md hover:shadow-xl shadow-slate-400 transition p-6">
+    <div className="flex flex-col justify-between h-[240px] dark:bg-slate-800 bg-white rounded-2xl shadow-md hover:shadow-xl hover:shadow-slate-400 transition p-6">
       <div>
         <h2 className="text-2xl font-semibold text-primary mb-2 dark:text-neutral-100">{title}</h2>
-        <p className="text-gray-700 mb-2 text-xl dark:text-neutral-300">{promo.description}</p>
+        <p className="text-gray-700 mb-2 text-lg dark:text-neutral-300">{promo.description}</p>
         <p className="text-sm text-gray-500 dark:text-gray-400">Hết hạn: {expiresText}</p>
       </div>
 

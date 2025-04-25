@@ -139,7 +139,7 @@ const AdminPage = () => {
 
   return (
     <div className="p-6 bg-gray-900 text-white max-h-screen overflow-y-auto">
-      <h2 className="text-2xl font-semibold mb-6">Bảng điều khiển</h2>
+      <h2 className="text-3xl font-bold mb-6 uppercase">Bảng điều khiển</h2>
 
       {/* Dashboard Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">

@@ -66,33 +66,33 @@ const ManageCustomers = () => {
     return parsedDate.toISOString().split("T")[0];
   }
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Danh sách khách hàng</h2>
+    <div className="">
+      <h2 className="text-3xl font-bold mb-4 uppercase">Danh sách khách hàng</h2>
 
       {loading && <p>Đang tải...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
       {!loading && !error && (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse border border-gray-300 ">
+        <div className="overflow-x-auto mt-10">
+          <table className="min-w-full border-collapse border border-gray-700 ">
             <thead>
               <tr className="bg-gray-700 hover:bg-primary">
-                <th className="border border-gray-300 px-4 py-2">Avatar</th>
-                <th className="border border-gray-300 px-4 py-2">Username</th>
-                <th className="border border-gray-300 px-4 py-2">Phone</th>
-                <th className="border border-gray-300 px-4 py-2">Email</th>
-                <th className="border border-gray-300 px-4 py-2">Date of Birth</th>
-                <th className="border border-gray-300 px-4 py-2">First name</th>
-                <th className="border border-gray-300 px-4 py-2">Last name</th>
-                <th className="border border-gray-300 px-4 py-2">Role</th>
-                <th className="border border-gray-300 px-4 py-2">Gender</th>
+                <th className=" px-4 py-2">Avatar</th>
+                <th className="  px-4 py-2">Username</th>
+                <th className="  px-4 py-2">Phone</th>
+                <th className="  px-4 py-2">Email</th>
+                <th className="  px-4 py-2">Date of Birth</th>
+                <th className="  px-4 py-2">First name</th>
+                <th className="  px-4 py-2">Last name</th>
+                <th className="  px-4 py-2">Role</th>
+                <th className="  px-4 py-2">Gender</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className='divide-y divide-gray-700'>
               {users.length > 0 ? (
                 users.map((user, index) => (
                   <tr key={index} className="hover:bg-gray-500">
-                    <td className="border border-gray-300 px-4 py-2 text-center">
+                    <td className=" px-4 py-2 text-center">
                       {user.avatarUrl ? (
                         <div className="flex justify-center">
                           <img
@@ -116,19 +116,19 @@ const ManageCustomers = () => {
                         </div>
                       )}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">{user.username}</td>
-                    <td className="border border-gray-300 px-4 py-2">{user.phone || 'N/A'}</td>
-                    <td className="border border-gray-300 px-4 py-2">{user.email || 'N/A'}</td>
-                    <td className="border border-gray-300 px-4 py-2">{formatDate(user.dob)}</td>
-                    <td className="border border-gray-300 px-4 py-2">{user.firstName || 'N/A'}</td>
-                    <td className="border border-gray-300 px-4 py-2">{user.lastName || 'N/A'}</td>
-                    <td className="border border-gray-300 px-4 py-2">{user.role || 'N/A'}</td>
-                    <td className="border border-gray-300 px-4 py-2">{user.gender || 'N/A'}</td>
+                    <td className=" text-center px-4 py-2">{user.username}</td>
+                    <td className="text-center  px-4 py-2">{user.phone || 'N/A'}</td>
+                    <td className=" text-center px-4 py-2">{user.email || 'N/A'}</td>
+                    <td className=" text-center px-4 py-2">{formatDate(user.dob)}</td>
+                    <td className=" text-center px-4 py-2">{user.firstName || 'N/A'}</td>
+                    <td className=" text-center px-4 py-2">{user.lastName || 'N/A'}</td>
+                    <td className=" text-center px-4 py-2">{user.role || 'N/A'}</td>
+                    <td className=" text-center px-4 py-2">{user.gender || 'N/A'}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="9" className="border border-gray-300 px-4 py-2 text-center">
+                  <td colSpan="9" className="  px-4 py-2 text-center">
                     Không có khách hàng nào.
                   </td>
                 </tr>
