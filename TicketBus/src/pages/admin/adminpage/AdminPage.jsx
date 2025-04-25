@@ -24,7 +24,7 @@ const AdminPage = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const tripRes = await axios.get("http://localhost:3001/trip/all", {
+      const tripRes = await axios.get(`${import.meta.env.VITE_API_URL}/trip/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -32,7 +32,7 @@ const AdminPage = () => {
         tripRes.data.map(async (trip) => {
           try {
             const vehicleRes = await axios.get(
-              `http://localhost:3001/vehicle/${trip.vehicleId}`,
+              `${import.meta.env.VITE_API_URL}/vehicle/${trip.vehicleId}`,
               {
                 headers: { Authorization: `Bearer ${token}` },
               }
@@ -53,7 +53,7 @@ const AdminPage = () => {
         })
       );
 
-      const totalTripRes = await axios.get("http://localhost:3001/trip/total", {
+      const totalTripRes = await axios.get(`${import.meta.env.VITE_API_URL}/trip/total`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,7 +81,7 @@ const AdminPage = () => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "http://localhost:3001/payments/revenues/total",
+          `${import.meta.env.VITE_API_URL}/payments/revenues/total`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -103,7 +103,7 @@ const AdminPage = () => {
     const fetchTotalUsers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:3001/user/total", {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/user/total`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -121,7 +121,7 @@ const AdminPage = () => {
     const token = localStorage.getItem("token");
     try {
       await axios.put(
-        `http://localhost:3001/trip/${tripId}`,
+        `${import.meta.env.VITE_API_URL}/trip/${tripId}`,
         { status: newStatus },
         {
           headers: {

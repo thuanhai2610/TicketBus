@@ -48,7 +48,7 @@ const ManageTickets = () => {
     setError(null);
 
     try {
-      const response = await axios.get("http://localhost:3001/payments/all", {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/payments/all`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

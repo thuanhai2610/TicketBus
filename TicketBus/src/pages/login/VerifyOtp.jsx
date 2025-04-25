@@ -56,7 +56,7 @@ const VerifyOtp = () => {
     setResendMessage(""); // Reset thông báo gửi lại
 
     try {
-      const response = await axios.post("http://localhost:3001/verify-otp", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/verify-otp`, {
         otp: otpCode,
         userId,
       });
@@ -88,7 +88,7 @@ const VerifyOtp = () => {
     setResendMessage("");
 
     try {
-      const response = await axios.post("http://localhost:3001/otp/resend", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/otp/resend`, {
         userId,
       });
       setResendMessage("Mã OTP mới đã được gửi đến email của bạn!");

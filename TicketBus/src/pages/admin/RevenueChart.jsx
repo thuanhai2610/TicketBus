@@ -11,8 +11,6 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 
-const API_URL = "http://localhost:3001/payments/revenues";
-
 export default function RevenueChart({ chartHeight = 400 }) {
   const [chartData, setChartData] = useState([]);
   const [breakdownData, setBreakdownData] = useState({});
@@ -30,7 +28,7 @@ export default function RevenueChart({ chartHeight = 400 }) {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/payments/revenues`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

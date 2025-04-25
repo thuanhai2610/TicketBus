@@ -34,7 +34,7 @@ const TicketHistory = () => {
     const fetchTickets = async () => {
         try {
             const username = localStorage.getItem("username");
-            const response = await axios.get(`http://localhost:3001/tickets/user/${username}`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/tickets/user/${username}`);
             setTickets(response.data);
         } catch (error) {
             console.error("Error fetching tickets:", error);
@@ -54,7 +54,7 @@ const TicketHistory = () => {
         switch (ticket.status) {
             case "PENDING":
                 try {
-                    await axios.put(`http://localhost:3001/tickets/${ticketId}`, {
+                    await axios.put(`${import.meta.env.VITE_API_URL}/tickets/${ticketId}`, {
                         status: "Cancelled"
                     });
                     alert("Hủy vé thành công!");

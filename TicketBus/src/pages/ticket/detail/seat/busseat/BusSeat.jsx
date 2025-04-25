@@ -36,7 +36,7 @@ const BusSeat = () => {
         handleLogout();
         return;
       }
-      const response = await axios.get(`http://localhost:3001/user/profile`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -67,7 +67,7 @@ const BusSeat = () => {
     setSeatsLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:3001/seats?vehicleId=${vehicleId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/seats?vehicleId=${vehicleId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -126,7 +126,7 @@ const BusSeat = () => {
   const fetchTripInfo = async (vehicleId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:3001/trip/all`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/trip/all`, {
         params: { vehicleId, page: 1, limit: 10 },
 
         headers: { Authorization: `Bearer ${token}` },
@@ -209,7 +209,7 @@ const BusSeat = () => {
 
 
       const response = await axios.post(
-        'http://localhost:3001/tickets/hold-seat',
+        `${import.meta.env.VITE_API_URL}/tickets/hold-seat`,
         payload,
         {
           headers: {

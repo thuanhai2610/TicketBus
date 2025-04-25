@@ -25,7 +25,7 @@ const Companies = () => {
   const fetchCompanies = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3001/companies", {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/companies`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -63,7 +63,7 @@ const Companies = () => {
 
   const handleCreateCompany = async () => {
     try {
-      await axios.post("http://localhost:3001/companies", newCompany, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/companies`, newCompany, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -98,7 +98,7 @@ const Companies = () => {
         throw new Error("Company _id is missing");
       }
       await axios.put(
-        `http://localhost:3001/companies/${editCompany._id}`,
+        `${import.meta.env.VITE_API_URL}/companies/${editCompany._id}`,
         editCompany,
         {
           headers: {

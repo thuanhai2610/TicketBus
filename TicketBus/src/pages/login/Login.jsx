@@ -33,7 +33,7 @@ const Login = () => {
         setError("");
 
         try {
-            const response = await axios.post("http://localhost:3001/login", {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
                 username,
                 password,
             });
@@ -63,7 +63,7 @@ const Login = () => {
         setSocialLoading(true);
         setError("");
         try {
-            const response = await axios.post("http://localhost:3001/google-login", {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/google-login`, {
                 credential: credentialResponse.credential,
             });
             const { access_token, role, username } = response.data;

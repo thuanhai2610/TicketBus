@@ -52,7 +52,7 @@ const Trips = () => {
     const fetchCompanies = async () => {
         try {
             setLoading(true);
-            const response = await axios.get("http://localhost:3001/companies", {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/companies`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
@@ -73,7 +73,7 @@ const Trips = () => {
             setTripsLoading(true);
             setTripsError(null);
             const response = await axios.get(
-                `http://localhost:3001/trip?companyId=${companyId}`,
+                `${import.meta.env.VITE_API_URL}/trip?companyId=${companyId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -155,7 +155,7 @@ const Trips = () => {
                 price: Number(newTrip.price),
             };
             const response = await axios.post(
-                "http://localhost:3001/trip",
+                `${import.meta.env.VITE_API_URL}/trip`,
                 tripToSend,
                 {
                     headers: {
@@ -240,7 +240,7 @@ const Trips = () => {
             };
     
             await axios.put(
-                `http://localhost:3001/trip/${editTrip.tripId}`,
+                `${import.meta.env.VITE_API_URL}/trip/${editTrip.tripId}`,
                 tripToSend,
                 {
                     headers: {
@@ -271,13 +271,13 @@ const Trips = () => {
 
     const handleDeleteTrip = async (tripId) => {
         try {
-            await axios.delete(`http://localhost:3001/trip/${tripId}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/trip/${tripId}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
 
-            await axios.delete(`http://localhost:3001/seats/trip/${tripId}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/seats/trip/${tripId}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },

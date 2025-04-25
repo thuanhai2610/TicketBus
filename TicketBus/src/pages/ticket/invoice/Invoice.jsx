@@ -40,7 +40,7 @@ const Invoice = () => {
           throw new Error('No token found. Please log in.');
         }
 
-        const response = await axios.get(`http://localhost:3001/tickets/${ticketId}`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/tickets/${ticketId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -22,8 +22,6 @@ const AdminLayout = () => {
   const handleGoToProfile = () => {
     navigate(`/user/profile?username=${username}`);
   };
-  // API base URL
-  const API_BASE_URL = "http://localhost:3001";
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -36,7 +34,7 @@ const AdminLayout = () => {
 
         const fetchUserData = async () => {
           try {
-            const response = await axios.get(`${API_BASE_URL}/user/profile?username=${decoded.username}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile?username=${decoded.username}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             setFirstName(response.data.firstName || "");
@@ -49,7 +47,7 @@ const AdminLayout = () => {
               if (response.data.avatar.startsWith("http")) {
                 setAvatar(response.data.avatar);
               } else {
-                setAvatar(`${API_BASE_URL}${response.data.avatar}`);
+                setAvatar(`${import.meta.env.VITE_API_URL}${response.data.avatar}`);
               }
             } else {
               setAvatar("");

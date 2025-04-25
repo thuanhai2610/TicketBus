@@ -32,7 +32,7 @@ const TicketVNPAY = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const queryString = urlParams.toString();
         const paymentResponse = await axios.get(
-          `http://localhost:3001/payments/vnpay/return?${queryString}`,
+          `${import.meta.env.VITE_API_URL}/payments/vnpay/return?${queryString}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ const TicketVNPAY = () => {
         // Step 2: If paymentId exists, fetch ticket data
         if (paymentResponse.data.paymentId) {
           const ticketResponse = await axios.get(
-            `http://localhost:3001/payments/tickets/ticketvnpay`, // Adjust endpoint as needed
+            `${import.meta.env.VITE_API_URL}/payments/tickets/ticketvnpay`, // Adjust endpoint as needed
             {
               params: { paymentId: paymentResponse.data.paymentId }, // Pass paymentId as query param
               headers: {
@@ -62,7 +62,7 @@ const TicketVNPAY = () => {
           if (ticketResponse.data.ticketId) {
             // Step 3: Fetch ticket details using ticketId
             const ticketDetailsResponse = await axios.get(
-              `http://localhost:3001/tickets/vn-pay/details?ticketId=${ticketResponse.data.ticketId}`,
+              `${import.meta.env.VITE_API_URL}/tickets/vn-pay/details?ticketId=${ticketResponse.data.ticketId}`,
               {
                 headers: { 'Content-Type': 'application/json' },
               }
@@ -72,7 +72,7 @@ const TicketVNPAY = () => {
                 // Step 4: Fetch trip details using tripId
           
                 const tripDetailsResponse = await axios.get(
-                  `http://localhost:3001/trip/tripdetails?tripId=${ticketDetailsResponse.data.tripId}`,
+                  `${import.meta.env.VITE_API_URL}/trip/tripdetails?tripId=${ticketDetailsResponse.data.tripId}`,
                   {
                     headers: { 'Content-Type': 'application/json' },
                   }
@@ -80,7 +80,7 @@ const TicketVNPAY = () => {
                 setTripDetails(tripDetailsResponse.data);
                 if (tripDetailsResponse.data.vehicleId) {
                     const vehicleDetailsResponse = await axios.get(
-                      `http://localhost:3001/vehicle/get/details?vehicleId=${tripDetailsResponse.data.vehicleId}`,
+                      `${import.meta.env.VITE_API_URL}/vehicle/get/details?vehicleId=${tripDetailsResponse.data.vehicleId}`,
                       {
                         headers: { 'Content-Type': 'application/json' },
                       }
