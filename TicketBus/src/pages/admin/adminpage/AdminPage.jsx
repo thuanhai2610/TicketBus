@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import RevenueChart from "../RevenueChart";
+import RevenueChart from "../revenuechart/RevenueChart";
+import RevenueAreaOnly from "../revenuechart/RevenueAreaOnly";
 
 const AdminPage = () => {
   const [trips, setTrips] = useState([]);
@@ -202,7 +203,7 @@ const AdminPage = () => {
 
       {/* Revenue Chart Section (using RevenueChart component) */}
       <Card className="bg-gray-800 border-gray-700 mb-6">
-        <RevenueChart chartHeight={200} /> {/* Smaller height */}
+        <RevenueAreaOnly chartHeight={200} /> {/* Smaller height */}
       </Card>
 
       {/* Tabs for Past Performance */}
