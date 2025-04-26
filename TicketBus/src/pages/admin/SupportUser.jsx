@@ -1,9 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FaPaperPlane, FaSmile } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
-import axios from "axios";
+import { io } from "socket.io-client";
 
-const Chatbox = () => {
+const socket = io(import.meta.env.VITE_API_URL, {
+  withCredentials: true,
+});
+
+const SupportUser = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -11,9 +15,8 @@ const Chatbox = () => {
   const chatContainerRef = useRef(null);
 
   const userId = localStorage.getItem("userId") || "";
-  const token = localStorage.getItem("token");
   const username = localStorage.getItem("username") || "Bạn";
-  const userAvatar = localStorage.getItem("avatar") || "";  // lấy avatar đã lưu
+  const userAvatar = localStorage.getItem("avatar") || "";
   const defaultAvatar = "https://i.pravatar.cc/40";
 
   const formatDateTime = (dateString) => {
@@ -30,25 +33,28 @@ const Chatbox = () => {
   };
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (!userId) return;
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/messages?senderId=${userId}&receiverId=67ebeea63d3cc6f79e3595da`);
-        const profileResponse = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        // Lưu avatar vào localStorage nếu chưa có
-        if (profileResponse.data.avatar) {
-          localStorage.setItem("avatar", profileResponse.data.avatar);
-        }
-        setMessages(response.data);
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-      }
-    };
+    if (!userId) return;
 
-    fetchMessages();
-  }, [userId, token]);
+    // Khi user vào => Join phòng userId
+    socket.emit("join", userId);
+
+    // Load lại toàn bộ tin nhắn cũ
+    socket.emit("getMessages", { senderId: userId });
+
+    socket.on("messages", (data) => {
+      setMessages(data);
+    });
+
+    socket.on("receiveMessage", (message) => {
+      // Thêm tin nhắn mới vào cuối
+      setMessages((prev) => [...prev, message]);
+    });
+
+    return () => {
+      socket.off("messages");
+      socket.off("receiveMessage");
+    };
+  }, [userId]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -60,45 +66,14 @@ const Chatbox = () => {
     if (!newMessage.trim() || !userId) return;
     setIsSending(true);
 
-    const newMessageData = {
+    socket.emit("sendMessage", {
       senderId: userId,
-      receiverId: "67ebeea63d3cc6f79e3595da",
       content: newMessage,
-    };
+    });
 
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newMessageData),
-      });
-
-      const responseData = await response.json();
-
-      if (response.ok) {
-        const formattedMessage = {
-          _id: responseData._id,
-          sender: {
-            _id: userId,
-            username: username,
-            avatar: userAvatar,  // dùng avatar mình đã lưu
-          },
-          receiver: {
-            _id: "67ebeea63d3cc6f79e3595da",
-            username: "Admin",
-          },
-          content: responseData.content,
-          createdAt: responseData.createdAt,
-        };
-        setMessages((prev) => [...prev, formattedMessage]);
-      } else {
-        alert(`Gửi tin nhắn thất bại: ${responseData.message || "Lỗi không xác định"}`);
-      }
-    } finally {
-      setIsSending(false);
-      setNewMessage("");
-      setShowEmojiPicker(false);
-    }
+    setNewMessage("");
+    setIsSending(false);
+    setShowEmojiPicker(false);
   };
 
   const handleKeyDown = (e) => {
@@ -113,8 +88,8 @@ const Chatbox = () => {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Chat với Admin</h1>
-          <p>Gửi tin nhắn để được hỗ trợ từ quản trị viên</p>
+          <h1 className="text-2xl font-bold">Hệ thống chăm sóc khách hàng</h1>
+          <p>Gửi tin nhắn để chăm sóc khách hàng</p>
         </div>
       </div>
 
@@ -138,13 +113,12 @@ const Chatbox = () => {
                     m.sender._id === userId ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
                   }`}
                 >
-                  {/* <p className="text-sm font-semibold">{m.sender.username}</p> */}
                   <p>{m.content}</p>
                   <p className="text-xs text-right opacity-70">{formatDateTime(m.createdAt)}</p>
                 </div>
                 {m.sender._id === userId && (
                   <img
-                    src={m.sender.avatar ? `${import.meta.env.VITE_API_URL}${m.sender.avatar}` : defaultAvatar}
+                    src={userAvatar ? `${import.meta.env.VITE_API_URL}${userAvatar}` : defaultAvatar}
                     alt="Avatar"
                     className="w-8 h-8 rounded-full ml-2"
                   />
@@ -193,4 +167,4 @@ const Chatbox = () => {
   );
 };
 
-export default Chatbox;
+export default SupportUser;

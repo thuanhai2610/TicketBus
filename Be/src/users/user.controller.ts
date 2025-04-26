@@ -20,8 +20,6 @@ import { RolesGuard } from 'src/auth/roles.guard'; // You'll need to create this
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UsersService) {}
-
-  // Get the authenticated user's profile
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getUserProfile(@Request() req) {
@@ -50,7 +48,6 @@ export class UserController {
     };
   }
 
-  // Update the authenticated user's profile
   @UseGuards(JwtAuthGuard)
   @Post('update-profile')
   @UseInterceptors(

@@ -39,4 +39,5 @@ export class ChatService {
   async findAdmin(): Promise<User | null> {
     return this.userModel.findOne({ role: 'admin' }).exec();
   }
+
 }

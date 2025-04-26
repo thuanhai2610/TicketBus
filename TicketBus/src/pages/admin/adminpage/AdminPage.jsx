@@ -24,7 +24,7 @@ const AdminPage = () => {
   const fetchTrips = async () => {
     try {
       const token = localStorage.getItem("token");
-
+      const userId = localStorage.getItem("userId")
       const tripRes = await axios.get(`${import.meta.env.VITE_API_URL}/trip/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });

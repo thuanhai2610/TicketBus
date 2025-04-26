@@ -29,4 +29,5 @@ export class ChatController {
   ): Promise<Message[]> {
     return this.chatService.getMessages(senderId, receiverId);
   }
+ 
 }

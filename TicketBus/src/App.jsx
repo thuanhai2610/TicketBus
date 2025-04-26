@@ -36,6 +36,7 @@ import "./pages/ticket/qrcode/style.css";
 import 'leaflet/dist/leaflet.css';
 import Discount from "./pages/admin/Discout";
 import Chatbox from "./pages/profile/Support";
+import SupportUser from "./pages/admin/SupportUser";
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
@@ -103,6 +104,7 @@ function App() {
               <Route path="settings" element={<Settings />} />
               <Route path="revenue" element={<RevenueChart />} />
               <Route path="discount" element={<Discount />} />
+              <Route path="support-user" element={<SupportUser/>} />
 
             </Route>
           </Routes>
