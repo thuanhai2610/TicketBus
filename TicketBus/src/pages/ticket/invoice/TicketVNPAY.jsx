@@ -177,6 +177,7 @@ const TicketVNPAY = () => {
               arrivalTime={tripDetails?.arrivalTime || '00:00'}
               vehicleId={vehicleDetails?.vehicleId || 'Không xác định'}
               totalPrice={ticketDetails.ticketPrice}
+              finalAmount={finalAmount}
               billStatus="Đã thanh toán"
             />
   

@@ -216,7 +216,12 @@ const Navbar = () => {
                                 >
                                     <span className="text-xs">🔄</span> Lịch sử mua vé
                                 </DropdownMenuItem>
-
+                                <DropdownMenuItem
+                                    onClick={() => navigate('/user/profile/support')}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                >
+                                    <span className="text-xs">🔄</span> Hỗ trợ
+                                </DropdownMenuItem>
                           
                                 <DropdownMenuSeparator className="my-2 border-t border-gray-300 dark:border-gray-600" />
 

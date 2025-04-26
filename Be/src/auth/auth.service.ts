@@ -86,6 +86,7 @@ export class AuthService {
       return {
         access_token: newToken,
         role: user.role,
+        sub: user._id.toString(),
       };
     } catch (error) {
       throw new BadRequestException(error.message);

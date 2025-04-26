@@ -38,6 +38,7 @@ export class UserController {
     }
 
     return {
+      userId: user._id,
       username: user.username,
       email: user.email,
       firstName: user.firstName || '',

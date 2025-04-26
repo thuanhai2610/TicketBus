@@ -7,6 +7,7 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
   app.enableCors({
     origin: ['http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -21,5 +22,6 @@ async function bootstrap() {
 
   await app.listen(3001);
   console.log(` Server running at http://localhost:3001`);
+  
 }
 bootstrap();

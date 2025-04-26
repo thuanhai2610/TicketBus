@@ -35,6 +35,7 @@ import React from "react";
 import "./pages/ticket/qrcode/style.css";
 import 'leaflet/dist/leaflet.css';
 import Discount from "./pages/admin/Discout";
+import Chatbox from "./pages/profile/Support";
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
@@ -80,6 +81,7 @@ function App() {
               <Route path="" element={<div />} /> {/* Thông tin mặc định */}
               <Route path="edit" element={<UpdateProfile />} />
               <Route path="history" element={<TicketHistory />} />
+              <Route path="support" element={<Chatbox />} />
             </Route>
 
             <Route path="/bus-tickets/detail/:vehicleId" element={<Detail />} />
