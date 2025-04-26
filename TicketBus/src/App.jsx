@@ -16,7 +16,7 @@ import ManageCustomers from "./pages/admin/managecustomers/ManageCustomers";
 import AdminPage from "./pages/admin/adminpage/AdminPage";
 import Blog from "./pages/blog/Blog";
 import Offer from "./pages/offer/Offer";
-import RevenueChart from "./pages/admin/RevenueChart";
+import RevenueChart from "./pages/admin/revenuechart/RevenueChart";
 import ProtectedRoute from "./components/protected/ProtectedRoute";
 import VerifyOtp from "./pages/login/VerifyOtp";
 import Profile from "./pages/profile/Profile";

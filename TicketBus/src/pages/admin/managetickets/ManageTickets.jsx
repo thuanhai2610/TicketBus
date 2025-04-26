@@ -3,7 +3,9 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { FaBus, FaTicketAlt, FaUsers, FaMoneyBillWave } from "react-icons/fa";
 import PieChart from './PieChart';
+import TicketLineChart from './TicketLineChart';
 import { LuTicketX, LuTicketSlash } from "react-icons/lu";
+import { FaArrowUpLong, FaArrowDown } from "react-icons/fa6";
 
 
 import {
@@ -12,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import RevenueChart from "../RevenueChart";
+import RevenueChart from "../revenuechart/RevenueChart";
 
 const ManageTickets = () => {
   const [tickets, setTickets] = useState({
@@ -75,40 +77,66 @@ const ManageTickets = () => {
       setLoading(false);
     }
   };
+  const [sortOrder, setSortOrder] = useState("desc"); // "desc" = mới nhất, "asc" = cũ nhất
 
-  const renderTickets = (ticketList) => (
-    <div className="overflow-x-auto">
-      {ticketList.length > 0 ? (
-        <table className="w-full text-white">
-          <thead>
-            <tr className="border-b border-gray-600">
-              <th className="py-2 px-4 text-left">TICKETID</th>
-              <th className="py-2 px-4 text-left">Giá Vé</th>
-              <th className="py-2 px-4 text-left">Ngày Giao Dịch</th>
-              <th className="py-2 px-4 text-left">Trạng thái</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[...ticketList]
-              .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)) 
-              .map((ticket) => (
-                <tr key={ticket._id} className="border-b border-gray-600 max-h-screen overflow-y-auto">
-                  <td className="py-2 px-4 text-blue-400">{ticket.ticketId}</td>
-                  <td className="py-2 px-4">{ticket.amount ? formatVND(ticket.amount) : "N/A"}</td>
-                  <td className="py-2 px-4">{new Date(ticket.createdAt).toLocaleDateString("vi-VN")}</td>
-                  <td className={`py-2 px-4 ${getStatusColor(ticket.paymentStatus)}`}>
-                    {ticket.paymentStatus.toUpperCase()}
-                  </td>
+
+
+  const renderTickets = (ticketList) => {
+
+    const sortedTickets = [...ticketList].sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+    });
+
+    const toggleSortOrder = () => {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    };
+
+    return (
+      <div className="overflow-x-auto">
+        {ticketList.length > 0 ? (
+          <div className="max-h-[400px] overflow-y-auto">
+            <table className="w-full text-white">
+              <thead className="sticky top-0 bg-gray-800 z-10">
+                <tr className="border-b border-gray-600">
+                  <th className="py-2 px-4 text-left">TICKETID</th>
+                  <th className="py-2 px-4 text-left">Giá Vé</th>
+                  <th className="py-2 px-4 text-left flex items-center gap-1 cursor-pointer" onClick={toggleSortOrder}>
+                    Ngày Giao Dịch
+                    {sortOrder === "asc" ? (
+                      <FaArrowUpLong size={16} />
+                    ) : (
+                      <FaArrowDown size={16} />
+                    )}
+                  </th>
+                  <th className="py-2 px-4 text-left">Trạng thái</th>
                 </tr>
-              ))}
-
-          </tbody>
-        </table>
-      ) : (
-        <p className="text-gray-500">Không có vé nào trong danh mục này.</p>
-      )}
-    </div>
-  );
+              </thead>
+              <tbody>
+                {sortedTickets.map((ticket) => (
+                  <tr key={ticket._id} className="border-b border-gray-600">
+                    <td className="py-2 px-4 text-blue-400">{ticket.ticketId}</td>
+                    <td className="py-2 px-4">
+                      {ticket.amount ? formatVND(ticket.amount) : "N/A"}
+                    </td>
+                    <td className="py-2 px-4">
+                      {new Date(ticket.createdAt).toLocaleDateString("vi-VN")}
+                    </td>
+                    <td className={`py-2 px-4 ${getStatusColor(ticket.paymentStatus)}`}>
+                      {ticket.paymentStatus.toUpperCase()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-gray-500">Không có vé nào trong danh mục này.</p>
+        )}
+      </div>
+    );
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -191,17 +219,16 @@ const ManageTickets = () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         {/* Pie Chart Left */}
-        <div className="col-span-1">
+        <div className="col-span-2">
           <PieChart tickets={tickets} />
         </div>
-
-        {/* Line Chart Right */}
         <div className="col-span-2">
-          <RevenueChart revenue={revenue} />
+          <TicketLineChart tickets={tickets} />
         </div>
-        
+        {/* Line Chart Right */}
+
       </div>
       {/* Buttons to switch between ticket statuses */}
       <div className="mb-4 flex space-x-2 overflow-y-auto">
