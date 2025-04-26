@@ -35,8 +35,10 @@ const Login = () => {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
                 username,
                 password,
+           
             });
-            const { success, access_token, role } = response.data;
+            console.log(response.data)
+            const { success, access_token, role} = response.data;
             if (success === false) {
                 alert(message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
                 setError(message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
@@ -44,6 +46,7 @@ const Login = () => {
             }
             localStorage.setItem("token", access_token);
             localStorage.setItem("username", username);
+       
             if (role === "admin") {
                 navigate("/admin");
             } else {

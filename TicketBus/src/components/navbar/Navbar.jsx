@@ -33,8 +33,6 @@ const Navbar = () => {
     const [isCompact, setIsCompact] = useState(false);
     const navigate = useNavigate();
 
-    const API_BASE_URL = 'http://localhost:3001';
-
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -45,7 +43,7 @@ const Navbar = () => {
 
                 const fetchUserData = async () => {
                     try {
-                        const response = await axios.get(`${API_BASE_URL}/user/profile`, {
+                        const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile`, {
                             headers: { Authorization: `Bearer ${token}` },
                         });
                         setFirstName(response.data.firstName || '');
@@ -54,7 +52,7 @@ const Navbar = () => {
                             if (response.data.avatar.startsWith('http')) {
                                 setAvatar(response.data.avatar);
                             } else {
-                                setAvatar(`${API_BASE_URL}${response.data.avatar}`);
+                                setAvatar(`${import.meta.env.VITE_API_URL}${response.data.avatar}`);
                             }
                         } else {
                             setAvatar('');
@@ -216,7 +214,12 @@ const Navbar = () => {
                                 >
                                     <span className="text-xs">🔄</span> Lịch sử mua vé
                                 </DropdownMenuItem>
-
+                                <DropdownMenuItem
+                                    onClick={() => navigate('/user/profile/support')}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                >
+                                    <span className="text-xs">🔄</span> Hỗ trợ
+                                </DropdownMenuItem>
                           
                                 <DropdownMenuSeparator className="my-2 border-t border-gray-300 dark:border-gray-600" />
 

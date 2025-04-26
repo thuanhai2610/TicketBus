@@ -213,6 +213,13 @@ const AdminLayout = () => {
                   <FaUsers className="mr-3 h-4 w-4" />
                   Khách hàng
                 </Link>
+                <Link
+                  to="/admin/support-user"
+                  className="flex items-center px-2 py-1.5 text-sm text-gray-200 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                >
+                  <FaUsers className="mr-3 h-4 w-4" />
+                  Chăm sóc Khách hàng
+                </Link>
               </li>
             </ul>
           </div>

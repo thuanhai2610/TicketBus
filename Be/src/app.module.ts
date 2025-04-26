@@ -22,6 +22,9 @@ import { SeatModule } from './function/seats/seat.module';
 import { PaymentModule } from './function/payments/payment.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { OtpModule } from './otp/otp.module';
+import { ChatModule } from './chat/chat.module';
+import { ChatGateway } from './chat/chat.gateway';
+import { ChatService } from './chat/chat.service';
 @Module({
   imports: [AuthModule, PendingUsersModule,ScheduleModule.forRoot(), ItemsModule,
      MongooseModule.forRoot('mongodb://localhost:27017/admin'),
@@ -49,7 +52,7 @@ import { OtpModule } from './otp/otp.module';
           strict: true,
         }
        }
-    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule, PaymentModule, MailerModule, OtpModule
+    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule, PaymentModule, MailerModule, OtpModule, ChatModule
   ],
 
   controllers: [AppController],
