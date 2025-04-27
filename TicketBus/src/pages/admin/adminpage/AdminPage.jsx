@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import RevenueChart from "../revenuechart/RevenueChart";
 import RevenueAreaOnly from "../revenuechart/RevenueAreaOnly";
+import { jwtDecode } from "jwt-decode";
 
 const AdminPage = () => {
   const [trips, setTrips] = useState([]);
@@ -24,7 +24,17 @@ const AdminPage = () => {
   const fetchTrips = async () => {
     try {
       const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("userId")
+  
+      const getUserIdFromToken = () => {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const decoded = jwtDecode(token); // Giải mã token
+          return decoded.sub; // Lấy userId từ trường "sub"
+        }
+        return null; // Trả về null nếu không tìm thấy token
+      };
+      const userId = getUserIdFromToken();
+
       const tripRes = await axios.get(`${import.meta.env.VITE_API_URL}/trip/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });

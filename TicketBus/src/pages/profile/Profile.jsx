@@ -29,13 +29,13 @@ const Profile = () => {
                 handleLogout();
                 return;
             }
-
             const fetchProfile = async () => {
                 try {
                     const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
-                     localStorage.setItem("userId", response.data.userId);
+                    localStorage.setItem("userId", response.data.userId);
+                    localStorage.setItem("avatar", response.data.avatar);
                     const avatar = response.data.avatar
                         ? response.data.avatar.startsWith("http")
                             ? response.data.avatar

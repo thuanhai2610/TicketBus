@@ -37,6 +37,8 @@ const AdminLayout = () => {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile?username=${decoded.username}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
+       
+            localStorage.setItem("avatarAdmin", response.data.avatar);
             setFirstName(response.data.firstName || "");
             setLastName(response.data.lastName || "");
             // Check if the API response contains an email field

@@ -14,7 +14,7 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post()
-  async create(@Body() dto: CreateMessageDto): Promise<Message> {
+  async create(@Body() dto: CreateMessageDto): Promise<Message | null> {
     return this.chatService.saveMessage(
       dto.senderId,
       dto.receiverId,
