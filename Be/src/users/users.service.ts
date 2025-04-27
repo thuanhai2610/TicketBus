@@ -134,4 +134,5 @@ export class UsersService {
               throw new BadRequestException('Failed to fetch users: ' + error.message);
             }
           }
+     
 }

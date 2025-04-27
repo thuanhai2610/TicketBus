@@ -1,54 +1,24 @@
 import React, { useEffect, useState, useRef } from "react";
+import { io } from "socket.io-client";
 import { FaPaperPlane, FaSmile } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
-import axios from "axios";
 
-const Chatbox = () => {
+const ADMIN_ID = "67ebeea63d3cc6f79e3595da";
+
+const socket = io(`${import.meta.env.VITE_API_URL}`, {
+  withCredentials: true,
+  autoConnect: false, 
+});
+
+const ChatBox = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [isSending, setIsSending] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const chatContainerRef = useRef(null);
-
-  const userId = localStorage.getItem("userId") || "";
-  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
   const username = localStorage.getItem("username") || "Bạn";
-  const userAvatar = localStorage.getItem("avatar") || "";  // lấy avatar đã lưu
+  const userAvatar = localStorage.getItem("avatar") || "";
   const defaultAvatar = "https://i.pravatar.cc/40";
-
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "N/A";
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return "Invalid Date";
-    return d.toLocaleString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      if (!userId) return;
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/messages?senderId=${userId}&receiverId=67ebeea63d3cc6f79e3595da`);
-        const profileResponse = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        // Lưu avatar vào localStorage nếu chưa có
-        if (profileResponse.data.avatar) {
-          localStorage.setItem("avatar", profileResponse.data.avatar);
-        }
-        setMessages(response.data);
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-      }
-    };
-
-    fetchMessages();
-  }, [userId, token]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -56,77 +26,98 @@ const Chatbox = () => {
     }
   }, [messages]);
 
-  const sendMessage = async () => {
-    if (!newMessage.trim() || !userId) return;
-    setIsSending(true);
+  // Thiết lập socket chỉ 1 lần khi component mount
+  useEffect(() => {
+    if (!userId) return;
 
-    const newMessageData = {
-      senderId: userId,
-      receiverId: "67ebeea63d3cc6f79e3595da",
-      content: newMessage,
-    };
+    socket.connect();              // Kết nối socket
+    socket.emit("join", userId);   // Tham gia room userId
 
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newMessageData),
-      });
+    // Yêu cầu load tin nhắn cũ
+    socket.emit("getMessages", { senderId: userId });
 
-      const responseData = await response.json();
+    // Lắng nghe tin nhắn cũ
+    socket.on("messages", (oldMsgs) => {
+      setMessages(oldMsgs);
+    });
 
-      if (response.ok) {
-        const formattedMessage = {
-          _id: responseData._id,
-          sender: {
-            _id: userId,
-            username: username,
-            avatar: userAvatar,  // dùng avatar mình đã lưu
-          },
-          receiver: {
-            _id: "67ebeea63d3cc6f79e3595da",
-            username: "Admin",
-          },
-          content: responseData.content,
-          createdAt: responseData.createdAt,
-        };
-        setMessages((prev) => [...prev, formattedMessage]);
-      } else {
-        alert(`Gửi tin nhắn thất bại: ${responseData.message || "Lỗi không xác định"}`);
+    // Lắng nghe tin nhắn mới từ admin (chỉ khi tin nhắn thực sự từ admin)
+    socket.on("receiveMessage", (msg) => {
+      // Chỉ hiển thị tin nhắn đến nếu không phải là tin nhắn từ chính user
+      if (msg.sender._id !== userId) {
+        setMessages((prev) => [...prev, msg]);
       }
-    } finally {
-      setIsSending(false);
-      setNewMessage("");
-      setShowEmojiPicker(false);
-    }
+    });
+
+    return () => {
+      socket.off("messages");
+      socket.off("receiveMessage");
+      socket.disconnect();
+    };
+  }, [userId]);
+
+  // Gửi tin nhắn qua WebSocket
+  const sendMessage = () => {
+    if (!newMessage.trim() || !userId) return;
+    const payload = {
+      senderId: userId,
+      content: newMessage,
+      receiverId: ADMIN_ID,  // Đảm bảo rằng người nhận là Admin
+    };
+    
+    // Gửi tin nhắn lên server
+    socket.emit("sendMessage", payload);
+
+    // Thêm tin nhắn của người dùng vào UI ngay lập tức (không đợi server echo)
+    const newMessageObj = {
+      _id: Date.now().toString(),
+      sender: { _id: userId, username, avatar: userAvatar },
+      receiver: { _id: ADMIN_ID, username: "Admin" },
+      content: newMessage,
+      createdAt: new Date().toISOString(),
+    };
+    
+    setMessages((prev) => [...prev, newMessageObj]);
+
+    // Làm sạch input và ẩn emoji picker
+    setNewMessage("");
+    setShowEmojiPicker(false);
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") sendMessage();
   };
 
-  const onEmojiClick = (emojiData) => {
-    setNewMessage((prev) => prev + emojiData.emoji);
+  const onEmojiClick = ({ emoji }) => {
+    setNewMessage((prev) => prev + emoji);
   };
+
+  const formatDateTime = (iso) =>
+    new Date(iso).toLocaleString("vi-VN", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit",
+    });
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Chat với Admin</h1>
-          <p>Gửi tin nhắn để được hỗ trợ từ quản trị viên</p>
-        </div>
-      </div>
-
-      <div className="chat-container bg-white rounded-lg shadow">
-        <div ref={chatContainerRef} className="messages h-96 overflow-y-auto p-4 space-y-4">
-          {messages.length ? (
-            messages.map((m) => (
+      <h1 className="text-2xl font-bold mb-2">Chat với Admin</h1>
+      <div className="chat-container bg-white rounded-lg shadow flex flex-col h-[500px]">
+        {/* Messages */}
+        <div
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto p-4 space-y-4"
+        >
+          {messages.length === 0 && (
+            <p className="text-center text-gray-400">Chưa có tin nhắn nào.</p>
+          )}
+          {messages.map((m) => {
+            const mine = m.sender._id === userId;
+            return (
               <div
                 key={m._id}
-                className={`flex items-end ${m.sender._id === userId ? "justify-end" : "justify-start"}`}
+                className={`flex items-end ${mine ? "justify-end" : "justify-start"}`}
               >
-                {m.sender._id !== userId && (
+                {!mine && (
                   <img
                     src={m.sender.avatar ? `${import.meta.env.VITE_API_URL}${m.sender.avatar}` : defaultAvatar}
                     alt="Avatar"
@@ -134,33 +125,32 @@ const Chatbox = () => {
                   />
                 )}
                 <div
-                  className={`max-w-xs p-3 rounded-lg ${
-                    m.sender._id === userId ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
-                  }`}
+                  className={`max-w-xs p-3 rounded-lg ${mine ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}
                 >
-                  {/* <p className="text-sm font-semibold">{m.sender.username}</p> */}
                   <p>{m.content}</p>
-                  <p className="text-xs text-right opacity-70">{formatDateTime(m.createdAt)}</p>
+                  <p className="text-xs text-right opacity-70">
+                    {formatDateTime(m.createdAt)}
+                  </p>
                 </div>
-                {m.sender._id === userId && (
+                {mine && (
                   <img
-                    src={m.sender.avatar ? `${import.meta.env.VITE_API_URL}${m.sender.avatar}` : defaultAvatar}
+                    src={userAvatar ? `${import.meta.env.VITE_API_URL}${userAvatar}` : defaultAvatar}
                     alt="Avatar"
                     className="w-8 h-8 rounded-full ml-2"
                   />
                 )}
               </div>
-            ))
-          ) : (
-            <div className="text-center text-gray-400 py-10">
-              Chưa có tin nhắn nào.
-            </div>
-          )}
+            );
+          })}
         </div>
 
+        {/* Input */}
         <div className="px-4 py-3 border-t relative">
           <div className="flex items-center space-x-2">
-            <button onClick={() => setShowEmojiPicker((val) => !val)} className="text-2xl">
+            <button
+              onClick={() => setShowEmojiPicker((v) => !v)}
+              className="text-2xl"
+            >
               <FaSmile />
             </button>
 
@@ -175,7 +165,7 @@ const Chatbox = () => {
 
             <button
               onClick={sendMessage}
-              disabled={isSending || !newMessage.trim()}
+              disabled={!newMessage.trim()}
               className="p-3 rounded-full bg-primary text-white disabled:opacity-50"
             >
               <FaPaperPlane />
@@ -193,4 +183,4 @@ const Chatbox = () => {
   );
 };
 
-export default Chatbox;
+export default ChatBox;

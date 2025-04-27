@@ -9,6 +9,8 @@ import {
   UploadedFile,
   UseGuards,
   Request,
+  Delete,
+  Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -157,6 +159,7 @@ export class UserController {
     return users
       .filter((user) => user.role !== 'admin')
       .map((user) => ({
+        userId: user._id,
         username: user.username,
         phone: user.phone || 'N/A',
         email: user.email || 'N/A',
@@ -175,5 +178,22 @@ export class UserController {
     const users = await this.userService.findAll();
     const nonAdminUsers = users.filter((user) => user.role !== 'admin');
     return { totalUsers: nonAdminUsers.length };
+  }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Delete(':id')
+  async deleteUser(@Param('id') id: string) {
+    try {
+      await this.userService.delete(id);
+      return {
+        success: true,
+        message: 'User deleted successfully',
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('User not found');
+      }
+      throw new BadRequestException('Failed to delete user: ' + error.message);
+    }
   }
 }
