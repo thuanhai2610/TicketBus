@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useRef } from "react";
 import { FaPaperPlane, FaSmile } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
@@ -8,7 +9,7 @@ const socket = io(import.meta.env.VITE_API_URL, {
   autoConnect: false,
 });
 
-const ADMIN_ID = "67ebeea63d3cc6f79e3595da"; // id admin cố định
+const ADMIN_ID = "67ef305360fb5a3b2861292d"; // id admin cố định
 
 const SupportUser = () => {
   const [messages, setMessages] = useState([]);
@@ -143,16 +144,18 @@ const SupportUser = () => {
   };
 
   return (
+    <div className="min-h-screen px-4">
+      <h2 className="font-bold text-3xl mb-6 text-center uppercase">Chăm sóc khách hàng</h2>
     <div className="flex p-6 h-[80vh] gap-4">
       {/* Sidebar danh sách users */}
-      <div className="w-1/4 bg-white rounded-lg shadow p-4 overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Khách hàng</h2>
+      <div className="w-1/4 bg-slate-700 rounded-lg shadow p-4 overflow-y-auto">
+        <h2 className="text-xl font-bold mb-4">Tin Nhắn</h2>
         {users.length ? (
           users.map((user) => (
             <div
               key={user._id}
-              className={`flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-gray-100 ${
-                currentUserId === user._id ? "bg-gray-200" : ""
+              className={`flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-slate-600 ${
+                currentUserId === user._id ? "bg-slate-500" : ""
               }`}
               onClick={() => loadMessages(user._id)}
             >
@@ -174,10 +177,10 @@ const SupportUser = () => {
       </div>
 
       {/* Chat container */}
-      <div className="flex-1 bg-white rounded-lg shadow flex flex-col">
+      <div className="flex-1 bg-slate-700 rounded-lg shadow flex flex-col">
         <div
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto p-4 space-y-4"
+          className="flex-1 overflow-y-auto p-4 space-y-4 mt-4"
         >
           {currentUserId ? (
             messages.length ? (
@@ -259,7 +262,7 @@ const SupportUser = () => {
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Nhập tin nhắn..."
-                className="flex-1 p-2 border rounded-full"
+                className="flex-1 p-2 border rounded-full text-neutral-950"
               />
               <button
                 onClick={sendMessage}
@@ -281,6 +284,7 @@ const SupportUser = () => {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 };

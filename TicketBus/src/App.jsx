@@ -35,9 +35,9 @@ import React from "react";
 import "./pages/ticket/qrcode/style.css";
 import 'leaflet/dist/leaflet.css';
 import Discount from "./pages/admin/Discout";
-import Chatbox from "./pages/profile/Support";
 import SupportUser from "./pages/admin/SupportUser";
-import ChatBox from "./pages/profile/Support";
+import AdminChatButton from "./components/chatbox/AdminChatButton";
+import Support from "./pages/ticket/Support";
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
@@ -83,14 +83,15 @@ function App() {
               <Route path="" element={<div />} /> {/* Thông tin mặc định */}
               <Route path="edit" element={<UpdateProfile />} />
               <Route path="history" element={<TicketHistory />} />
-              <Route path="support" element={<ChatBox />} />
+           
             </Route>
 
             <Route path="/bus-tickets/detail/:vehicleId" element={<Detail />} />
             <Route path="/bus-tickets/checkout" element={<Checkout />} />
             <Route path="/bus-tickets/payment" element={<Invoice />} />
             <Route path="/bus-tickets/VNPAY" element={<VNPAY />} />
-          
+            <Route path="/bus-tickets/support" element={<Support />} />
+
             {/* Admin Routes */}
             <Route path="/admin/*" element={
               <ProtectedRoute requiredRole="admin">
@@ -105,10 +106,15 @@ function App() {
               <Route path="settings" element={<Settings />} />
               <Route path="revenue" element={<RevenueChart />} />
               <Route path="discount" element={<Discount />} />
-              <Route path="support-user" element={<SupportUser/>} />
+              <Route path="support-user" element={<SupportUser />} />
 
             </Route>
           </Routes>
+          {!isAdminRoute && (
+            <div className="fixed bottom-6 right-6 z-50">
+              <AdminChatButton />
+            </div>
+          )}
         </main>
 
         <Footer />
