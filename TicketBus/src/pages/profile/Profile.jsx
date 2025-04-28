@@ -105,9 +105,9 @@ const Profile = () => {
                             <Link to="/user/profile/history" className={`flex items-center gap-2 px-4 py-2 rounded ${location.pathname.includes("history") ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200'}`}>
                                 <span className="text-xl">🔄</span> Lịch sử mua vé
                             </Link>
-                            <Link to="/user/profile/support" className={`flex items-center gap-2 px-4 py-2 rounded ${location.pathname.includes("support") ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200'}`}>
+                            {/* <Link to="/user/profile/support" className={`flex items-center gap-2 px-4 py-2 rounded ${location.pathname.includes("support") ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200'}`}>
                                 <span className="text-xl">🔄</span> Hỗ trợ
-                            </Link>
+                            </Link> */}
                         </div>
                     </div>
                     {/* Logout button at bottom */}

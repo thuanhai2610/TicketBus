@@ -13,7 +13,7 @@ const Detail = () => {
   const message =(
       <>
         Mỗi khách hàng chỉ có thể đặt 10 chỗ ngồi. Nếu bạn muốn đặt nhiều hơn 10 chỗ,
-        Vui lòng! liên hệ với<Link to={"/support-teams"} className='text-yellow-700 font-medium'> nhóm hỗ trợ của chúng tôi.</Link>
+        Vui lòng! liên hệ với<Link to={"/bus-tickets/support"} className='text-yellow-700 font-medium'> nhóm hỗ trợ của chúng tôi.</Link>
       </>
   );
   return (
