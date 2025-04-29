@@ -3,13 +3,14 @@ import React, { useEffect, useState, useRef } from "react";
 import { FaPaperPlane, FaSmile } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
 import { io } from "socket.io-client";
+import CSKH from "../../assets/CSKH.png";
 
 const socket = io(import.meta.env.VITE_API_URL, {
   withCredentials: true,
   autoConnect: false,
 });
 
-const ADMIN_ID = "67ebeea63d3cc6f79e3595da"; // id admin cố định
+const ADMIN_ID = "67ef305360fb5a3b2861292d"; // id admin cố định
 
 const SupportUser = () => {
   const [messages, setMessages] = useState([]);
@@ -120,11 +121,16 @@ const SupportUser = () => {
     };
     const tempMessage = {
       _id: Date.now().toString(),
-      sender: { _id: ADMIN_ID, username: "Admin" },
+      sender: {
+        _id: ADMIN_ID,
+        username: "Admin",
+        avatar: adminAvatar || null, // <-- lấy avatar từ localStorage
+      },
       receiver: { _id: currentUserId },
       content: newMessage,
       createdAt: new Date().toISOString(),
     };
+
     setMessages((prev) => [...prev, tempMessage]);
 
     // Send to server
@@ -144,147 +150,198 @@ const SupportUser = () => {
   };
 
   return (
-    <div className="min-h-screen px-4">
-      <h2 className="font-bold text-3xl mb-6 text-center uppercase">Chăm sóc khách hàng</h2>
-    <div className="flex p-6 h-[80vh] gap-4">
-      {/* Sidebar danh sách users */}
-      <div className="w-1/4 bg-slate-700 rounded-lg shadow p-4 overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Tin Nhắn</h2>
-        {users.length ? (
-          users.map((user) => (
-            <div
-              key={user._id}
-              className={`flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-slate-600 ${
-                currentUserId === user._id ? "bg-slate-500" : ""
-              }`}
-              onClick={() => loadMessages(user._id)}
-            >
+    <div className="min-h-screen  flex items-center justify-center p-4">
+      <div className="flex w-full max-w-6xl h-[80vh] rounded-2xl shadow-2xl overflow-hidden">
+        {/* Sidebar danh sách users */}
+        <div className="w-1/4 bg-[#1C2526] text-white p-4 flex flex-col">
+          <h2 className="text-lg font-semibold mb-4 uppercase tracking-wide">
+            Chăm Sóc Khách Hàng
+          </h2>
+          <div className="flex-1 overflow-y-auto">
+            {users.length ? (
+              users.map((user) => (
+                <div
+                  key={user._id}
+                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-[#2A3435] transition-colors ${currentUserId === user._id ? "bg-[#2A3435]" : ""
+                    }`}
+                  onClick={() => loadMessages(user._id)}
+                >
+                  <img
+                    src={
+                      user.avatar
+                        ? `${import.meta.env.VITE_API_URL}${user.avatar}`
+                        : defaultAvatar
+                    }
+                    alt="avatar"
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div>
+                    <span className="text-white font-medium">
+                      {user.username || "Khách hàng"}
+                    </span>
+                    <p className="text-xs text-gray-400">
+                      {user.lastMessage || ""}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400 text-center">Chưa có khách hàng</p>
+            )}
+          </div>
+        </div>
+
+        {/* Chat container */}
+        <div className="flex-1 bg-[#252D2E] flex flex-col">
+          {/* Chat header */}
+          {currentUserId ? (
+            <div className="p-4 border-b border-[#2A3435] flex items-center gap-3">
               <img
                 src={
-                  user.avatar
-                    ? `${import.meta.env.VITE_API_URL}${user.avatar}`
+                  users.find((u) => u._id === currentUserId)?.avatar
+                    ? `${import.meta.env.VITE_API_URL}${users.find((u) => u._id === currentUserId).avatar}`
                     : defaultAvatar
                 }
-                alt="avatar"
-                className="w-8 h-8 rounded-full"
+                alt="User"
+                className="w-8 h-10 rounded-full"
               />
-              <span>{user.username || "Khách hàng"}</span>
+              <span className="text-white font-medium">
+                {users.find((u) => u._id === currentUserId)?.username ||
+                  "Khách hàng"}
+              </span>
             </div>
-          ))
-        ) : (
-          <p className="text-gray-400">Chưa có khách hàng</p>
-        )}
-      </div>
+          ) : null}
 
-      {/* Chat container */}
-      <div className="flex-1 bg-slate-700 rounded-lg shadow flex flex-col">
-        <div
-          ref={chatContainerRef}
-          className="flex-1 overflow-y-auto p-4 space-y-4 mt-4"
-        >
-          {currentUserId ? (
-            messages.length ? (
-              messages.map((m) => {
-                const mine = m.sender?._id === ADMIN_ID;
-                return (
-                  <div
-                    key={m._id}
-                    className={`flex items-end ${
-                      mine ? "justify-end" : "justify-start"
-                    }`}
-                  >
-                    {!mine && (
-                      <img
-                        src={
-                          m.sender?.avatar
-                            ? `${import.meta.env.VITE_API_URL}${
-                                m.sender.avatar
-                              }`
-                            : defaultAvatar
-                        }
-                        alt="Avatar"
-                        className="w-8 h-8 rounded-full mr-2"
-                      />
-                    )}
-                    <div
-                      className={`max-w-xs p-3 rounded-lg ${
-                        mine
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 text-black"
-                      }`}
-                    >
-                      <p>{m.content}</p>
-                      <p className="text-xs text-right opacity-70">
-                        {formatDateTime(m.createdAt)}
-                      </p>
+          {/* Chat messages */}
+          <div
+            ref={chatContainerRef}
+            className="flex-1 overflow-y-auto p-6 space-y-6"
+          >
+            {currentUserId ? (
+              messages.length ? (
+                messages.map((m, index) => {
+                  const mine = m.sender?._id === ADMIN_ID;
+                  const showDate =
+                    index === 0 ||
+                    new Date(messages[index - 1].createdAt).toDateString() !==
+                    new Date(m.createdAt).toDateString();
+
+                  return (
+                    <div key={m._id}>
+                      {showDate && (
+                        <div className="text-center text-gray-400 text-sm my-4">
+                          {new Date(m.createdAt).toLocaleDateString("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })}
+                        </div>
+                      )}
+                      <div
+                        className={`flex items-end ${mine ? "justify-end" : "justify-start"
+                          }`}
+                      >
+                        {!mine && (
+                          <img
+                            src={
+                              m.sender?.avatar
+                                ? `${import.meta.env.VITE_API_URL}${m.sender.avatar}`
+                                : defaultAvatar
+                            }
+                            alt="Avatar"
+                            className="w-8 h-8 rounded-full mr-2"
+                          />
+                        )}
+                        <div
+                          className={`max-w-lg p-3 rounded-2xl ${mine
+                            ? "bg-blue-600 text-white"
+                            : "bg-[#828282] text-white"
+                            }`}
+                        >
+                          <p>{m.content}</p>
+                          <p
+                            className={`text-xs opacity-70 mt-1 ${mine ? "text-right" : "text-left"}`}
+                          >
+                            {new Date(m.createdAt).toLocaleTimeString("vi-VN", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+
+                        </div>
+                        {mine && (
+                          <img
+                            src={
+                              m.sender?.avatar
+                                ? `${import.meta.env.VITE_API_URL}${m.sender.avatar}`
+                                : defaultAvatar
+                            }
+                            alt="Admin"
+                            className="w-8 h-8 rounded-full ml-2"
+                          />
+                        )}
+                      </div>
                     </div>
-                    {mine && (
-                      <img
-                        src={
-                          m.sender?.avatar
-                            ? `${import.meta.env.VITE_API_URL}${
-                                m.sender.avatar
-                              }`
-                            : defaultAvatar
-                        }
-                        alt="Admin"
-                        className="w-8 h-8 rounded-full ml-2"
-                      />
-                    )}
-                  </div>
-                );
-              })
+                  );
+                })
+              ) : (
+                <p className="text-center text-gray-400 mt-20">
+                  Chưa có tin nhắn với khách hàng này
+                </p>
+              )
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full">
+                <img
+                  src={CSKH}
+                  alt="Chọn khách hàng"
+                  className="w-40 h-36 mb-6 opacity-80"
+                />
+                <p className="text-center text-gray-400">
+                  Chọn khách hàng để xem tin nhắn
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Input */}
+          <div className="p-4 bg-[#252D2E] border-t border-[#2A3435] relative">
+            {currentUserId ? (
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setShowEmojiPicker((v) => !v)}
+                  className="text-xl text-gray-400 hover:text-white transition-colors"
+                >
+                  <FaSmile />
+                </button>
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type Something..."
+                  className="flex-1 p-3 bg-[#2A3435] text-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={isSending || !newMessage.trim()}
+                  className="p-3 rounded-full bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  <FaPaperPlane />
+                </button>
+              </div>
             ) : (
               <p className="text-center text-gray-400">
-                Chưa có tin nhắn với khách hàng này
+                Chọn khách hàng để bắt đầu trò chuyện
               </p>
-            )
-          ) : (
-            <p className="text-center text-gray-400">
-              Chọn khách hàng để xem tin nhắn
-            </p>
-          )}
-        </div>
-
-        {/* Input */}
-        <div className="px-4 py-3 border-t relative">
-          {currentUserId ? (
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setShowEmojiPicker((v) => !v)}
-                className="text-2xl"
-              >
-                <FaSmile />
-              </button>
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Nhập tin nhắn..."
-                className="flex-1 p-2 border rounded-full text-neutral-950"
-              />
-              <button
-                onClick={sendMessage}
-                disabled={isSending || !newMessage.trim()}
-                className="p-3 rounded-full bg-primary text-white disabled:opacity-50"
-              >
-                <FaPaperPlane />
-              </button>
-            </div>
-          ) : (
-            <p className="text-center text-gray-400">
-              Chọn khách hàng để bắt đầu trò chuyện
-            </p>
-          )}
-          {showEmojiPicker && (
-            <div className="absolute bottom-20 left-6 z-10">
-              <EmojiPicker onEmojiClick={onEmojiClick} />
-            </div>
-          )}
+            )}
+            {showEmojiPicker && (
+              <div className="absolute bottom-20 left-6 z-10">
+                <EmojiPicker onEmojiClick={onEmojiClick} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };

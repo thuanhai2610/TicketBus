@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaTicketAlt, FaBus, FaUsers, FaMoneyBillWave } from "react-icons/fa";
+import { FaTicketAlt, FaBus, FaUsers, FaChartLine } from "react-icons/fa";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -149,7 +149,7 @@ console.log(userId)
   };
 
   return (
-    <div className="p-6 bg-gray-900 text-white max-h-screen overflow-y-auto">
+    <div className=" bg-gray-900 text-white max-h-screen overflow-y-auto">
       <h2 className="text-3xl font-bold mb-6 uppercase">Bảng điều khiển</h2>
 
       {/* Dashboard Stats */}
@@ -171,7 +171,7 @@ console.log(userId)
         <Link to="/admin/revenue">
           <Card className="bg-gray-800 border-gray-700 hover:bg-gray-700 transition">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <FaMoneyBillWave className="text-green-500 text-2xl mr-3" />
+              <FaChartLine className="text-green-500 text-2xl mr-3" />
               <CardTitle className="text-sm font-medium text-gray-400">
                 Doanh thu
               </CardTitle>

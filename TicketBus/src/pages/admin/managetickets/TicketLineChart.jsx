@@ -61,7 +61,7 @@ const TicketAreaChart = ({ tickets }) => {
   return (
     <div className="bg-transparent p-4 rounded-lg shadow-lg">
       <h3 className="text-lg font-semibold text-white mb-4">Thống kê số lượng vé theo ngày</h3>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={400}>
         <AreaChart
           data={data}
           margin={{

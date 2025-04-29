@@ -105,13 +105,13 @@ export default function AreaChartOnly({ chartHeight = 300 }) {
         <div className="flex justify-between items-center">
           <div className="flex space-x-2">
             <button
-              className={`px-4 py-2 text-sm rounded-lg ${view === "daily" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+              className={`px-4 py-2 text-sm rounded-lg ${view === "daily" ? "bg-primaryblue text-neutral-950" : "bg-primary text-white hover:bg-slate-500"}`}
               onClick={() => handleViewChange("daily")}
             >
               Doanh thu ngày
             </button>
             <button
-              className={`px-4 py-2 text-sm rounded-lg ${view === "monthly" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+              className={`px-4 py-2 text-sm rounded-lg ${view === "monthly" ? "bg-primaryblue text-neutral-950" : "bg-primary text-white hover:bg-slate-500"}`}
               onClick={() => handleViewChange("monthly")}
             >
               Doanh thu tháng
@@ -131,8 +131,8 @@ export default function AreaChartOnly({ chartHeight = 300 }) {
               <Area
                 type="monotone"
                 dataKey="revenue"
-                stroke="#ff6f61"
-                fill="#ff6f61"
+                stroke="#4169E1"
+                fill="#1874CD"
                 fillOpacity={0.2}
               />
             </AreaChart>

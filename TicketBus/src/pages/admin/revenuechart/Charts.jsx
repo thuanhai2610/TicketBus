@@ -170,7 +170,7 @@ export default function Charts({ chartData, completedPayments, chartHeight, form
                                 </svg>
                             </div>
                             <div className="text-right">
-                                <p className="text-sm text-gray-600">{item.name}</p>
+                                <p className="text-sm text-primaryblue">{item.name}</p>
                                 <p className="text-lg font-semibold">{formatVND(item.value)}</p>
                             </div>
                         </div>
