@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import { FaPaperPlane, FaSmile } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
 
-const ADMIN_ID = "67ebeea63d3cc6f79e3595da";
+const ADMIN_ID = import.meta.env.VITE_ADMIN_ID;
 
 const socket = io(`${import.meta.env.VITE_API_URL}`, {
   withCredentials: true,
