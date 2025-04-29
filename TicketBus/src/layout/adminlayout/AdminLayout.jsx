@@ -12,16 +12,11 @@ const AdminLayout = () => {
   const [email, setEmail] = useState(""); // State for email
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState('');
   const [avatar, setAvatar] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isTripsOpen, setIsTripsOpen] = useState(false); // State for collapsing "Nhà xe" section
   const [isTicketsOpen, setIsTicketsOpen] = useState(false); // State for collapsing "Đơn đặt vé" section
   const navigate = useNavigate();
-
-  const handleGoToProfile = () => {
-    navigate(`/user/profile?username=${username}`);
-  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");

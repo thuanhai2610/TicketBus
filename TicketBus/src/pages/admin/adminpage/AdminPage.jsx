@@ -34,7 +34,7 @@ const AdminPage = () => {
         return null; // Trả về null nếu không tìm thấy token
       };
       const userId = getUserIdFromToken();
-
+console.log(userId)
       const tripRes = await axios.get(`${import.meta.env.VITE_API_URL}/trip/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });

@@ -5,8 +5,6 @@ import axios from "axios";
 
 const TicketHistory = () => {
     const [tickets, setTickets] = useState([]);
-    const username = localStorage.getItem("username");
-
     const formatDateTime = (dateString) => {
         if (!dateString) return 'N/A';
         
