@@ -10,7 +10,7 @@ const socket = io(import.meta.env.VITE_API_URL, {
   autoConnect: false,
 });
 
-const ADMIN_ID = "67ef305360fb5a3b2861292d"; // id admin cố định
+const ADMIN_ID = import.meta.env.VITE_ADMIN_ID; // id admin cố định
 
 const SupportUser = () => {
   const [messages, setMessages] = useState([]);
