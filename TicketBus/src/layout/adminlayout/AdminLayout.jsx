@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import Logo from "../../assets/logo.png";
 import { FaBus, FaTicketAlt, FaUsers, FaCog, FaUserCircle, FaHome, FaMoneyBillAlt, FaSignOutAlt, FaSignInAlt, FaStar, FaUser, FaCreditCard, FaBell, FaChevronDown, FaChevronRight } from "react-icons/fa";
-import { MdOutlineLogout , MdDiscount } from "react-icons/md";
+import { MdOutlineLogout , MdDiscount ,MdSupportAgent  } from "react-icons/md";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
@@ -214,7 +214,7 @@ const AdminLayout = () => {
                   to="/admin/support-user"
                   className="flex items-center px-2 py-1.5 text-sm text-gray-200 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
                 >
-                  <FaUsers className="mr-3 h-4 w-4" />
+                  <MdSupportAgent  className="mr-3 h-4 w-4" />
                   Chăm sóc Khách hàng
                 </Link>
               </li>

@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import Charts from "./Charts";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { FaMoneyBillWave } from "react-icons/fa";
+import { FaChartLine, FaReceipt, FaCalculator } from "react-icons/fa";
 
 export default function RevenueChart({ chartHeight = 300 }) {
   const [chartData, setChartData] = useState([]);
@@ -109,36 +112,55 @@ export default function RevenueChart({ chartHeight = 300 }) {
       <h2 className="font-bold uppercase text-3xl mb-6">Quản lý Doanh Thu</h2>
 
       {/* Summary Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-slate-800 text-white shadow-md rounded-lg p-4">
-          <p className="text-sm">Tổng Doanh Thu</p>
-          <p className="text-2xl font-bold mt-2">{formatVND(summary.totalRevenue)}</p>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-white h-2 rounded-full" style={{ width: "60%" }}></div>
-          </div>
-        </div>
-        <div className="bg-slate-800 text-white shadow-md rounded-lg p-4">
-          <p className="text-sm">Số Giao Dịch</p>
-          <p className="text-2xl font-bold mt-2">{summary.totalTickets}</p>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-white h-2 rounded-full" style={{ width: "30%" }}></div>
-          </div>
-        </div>
-        <div className="bg-slate-800 text-white shadow-md rounded-lg p-4">
-          <p className="text-sm">Doanh Thu Trung Bình</p>
-          <p className="text-2xl font-bold mt-2">{formatVND(summary.avgRevenue)}</p>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-white h-2 rounded-full" style={{ width: "70%" }}></div>
-          </div>
-        </div>
-        <div className="bg-slate-800 text-white shadow-md rounded-lg p-4">
-          <p className="text-sm">Doanh Thu</p>
-          <p className="text-2xl font-bold mt-2">{formatVND(summary.totalRevenue)}</p>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-white h-2 rounded-full" style={{ width: "50%" }}></div>
-          </div>
-        </div>
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+  <Card className="bg-gray-800 border-gray-700 hover:bg-gray-700 transition">
+    <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+      <FaMoneyBillWave className="text-green-500 text-2xl mr-3" />
+      <CardTitle className="text-sm font-medium text-gray-400">
+        Tổng Doanh Thu
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold">{formatVND(summary.totalRevenue)}</div>
+    </CardContent>
+  </Card>
+
+  <Card className="bg-gray-800 border-gray-700 hover:bg-gray-700 transition">
+    <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+      <FaReceipt className="text-blue-500 text-2xl mr-3" />
+      <CardTitle className="text-sm font-medium text-gray-400">
+        Số Giao Dịch
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold">{summary.totalTickets}</div>
+    </CardContent>
+  </Card>
+
+  <Card className="bg-gray-800 border-gray-700 hover:bg-gray-700 transition">
+    <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+      <FaCalculator className="text-yellow-500 text-2xl mr-3" />
+      <CardTitle className="text-sm font-medium text-gray-400">
+        Doanh Thu Trung Bình
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold">{formatVND(summary.avgRevenue)}</div>
+    </CardContent>
+  </Card>
+
+  <Card className="bg-gray-800 border-gray-700 hover:bg-gray-700 transition">
+    <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+      <FaChartLine className="text-purple-500 text-2xl mr-3" />
+      <CardTitle className="text-sm font-medium text-gray-400">
+        Doanh Thu Dự Kiến
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold">{formatVND(summary.totalRevenue)}</div>
+    </CardContent>
+  </Card>
+</div>
 
       {/* Chart Section */}
       <div className="mb-6 shadow-md rounded-lg p-4">
@@ -146,13 +168,13 @@ export default function RevenueChart({ chartHeight = 300 }) {
           <h3 className="text-lg font-semibold">Doanh thu gần đây</h3>
           <div className="flex space-x-2">
             <button
-              className={`px-3 py-1 rounded text-sm ${view === "daily" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}
+              className={`px-3 py-1 rounded text-sm ${view === "daily" ? "bg-primaryblue text-neutral-950" : "bg-primary text-white"}`}
               onClick={() => handleViewChange("daily")}
             >
               Doanh thu ngày
             </button>
             <button
-              className={`px-3 py-1 rounded text-sm ${view === "monthly" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}
+              className={`px-3 py-1 rounded text-sm ${view === "monthly" ? "bg-primaryblue text-neutral-950" : "bg-primary text-white"}`}
               onClick={() => handleViewChange("monthly")}
             >
               Doanh thu tháng
