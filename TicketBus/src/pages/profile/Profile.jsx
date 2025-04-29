@@ -34,8 +34,10 @@ const Profile = () => {
                     const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
+                    localStorage.setItem("username", response.data.username)
                     localStorage.setItem("userId", response.data.userId);
                     localStorage.setItem("avatar", response.data.avatar);
+                    // console.log(response.data)
                     const avatar = response.data.avatar
                         ? response.data.avatar.startsWith("http")
                             ? response.data.avatar
