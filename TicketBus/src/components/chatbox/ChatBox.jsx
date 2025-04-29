@@ -111,9 +111,8 @@ const ChatBox = () => {
             return (
               <div
                 key={m._id}
-                className={`flex items-end ${
-                  mine ? "justify-end" : "justify-start"
-                } transition-opacity duration-200`}
+                className={`flex items-end ${mine ? "justify-end" : "justify-start"
+                  } transition-opacity duration-200`}
               >
                 {!mine && (
                   <img
@@ -127,13 +126,14 @@ const ChatBox = () => {
                   />
                 )}
                 <div
-                  className={`max-w-[70%] p-3 rounded-xl ${
-                    mine
+                  className={`max-w-[70%] p-3 rounded-xl ${mine
                       ? "bg-blue-600 text-white"
                       : "bg-gray-200 text-gray-800"
-                  } shadow-sm`}
+                    } shadow-sm`}
                 >
-                  <p className="text-sm leading-relaxed">{m.content}</p>
+                  <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">
+                    {m.content}
+                  </p>
                   <p className="text-xs text-right opacity-70 mt-1">
                     {formatDateTime(m.createdAt)}
                   </p>
@@ -153,6 +153,7 @@ const ChatBox = () => {
             );
           })}
         </div>
+
 
         {/* Input */}
         <div className="p-3 bg-gray-50 border-t border-gray-200">

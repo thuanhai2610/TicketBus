@@ -238,8 +238,7 @@ const SupportUser = () => {
                         </div>
                       )}
                       <div
-                        className={`flex items-end ${mine ? "justify-end" : "justify-start"
-                          }`}
+                        className={`flex items-end ${mine ? "justify-end" : "justify-start"}`}
                       >
                         {!mine && (
                           <img
@@ -249,25 +248,25 @@ const SupportUser = () => {
                                 : defaultAvatar
                             }
                             alt="Avatar"
-                            className="w-8 h-8 rounded-full mr-2"
+                            className="w-8 h-8 rounded-full mr-2 object-cover"
                           />
                         )}
                         <div
-                          className={`max-w-lg p-3 rounded-2xl ${mine
-                            ? "bg-blue-600 text-white"
-                            : "bg-[#828282] text-white"
+                          className={`max-w-lg p-3 rounded-2xl ${mine ? "bg-blue-600 text-white" : "bg-[#828282] text-white"
                             }`}
                         >
-                          <p>{m.content}</p>
+                          <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">
+                            {m.content}
+                          </p>
                           <p
-                            className={`text-xs opacity-70 mt-1 ${mine ? "text-right" : "text-left"}`}
+                            className={`text-xs opacity-70 mt-1 ${mine ? "text-right" : "text-left"
+                              }`}
                           >
                             {new Date(m.createdAt).toLocaleTimeString("vi-VN", {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}
                           </p>
-
                         </div>
                         {mine && (
                           <img
@@ -277,7 +276,7 @@ const SupportUser = () => {
                                 : defaultAvatar
                             }
                             alt="Admin"
-                            className="w-8 h-8 rounded-full ml-2"
+                            className="w-8 h-8 rounded-full ml-2 object-cover"
                           />
                         )}
                       </div>
