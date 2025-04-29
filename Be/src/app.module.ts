@@ -26,8 +26,7 @@ import { ChatModule } from './chat/chat.module';
 import { ChatGateway } from './chat/chat.gateway';
 import { ChatService } from './chat/chat.service';
 @Module({
-  imports: [AuthModule, PendingUsersModule,ScheduleModule.forRoot(), ItemsModule,
-     MongooseModule.forRoot('mongodb://localhost:27017/admin'),
+  imports: [AuthModule, PendingUsersModule,ScheduleModule.forRoot(), ItemsModule, MongooseModule.forRoot('mongodb+srv://thuanhai:thuanhai123@cluster0.zeum7vn.mongodb.net/tickets?retryWrites=true&w=majority&appName=Cluster0'),
     ConfigModule.forRoot({
       isGlobal: true, 
       envFilePath: '.env', 
