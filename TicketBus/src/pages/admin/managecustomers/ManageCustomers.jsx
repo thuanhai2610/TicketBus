@@ -45,11 +45,9 @@ const ManageCustomers = () => {
     setLoading(true);
     setError(null);
     try {
-      console.log('Fetching users with token:', token); // Debug token
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log('API response:', response.data); // Debug API response
       const usersWithAvatars = response.data
         .filter(user => user.role && user.role.toLowerCase() === 'user') // Case-insensitive role filter
         .map(user => ({
@@ -60,7 +58,6 @@ const ManageCustomers = () => {
               : `${import.meta.env.VITE_API_URL}${user.avatar}`
             : '',
         }));
-      console.log('Filtered users:', usersWithAvatars); // Debug filtered users
       setUsers(usersWithAvatars);
       setFilteredUsers(usersWithAvatars);
     } catch (err) {
@@ -146,7 +143,6 @@ const ManageCustomers = () => {
                         src={user.avatarUrl}
                         alt={`${user.username}'s avatar`}
                         className="w-16 h-16 rounded-full border border-blue-500 object-cover mb-2"
-                        onError={(e) => (e.target.src = 'https://via.placeholder.com/64')}
                       />
                     ) : (
                       <FaUserCircle className="w-16 h-16 text-gray-400 mb-2" />
