@@ -28,7 +28,7 @@ export class TripService {
 
     // Set default coordinates
     const dtoInstance = plainToInstance(CreateTripDto, createTripDto);
-  dtoInstance.setDefaultCoordinates();
+     dtoInstance.setDefaultCoordinates();
 
     // Validate company
     const company = await this.companyModel
@@ -64,32 +64,32 @@ export class TripService {
     }
 
     // Check if driver is already assigned
-    const existingTripWithDriver = await this.tripModel
-      .findOne({
-        driverId: createTripDto.driverId,
-        status: { $in: ['PENDING', 'IN_PROGRESS'] },
-      })
-      .exec();
-    if (existingTripWithDriver) {
-      console.log(
-        `Tài xế ${createTripDto.driverId} đã được phân công cho chuyến đi khác (ID: ${existingTripWithDriver.tripId}) và chưa hoàn thành`,
-      );
-      return null;
-    }
+    // const existingTripWithDriver = await this.tripModel
+    //   .findOne({
+    //     driverId: createTripDto.driverId,
+    //     status: { $in: ['PENDING', 'IN_PROGRESS'] },
+    //   })
+    //   .exec();
+    // if (existingTripWithDriver) {
+    //   console.log(
+    //     `Tài xế ${createTripDto.driverId} đã được phân công cho chuyến đi khác (ID: ${existingTripWithDriver.tripId}) và chưa hoàn thành`,
+    //   );
+    //   return null;
+    // }
 
     // Check if vehicle is already assigned
-    const existingTripVehicle = await this.tripModel
-      .findOne({
-        vehicleId: createTripDto.vehicleId,
-        status: { $in: ['PENDING', 'IN_PROGRESS'] },
-      })
-      .exec();
-    if (existingTripVehicle) {
-      console.log(
-        `Xe ${createTripDto.vehicleId} đã được phân công cho chuyến đi khác (ID: ${existingTripVehicle.tripId}) và chưa hoàn thành`,
-      );
-      return null;
-    }
+    // const existingTripVehicle = await this.tripModel
+    //   .findOne({
+    //     vehicleId: createTripDto.vehicleId,
+    //     status: { $in: ['PENDING', 'IN_PROGRESS'] },
+    //   })
+    //   .exec();
+    // if (existingTripVehicle) {
+    //   console.log(
+    //     `Xe ${createTripDto.vehicleId} đã được phân công cho chuyến đi khác (ID: ${existingTripVehicle.tripId}) và chưa hoàn thành`,
+    //   );
+    //   return null;
+    // }
     const departureDateParts = createTripDto.departureDate.split('-');
     if (departureDateParts.length !== 3) {
       console.log('Invalid departureDate format:', createTripDto.departureDate);

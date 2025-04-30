@@ -77,20 +77,20 @@ TripSchema.pre('save', async function (next) {
     _id: { $ne: trip._id } // Exclude current document if it's an update
   }).exec();
 
-  if (existingTrip) {
-    const error = new Error(`Tài xế ${trip.driverId} đã được phân công cho chuyến đi khác và chưa hoàn thành`);
-    return next(error);
-  }
+  // if (existingTrip) {
+  //   const error = new Error(`Tài xế ${trip.driverId} đã được phân công cho chuyến đi khác và chưa hoàn thành`);
+  //   return next(error);
+  // }
   const existingTripWithVehicle = await this.model('Trip').findOne({
     vehicleId: trip.vehicleId,
     status: { $in: ['PENDING', 'IN_PROGRESS'] },
     _id: { $ne: trip._id } // Exclude current document if it's an update
   }).exec();
 
-  if (existingTripWithVehicle) {
-    const error = new Error(`Phương tiện ${trip.vehicleId} đã được phân công cho chuyến đi khác và chưa hoàn thành`);
-    return next(error);
-  }
+  // if (existingTripWithVehicle) {
+  //   const error = new Error(`Phương tiện ${trip.vehicleId} đã được phân công cho chuyến đi khác và chưa hoàn thành`);
+  //   return next(error);
+  // }
 
   next();
 });
