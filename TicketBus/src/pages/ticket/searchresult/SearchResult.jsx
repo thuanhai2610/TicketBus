@@ -19,9 +19,13 @@ const SearchResult = ({ trips }) => { // Nhận prop trips từ Ticket
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = date.getUTCFullYear();
     const hours = String(date.getUTCHours()).padStart(2, '0');
     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
+  
+    return `${day}/${month}/${year} - ${hours}:${minutes}`;
   };
 
   const fetchVehicles = async (vehicleIds) => {

@@ -7,7 +7,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import ErrorMessage from '../../../../../components/alertmessage/errormsg/ErrorMessage';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-
+import dayjs from 'dayjs';
 const BusSeat = () => {
   const { vehicleId } = useParams(); // Lấy vehicleId từ URL
   const navigate = useNavigate();
@@ -115,10 +115,15 @@ const BusSeat = () => {
   };
   const formatTime = (dateString) => {
     const date = new Date(dateString);
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = date.getUTCFullYear();
     const hours = String(date.getUTCHours()).padStart(2, '0');
     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
+  
+    return `${day}/${month}/${year} - ${hours}:${minutes}`;
   };
+  
 
   const departureTime = tripInfo?.departureTime ? formatTime(tripInfo.departureTime) : 'Unknown Time';
   const arrivalTime = tripInfo?.arrivalTime ? formatTime(tripInfo.arrivalTime) : 'Unknown Time';
