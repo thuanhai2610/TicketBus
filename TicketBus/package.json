@@ -43,6 +43,7 @@
     "clsx": "^2.1.1",
     "compressorjs": "^1.2.1",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "downloadjs": "^1.4.7",
     "emoji-picker-react": "^4.12.2",
     "framer-motion": "^12.6.2",

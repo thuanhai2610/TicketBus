@@ -24,13 +24,14 @@ const PassengerInvoice = ({
 ) => {
     const formatTime = (dateString) => {
         const date = new Date(dateString);
-        let hours = date.getUTCHours();
-        const minutes = date.getUTCMinutes();
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12 || 12; // chuyển 0 thành 12
-        const paddedMinutes = String(minutes).padStart(2, '0');
-        return `${hours}:${paddedMinutes} ${ampm}`;
-    };
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const year = date.getUTCFullYear();
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+      
+        return `${day}/${month}/${year} - ${hours}:${minutes}`;
+      };
     const formatDateVerbose = (isoString) => {
         if (!isoString) return '';
         const date = new Date(isoString);

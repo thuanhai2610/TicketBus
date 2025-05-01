@@ -28,6 +28,9 @@ const Search = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+
+  const locationsGo = ["Nha Trang",  "Đà Nẵng"];
+
   const locations = ["Nha Trang", "Phú Yên", "Bình Định", "Quảng Ngãi", "Đà Nẵng", "Huế"];
 
   const handleSearch = () => {
@@ -64,7 +67,7 @@ const Search = () => {
               <SelectValue placeholder="Chọn điểm đi" />
             </SelectTrigger>
             <SelectContent>
-              {locations.map((location, index) => (
+              {locationsGo.map((location, index) => (
                 <SelectItem key={index} value={location}>
                   {location}
                 </SelectItem>
