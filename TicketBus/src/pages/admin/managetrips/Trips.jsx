@@ -209,19 +209,19 @@ const Trips = () => {
         }
     };
 
-    
+
     const handleUpdateTrip = async () => {
         try {
             setIsSubmitting(true);
-    
+
             const formatISOWithoutTimezone = (dateStr, timeStr) => {
                 const [day, month, year] = dateStr.split("-");
                 return `${year}-${month}-${day}T${timeStr}:00Z`;
             };
-    
+
             const departureTime = formatISOWithoutTimezone(editTrip.departureDate, editTrip.departureHour);
             const arrivalTime = formatISOWithoutTimezone(editTrip.arrivalDate, editTrip.arrivalHour);
-    
+
             const tripToSend = {
                 vehicleId: editTrip.vehicleId,
                 driverId: editTrip.driverId,
@@ -236,7 +236,7 @@ const Trips = () => {
                 price: Number(editTrip.price),
                 status: editTrip.status,
             };
-    
+
             await axios.put(
                 `${import.meta.env.VITE_API_URL}/trip/${editTrip.tripId}`,
                 tripToSend,
@@ -246,7 +246,7 @@ const Trips = () => {
                     },
                 }
             );
-    
+
             setNotification({
                 open: true,
                 message: "Chuyến đi đã được cập nhật thành công",
@@ -264,8 +264,8 @@ const Trips = () => {
             setIsSubmitting(false);
         }
     };
-    
-    
+
+
 
     const handleDeleteTrip = async (tripId) => {
         try {
@@ -337,16 +337,16 @@ const Trips = () => {
     }
 
     return (
-        <div className="p-4">
+        <div className="">
             {/* Company Selector */}
             <div className="mb-4">
-                <label className="block text-lg font-medium text-gray-50">
+                <label className="block text-lg font-medium text-neutral-950">
                     Chọn Bến Xe
                 </label>
                 <select
                     value={selectedCompanyId}
                     onChange={handleCompanyChange}
-                    className="mt-1 block w-full border bg-primary border-gray-300 rounded-md p-2 focus:ring-red-500 focus:border-blue-500"
+                    className="mt-2 block w-full border shadow-md shadow-emerald-500 border-gray-300 rounded-md p-2 focus:ring-red-500 focus:border-blue-500"
                 >
                     <option value="">━━ Chọn Bến Xe ━━</option>
                     {companies.map((company) => (
@@ -387,14 +387,14 @@ const Trips = () => {
                     {/* Trips Table */}
                     {tripsLoading ? (
                         <div className="flex justify-center my-4">
-                            <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-emerald-600"></div>
                         </div>
                     ) : tripsError ? (
                         <p className="text-red-500">{tripsError}</p>
                     ) : trips.length > 0 ? (
-                        <div className="shadow-md rounded overflow-x-auto shadow-neutral-200">
+                        <div className="shadow-md shadow-emerald-500 rounded overflow-x-auto max-h-[540px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-gray-200">
                             <table className="min-w-full divide-y divide-gray-300">
-                                <thead className="bg-slate-500">
+                                <thead className="sticky top-0 z-10 bg-emerald-800">
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
                                             ID chuyến đi
@@ -414,57 +414,36 @@ const Trips = () => {
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
                                             Giờ đến
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-xs text-center font-medium text-gray-50 uppercase tracking-wider">
                                             Hành động
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className=" divide-y divide-gray-500">
+                                <tbody className="divide-y divide-gray-400">
                                     {trips.map((trip) => {
                                         const departureDate = new Date(trip.departureTime);
                                         const arrivalDate = new Date(trip.arrivalTime);
 
                                         const formatUTCTime = (date) => {
                                             const day = String(date.getUTCDate()).padStart(2, "0");
-                                            const month = String(date.getUTCMonth() + 1).padStart(
-                                                2,
-                                                "0"
-                                            );
+                                            const month = String(date.getUTCMonth() + 1).padStart(2, "0");
                                             const year = date.getUTCFullYear();
                                             const hours = String(date.getUTCHours()).padStart(2, "0");
-                                            const minutes = String(date.getUTCMinutes()).padStart(
-                                                2,
-                                                "0"
-                                            );
+                                            const minutes = String(date.getUTCMinutes()).padStart(2, "0");
                                             return `${hours}:${minutes} ${day}/${month}/${year}`;
                                         };
 
                                         return (
-                                            <tr
-                                                key={trip._id || trip.tripId}
-                                                className="hover:bg-slate-600"
-                                            >
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">
-                                                    {trip.tripId}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">
-                                                    {trip.vehicleId}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">
-                                                    {formatUTCTime(departureDate)}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">
-                                                    {trip.departurePoint}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">
-                                                    {trip.destinationPoint}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">
-                                                    {formatUTCTime(arrivalDate)}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm flex space-x-2">
+                                            <tr key={trip._id || trip.tripId} className="hover:bg-emerald-100 text-neutral-950">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-500 underline font-semibold">{trip.tripId}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm">{trip.vehicleId}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm">{formatUTCTime(departureDate)}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm">{trip.departurePoint}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm">{trip.destinationPoint}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm">{formatUTCTime(arrivalDate)}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm flex space-x-2 justify-center">
                                                     <button
-                                                        className="border border-red-500 text-red-500 px-3 py-1 rounded flex items-center hover:bg-red-500 hover:text-white"
+                                                        className="font-semibold border border-red-500 text-red-500 px-3 py-1 rounded flex items-center hover:bg-red-500 hover:text-white"
                                                         onClick={() => handleDeleteTrip(trip.tripId)}
                                                     >
                                                         <svg
@@ -474,36 +453,19 @@ const Trips = () => {
                                                             viewBox="0 0 24 24"
                                                             xmlns="http://www.w3.org/2000/svg"
                                                         >
-                                                            <path
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                strokeWidth="2"
-                                                                d="M6 18L18 6M6 6l12 12"
-                                                            ></path>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                                                         </svg>
                                                         Xóa
                                                     </button>
                                                     <button
-                                                        className="border border-blue-500 text-blue-500 px-3 py-1 rounded flex items-center hover:bg-blue-500 hover:text-white"
+                                                        className="font-semibold border border-blue-500 text-blue-500 px-3 py-1 rounded flex items-center hover:bg-blue-500 hover:text-white"
                                                         onClick={() => {
                                                             setEditTrip({
                                                                 ...trip,
-                                                                departureDate: trip.departureTime
-                                                                    .split("T")[0]
-                                                                    .split("-")
-                                                                    .reverse()
-                                                                    .join("-"),
-                                                                departureHour: trip.departureTime
-                                                                    .split("T")[1]
-                                                                    .slice(0, 5),
-                                                                arrivalDate: trip.arrivalTime
-                                                                    .split("T")[0]
-                                                                    .split("-")
-                                                                    .reverse()
-                                                                    .join("-"),
-                                                                arrivalHour: trip.arrivalTime
-                                                                    .split("T")[1]
-                                                                    .slice(0, 5),
+                                                                departureDate: trip.departureTime.split("T")[0].split("-").reverse().join("-"),
+                                                                departureHour: trip.departureTime.split("T")[1].slice(0, 5),
+                                                                arrivalDate: trip.arrivalTime.split("T")[0].split("-").reverse().join("-"),
+                                                                arrivalHour: trip.arrivalTime.split("T")[1].slice(0, 5),
                                                             });
                                                             setOpenEditTripDialog(true);
                                                         }}
@@ -520,7 +482,7 @@ const Trips = () => {
                                                                 strokeLinejoin="round"
                                                                 strokeWidth="2"
                                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                                            ></path>
+                                                            />
                                                         </svg>
                                                         Chỉnh sửa
                                                     </button>
@@ -532,18 +494,17 @@ const Trips = () => {
                             </table>
                         </div>
                     ) : (
-                        <p className="text-gray-200 text-center">
-                            Không có chuyến đi nào thuộc bến xe này.
-                        </p>
+                        <p className="text-gray-200 text-center">Không có chuyến đi nào thuộc bến xe này.</p>
                     )}
+
                 </>
             )}
 
             {/* Create Trip Dialog */}
             {openCreateTripDialog && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-primary rounded-lg w-full max-w-lg p-6">
-                        <h2 className="text-lg font-semibold mb-4 uppercase text-center">Tạo Chuyến Đi Mới</h2>
+                    <div className="bg-emerald-700 rounded-lg w-full max-w-lg p-6">
+                        <h2 className="text-2xl text-neutral-50 font-semibold mb-4 uppercase text-center">Tạo Chuyến Đi Mới</h2>
                         <form className="space-y-4">
                             {/* Trip ID & Company ID */}
                             <div className="grid grid-cols-2 gap-4">
@@ -554,7 +515,7 @@ const Trips = () => {
                                         name="tripId"
                                         value={newTrip.tripId}
                                         onChange={handleTripInputChange}
-                                        className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-transparent"
+                                        className="text-neutral-50 mt-1 block w-full border border-gray-300 rounded-md p-2 bg-transparent"
                                         required
                                     />
                                 </div>
@@ -565,7 +526,7 @@ const Trips = () => {
                                         name="companyId"
                                         value={newTrip.companyId}
                                         disabled
-                                        className="bg-transparent  mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-400 cursor-not-allowed"
+                                        className="text-neutral-300 bg-emerald-800  mt-1 block w-full border border-gray-300 rounded-md p-2 cursor-not-allowed"
                                     />
                                 </div>
                             </div>
@@ -579,7 +540,7 @@ const Trips = () => {
                                         name="vehicleId"
                                         value={newTrip.vehicleId}
                                         onChange={handleTripInputChange}
-                                        className="bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                        className="text-neutral-50 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2"
                                         required
                                     />
                                 </div>
@@ -590,7 +551,7 @@ const Trips = () => {
                                         name="driverId"
                                         value={newTrip.driverId}
                                         onChange={handleTripInputChange}
-                                        className="bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                        className="text-neutral-50 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2"
                                         required
                                     />
                                 </div>
@@ -599,17 +560,17 @@ const Trips = () => {
                             {/* Departure & Destination */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-0">Điểm khởi hành</label>
+                                    <label className="block text-sm font-medium text-gray-50">Điểm khởi hành</label>
                                     <select
                                         name="departurePoint"
                                         value={newTrip.departurePoint}
                                         onChange={handleTripInputChange}
-                                        className="bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                        className="text-neutral-300 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2"
                                         required
                                     >
-                                        <option value="" className="bg-slate-500">Chọn điểm khởi hành</option>
+                                        <option value="" className="text-neutral-950">Chọn điểm khởi hành</option>
                                         {Object.keys(locationCoordinates).map((point) => (
-                                            <option key={point} value={point} className="bg-slate-500">{point}</option>
+                                            <option key={point} value={point} className="text-neutral-950">{point}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -619,12 +580,12 @@ const Trips = () => {
                                         name="destinationPoint"
                                         value={newTrip.destinationPoint}
                                         onChange={handleTripInputChange}
-                                        className="bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                        className="text-neutral-300 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2"
                                         required
                                     >
-                                        <option value="" className="bg-slate-500">Chọn điểm đến</option>
+                                        <option value="" className="text-neutral-950">Chọn điểm đến</option>
                                         {Object.keys(locationCoordinates).map((point) => (
-                                            <option key={point} value={point} className="bg-slate-500">{point}</option>
+                                            <option key={point} value={point} className="text-neutral-950">{point}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -640,7 +601,7 @@ const Trips = () => {
                                         placeholder="DD-MM-YYYY"
                                         value={newTrip.departureDate}
                                         onChange={handleTripInputChange}
-                                        className={`bg-transparent mt-1 block w-full border rounded-md p-2 ${newTrip.departureDate && !/^\d{2}-\d{2}-\d{4}$/.test(newTrip.departureDate)
+                                        className={`text-neutral-50 bg-transparent mt-1 block w-full border rounded-md p-2 ${newTrip.departureDate && !/^\d{2}-\d{2}-\d{4}$/.test(newTrip.departureDate)
                                             ? "border-red-500"
                                             : "border-gray-300"
                                             }`}
@@ -655,7 +616,7 @@ const Trips = () => {
                                         placeholder="DD-MM-YYYY"
                                         value={newTrip.arrivalDate}
                                         onChange={handleTripInputChange}
-                                        className={`bg-transparent mt-1 block w-full border rounded-md p-2 ${newTrip.arrivalDate && !/^\d{2}-\d{2}-\d{4}$/.test(newTrip.arrivalDate)
+                                        className={`text-neutral-50 bg-transparent mt-1 block w-full border rounded-md p-2 ${newTrip.arrivalDate && !/^\d{2}-\d{2}-\d{4}$/.test(newTrip.arrivalDate)
                                             ? "border-red-500"
                                             : "border-gray-300"
                                             }`}
@@ -667,14 +628,14 @@ const Trips = () => {
                             {/* Departure & Arrival Hours */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-0">Giờ khởi hành</label>
+                                    <label className="block text-sm font-medium text-gray-50">Giờ khởi hành</label>
                                     <input
                                         type="text"
                                         name="departureHour"
                                         placeholder="HH:MM"
                                         value={newTrip.departureHour}
                                         onChange={handleTripInputChange}
-                                        className={`bg-transparent mt-1 block w-full border rounded-md p-2 ${newTrip.departureHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.departureHour)
+                                        className={`text-neutral-50 bg-transparent mt-1 block w-full border rounded-md p-2 ${newTrip.departureHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.departureHour)
                                             ? "border-red-500"
                                             : "border-gray-300"
                                             }`}
@@ -689,7 +650,7 @@ const Trips = () => {
                                         placeholder="HH:MM"
                                         value={newTrip.arrivalHour}
                                         onChange={handleTripInputChange}
-                                        className={`bg-transparent mt-1 block w-full border rounded-md p-2 ${newTrip.arrivalHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.arrivalHour)
+                                        className={`text-neutral-50 bg-transparent mt-1 block w-full border rounded-md p-2 ${newTrip.arrivalHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTrip.arrivalHour)
                                             ? "border-red-500"
                                             : "border-gray-300"
                                             }`}
@@ -717,7 +678,7 @@ const Trips = () => {
                                                 price: rawValue,
                                             }));
                                         }}
-                                        className={`bg-transparent mt-1 block w-full border rounded-md p-2 ${newTrip.price !== "" && (isNaN(newTrip.price) || newTrip.price <= 0)
+                                        className={`text-neutral-50 bg-transparent mt-1 block w-full border rounded-md p-2 ${newTrip.price !== "" && (isNaN(newTrip.price) || newTrip.price <= 0)
                                             ? "border-red-500"
                                             : "border-gray-300"
                                             }`}
@@ -731,14 +692,14 @@ const Trips = () => {
                                         name="status"
                                         value={newTrip.status}
                                         onChange={handleTripInputChange}
-                                        className="bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                        className="text-neutral-50 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2"
                                         required
                                     >
-                                        <option value="" className="bg-slate-500">Chọn trạng thái</option>
-                                        <option value="PENDING" className="bg-slate-500">Đang chờ</option>
-                                        <option value="IN_PROGRESS" className="bg-slate-500">Đang tiến hành</option>
-                                        <option value="COMPLETED" className="bg-slate-500">Đã hoàn thành</option>
-                                        <option value="CANCELLED" className="bg-slate-500">Đã hủy</option>
+                                        <option value="" className="text-neutral-950">Chọn trạng thái</option>
+                                        <option value="PENDING" className="text-neutral-950">Đang chờ</option>
+                                        <option value="IN_PROGRESS" className="text-neutral-950">Đang tiến hành</option>
+                                        <option value="COMPLETED" className="text-neutral-950">Đã hoàn thành</option>
+                                        <option value="CANCELLED" className="text-neutral-950">Đã hủy</option>
                                     </select>
                                 </div>
                             </div>
@@ -754,7 +715,7 @@ const Trips = () => {
                                 Hủy
                             </button>
                             <button
-                                className={`px-4 py-2 text-white bg-emerald-500 rounded hover:bg-emerald-700 flex items-center ${isSubmitting ||
+                                className={`px-4 py-2 text-white bg-amber-500 rounded hover:bg-amber-600 flex items-center ${isSubmitting ||
                                     !newTrip.tripId ||
                                     !newTrip.vehicleId ||
                                     !newTrip.companyId ||
@@ -840,8 +801,8 @@ const Trips = () => {
             {/* Edit Trip Dialog */}
             {openEditTripDialog && editTrip && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-primary rounded-lg w-full max-w-lg p-6">
-                        <h2 className="text-lg font-semibold mb-4 text-center uppercase">Chỉnh sửa Chuyến Đi</h2>
+                    <div className="bg-emerald-700 rounded-lg w-full max-w-lg p-6">
+                        <h2 className="text-2xl text-neutral-50 font-semibold mb-4 text-center uppercase">Chỉnh sửa Chuyến Đi</h2>
                         <form className="space-y-4">
                             {/* ID chuyến đi & ID công ty */}
                             <div className="flex gap-4">
@@ -852,7 +813,7 @@ const Trips = () => {
                                         name="tripId"
                                         value={editTrip.tripId}
                                         disabled
-                                        className="bg-transparent mt-1 w-full border border-gray-300 rounded-md p-2 cursor-not-allowed"
+                                        className="text-neutral-300 bg-emerald-800 mt-1 w-full border border-gray-300 rounded-md p-2 cursor-not-allowed"
                                     />
                                 </div>
                                 <div className="flex-1">
@@ -862,7 +823,7 @@ const Trips = () => {
                                         name="companyId"
                                         value={editTrip.companyId}
                                         disabled
-                                        className="mt-1 w-full border border-gray-300 rounded-md p-2 bg-transparent cursor-not-allowed"
+                                        className="text-neutral-300 bg-emerald-800 mt-1 w-full border border-gray-300 rounded-md p-2 bg-transparent cursor-not-allowed"
                                     />
                                 </div>
                             </div>
@@ -876,7 +837,7 @@ const Trips = () => {
                                         name="vehicleId"
                                         value={editTrip.vehicleId}
                                         onChange={(e) => setEditTrip({ ...editTrip, vehicleId: e.target.value })}
-                                        className="bg-transparent mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="text-neutral-50 bg-transparent mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                                         required
                                     />
                                 </div>
@@ -887,7 +848,7 @@ const Trips = () => {
                                         name="driverId"
                                         value={editTrip.driverId}
                                         onChange={(e) => setEditTrip({ ...editTrip, driverId: e.target.value })}
-                                        className="bg-transparent mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="text-neutral-50 bg-transparent mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                                         required
                                     />
                                 </div>
@@ -909,12 +870,12 @@ const Trips = () => {
                                                 departureLongtitude: coords?.lng || "",
                                             });
                                         }}
-                                        className="bg-transparent mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="text-neutral-200 bg-transparent mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                                         required
                                     >
-                                        <option value="" className="bg-slate-500">Chọn điểm khởi hành</option>
+                                        <option value="" className="text-neutral-950">Chọn điểm khởi hành</option>
                                         {Object.keys(locationCoordinates).map((point) => (
-                                            <option key={point} value={point} className="bg-slate-500">{point}</option>
+                                            <option key={point} value={point} className="text-neutral-950">{point}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -932,12 +893,12 @@ const Trips = () => {
                                                 destinationLongtitude: coords?.lng || "",
                                             });
                                         }}
-                                        className="bg-transparent mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="text-neutral-200 bg-transparent mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                                         required
                                     >
-                                        <option value="" className="bg-slate-500">Chọn điểm đến</option>
+                                        <option value="" className="text-neutral-950">Chọn điểm đến</option>
                                         {Object.keys(locationCoordinates).map((point) => (
-                                            <option key={point} value={point} className="bg-slate-500">{point}</option>
+                                            <option key={point} value={point} className="text-neutral-950">{point}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -953,7 +914,7 @@ const Trips = () => {
                                         value={editTrip.departureDate}
                                         onChange={(e) => setEditTrip({ ...editTrip, departureDate: e.target.value })}
                                         placeholder="DD-YY-MM"
-                                        className={`bg-transparent mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 ${editTrip.departureDate && !/^\d{2}-\d{2}-\d{4}$/.test(editTrip.departureDate)
+                                        className={`text-neutral-50 bg-transparent mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 ${editTrip.departureDate && !/^\d{2}-\d{2}-\d{4}$/.test(editTrip.departureDate)
                                             ? "border-red-500"
                                             : "border-gray-300"
                                             }`}
@@ -968,7 +929,7 @@ const Trips = () => {
                                         value={editTrip.arrivalDate}
                                         onChange={(e) => setEditTrip({ ...editTrip, arrivalDate: e.target.value })}
                                         placeholder="05-04-2025"
-                                        className={`bg-transparent mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 ${editTrip.arrivalDate && !/^\d{2}-\d{2}-\d{4}$/.test(editTrip.arrivalDate)
+                                        className={`text-neutral-50 bg-transparent mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 ${editTrip.arrivalDate && !/^\d{2}-\d{2}-\d{4}$/.test(editTrip.arrivalDate)
                                             ? "border-red-500"
                                             : "border-gray-300"
                                             }`}
@@ -987,7 +948,7 @@ const Trips = () => {
                                         value={editTrip.departureHour}
                                         onChange={(e) => setEditTrip({ ...editTrip, departureHour: e.target.value })}
                                         placeholder="HH:MM"
-                                        className={`bg-transparent mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 ${editTrip.departureHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.departureHour)
+                                        className={`text-neutral-50 bg-transparent mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 ${editTrip.departureHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.departureHour)
                                             ? "border-red-500"
                                             : "border-gray-300"
                                             }`}
@@ -1002,7 +963,7 @@ const Trips = () => {
                                         value={editTrip.arrivalHour}
                                         onChange={(e) => setEditTrip({ ...editTrip, arrivalHour: e.target.value })}
                                         placeholder="HH:MM"
-                                        className={`bg-transparent mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 ${editTrip.arrivalHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.arrivalHour)
+                                        className={`text-neutral-50 bg-transparent mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 ${editTrip.arrivalHour && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(editTrip.arrivalHour)
                                             ? "border-red-500"
                                             : "border-gray-300"
                                             }`}
@@ -1027,9 +988,9 @@ const Trips = () => {
                                             const raw = e.target.value.replace(/\D/g, ""); // Xóa tất cả ký tự không phải số
                                             setEditTrip({ ...editTrip, price: raw });
                                         }}
-                                        className={`bg-transparent mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 ${isNaN(editTrip.price) || editTrip.price <= 0
-                                                ? "border-red-500"
-                                                : "border-gray-300"
+                                        className={`text-neutral-50 bg-transparent mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 ${isNaN(editTrip.price) || editTrip.price <= 0
+                                            ? "border-red-500"
+                                            : "border-gray-300"
                                             }`}
                                         required
                                     />
@@ -1041,14 +1002,14 @@ const Trips = () => {
                                         name="status"
                                         value={editTrip.status}
                                         onChange={(e) => setEditTrip({ ...editTrip, status: e.target.value })}
-                                        className="bg-transparent mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="text-neutral-50 bg-transparent mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                                         required
                                     >
-                                        <option value="" className="bg-slate-500">Chọn trạng thái</option>
-                                        <option value="PENDING" className="bg-slate-500">Đang chờ</option>
-                                        <option value="IN_PROGRESS" className="bg-slate-500">Đang tiến hành</option>
-                                        <option value="COMPLETED" className="bg-slate-500">Đã hoàn thành</option>
-                                        <option value="CANCELLED" className="bg-slate-500">Đã hủy</option>
+                                        <option value="" className="text-neutral-950">Chọn trạng thái</option>
+                                        <option value="PENDING" className="text-neutral-950">Đang chờ</option>
+                                        <option value="IN_PROGRESS" className="text-neutral-950">Đang tiến hành</option>
+                                        <option value="COMPLETED" className="text-neutral-950">Đã hoàn thành</option>
+                                        <option value="CANCELLED" className="text-neutral-950">Đã hủy</option>
                                     </select>
                                 </div>
                             </div>

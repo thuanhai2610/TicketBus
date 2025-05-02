@@ -327,15 +327,15 @@ const Vehicles = () => {
         <div className="">
             {/* Company Selection */}
             <div className="mb-6">
-                <label className="block text-gray-50 font-medium mb-2 uppercase">
+                <label className="block text-lg font-medium text-neutral-950">
                     Chọn Bến Xe
                 </label>
                 <select
                     value={selectedCompanyId}
                     onChange={handleCompanyChange}
-                    className="bg-primary w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="font-normal text-md w-full p-3 mt-3 shadow-md shadow-emerald-600 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-600"
                 >
-                    <option value="">━━ Chọn Bến Xe ━━</option>
+                    <option value="" >━━ Chọn Bến Xe ━━</option>
                     {companies.map((company) => (
                         <option key={company.companyId} value={company.companyId}>
                             {company.companyName}
@@ -348,7 +348,7 @@ const Vehicles = () => {
                 <>
                     {/* Vehicles Header */}
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-semibold text-gray-50">
+                        <h2 className="text-2xl font-semibold text-neutral-950">
                             Danh sách Xe
                         </h2>
                         <button
@@ -398,42 +398,32 @@ const Vehicles = () => {
                             </svg>
                         </div>
                     ) : vehiclesError ? (
-                        <p className="text-red-600 text-center ">{vehiclesError}</p>
+                        <p className="text-red-600 text-center">{vehiclesError}</p>
                     ) : vehicles.length > 0 ? (
-                        <div className="overflow-x-auto shadow-md shadow-neutral-200 ">
-                            <table className="w-full  shadow-lg rounded">
-                                <thead>
-                                    <tr className="bg-slate-500">
-                                        <th className="p-3 text-left text-gray-50 font-semibold">
-                                            ID xe
-                                        </th>
-                                        <th className="p-3 text-left text-gray-50 font-semibold">
-                                            Biển số xe
-                                        </th>
-                                        <th className="p-3 text-left text-gray-50 font-semibold">
-                                            Loại xe
-                                        </th>
-                                        <th className="p-3 text-left text-gray-50 font-semibold">
-                                            Số ghế
-                                        </th>
-                                        <th className="p-3 text-left text-gray-50 font-semibold">
-                                            Hành động
-                                        </th>
+                        <div className="overflow-x-auto max-h-[550px] overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-500 scrollbar-track-gray-200 shadow-md rounded">
+                            <table className="w-full shadow-lg rounded">
+                                <thead className="sticky top-0 z-10 bg-emerald-700">
+                                    <tr>
+                                        <th className="p-3 text-left text-gray-50 font-semibold uppercase">ID xe</th>
+                                        <th className="p-3 text-left text-gray-50 font-semibold uppercase">Biển số xe</th>
+                                        <th className="p-3 text-left text-gray-50 font-semibold uppercase">Loại xe</th>
+                                        <th className="p-3 text-left text-gray-50 font-semibold uppercase">Số ghế</th>
+                                        <th className="p-3 text-gray-50 font-semibold text-center uppercase">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {vehicles.map((vehicle) => (
                                         <tr
                                             key={vehicle._id || vehicle.vehicleId}
-                                            className="border-b hover:bg-slate-700"
+                                            className="border-b hover:bg-emerald-100"
                                         >
-                                            <td className="p-3">{vehicle.vehicleId}</td>
+                                            <td className="p-3 text-blue-500 underline">{vehicle.vehicleId}</td>
                                             <td className="p-3">{vehicle.lisencePlate}</td>
                                             <td className="p-3">{vehicle.vehicleType}</td>
                                             <td className="p-3">
                                                 {vehicle.availableSeats}/{vehicle.seatCount}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm flex space-x-2">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm justify-center flex space-x-2">
                                                 <button
                                                     className="border border-red-500 text-red-500 px-3 py-1 rounded flex items-center hover:bg-red-500 hover:text-white"
                                                     onClick={() => handleDeleteVehicle(vehicle.vehicleId)}
@@ -488,14 +478,15 @@ const Vehicles = () => {
                             Không có xe nào thuộc bến xe này.
                         </p>
                     )}
+
                 </>
             )}
 
             {/* Create Vehicle Dialog */}
             {openCreateVehicleDialog && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-primary rounded-lg shadow-lg max-w-md w-full p-6 shadow-neutral-200">
-                        <h3 className="text-lg font-semibold text-gray-50 mb-4 uppercase text-center">
+                    <div className="bg-emerald-700 rounded-lg shadow-lg max-w-md w-full p-6 shadow-neutral-200">
+                        <h3 className="text-2xl font-semibold text-gray-50 mb-4 uppercase text-center">
                             Tạo Xe Mới
                         </h3>
                         <div className="space-y-4">
@@ -505,7 +496,7 @@ const Vehicles = () => {
                                 placeholder="ID xe"
                                 value={newVehicle.vehicleId}
                                 onChange={handleVehicleInputChange}
-                                className="bg-transparent w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="text-neutral-50 bg-transparent w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
                             />
                             <input
@@ -514,7 +505,7 @@ const Vehicles = () => {
                                 placeholder="ID Bến Xe"
                                 value={newVehicle.companyId}
                                 disabled
-                                className=" w-full p-3 border border-gray-300 rounded-md bg-slate-500"
+                                className=" w-full p-3 border border-gray-300 rounded-md bg-emerald-800 text-neutral-300"
                             />
                             <input
                                 name="lisencePlate"
@@ -522,19 +513,19 @@ const Vehicles = () => {
                                 placeholder="Biển số xe"
                                 value={newVehicle.lisencePlate}
                                 onChange={handleVehicleInputChange}
-                                className="bg-transparent w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="text-neutral-50 bg-transparent w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
                             />
                             <select
                                 name="vehicleType"
                                 value={newVehicle.vehicleType}
                                 onChange={handleVehicleInputChange}
-                                className="bg-transparent text-neutral-50 w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className=" bg-transparent text-neutral-50 w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
                                 required
                             >
-                                <option value="" className="bg-slate-500">━━ Chọn loại xe ━━</option>
-                                <option value="GIUONGNAM" className="bg-slate-500">GIUONGNAM</option>
-                                <option value="NGOI" className=" bg-slate-500">NGOI</option>
+                                <option value="" className="text-neutral-950">━━ Chọn loại xe ━━</option>
+                                <option value="GIUONGNAM" className="text-neutral-950">GIUONGNAM</option>
+                                <option value="NGOI" className=" text-neutral-950">NGOI</option>
                             </select>
                             <input
                                 name="seatCount"
@@ -542,7 +533,7 @@ const Vehicles = () => {
                                 placeholder="Tổng số ghế"
                                 value={newVehicle.seatCount}
                                 onChange={handleVehicleInputChange}
-                                className={`bg-transparent w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${newVehicle.seatCount &&
+                                className={`text-neutral-50 bg-transparent w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${newVehicle.seatCount &&
                                     (isNaN(newVehicle.seatCount) || newVehicle.seatCount <= 0)
                                     ? "border-red-500"
                                     : "border-gray-300 focus:ring-blue-500"
@@ -552,7 +543,7 @@ const Vehicles = () => {
                             />
                             {newVehicle.seatCount &&
                                 (isNaN(newVehicle.seatCount) || newVehicle.seatCount <= 0) && (
-                                    <p className="text-red-500 text-sm">
+                                    <p className="text-yellow-500 text-sm">
                                         Tổng số ghế phải là một số lớn hơn 0
                                     </p>
                                 )}
@@ -562,7 +553,7 @@ const Vehicles = () => {
                                 placeholder="Số ghế trống"
                                 value={newVehicle.availableSeats}
                                 onChange={handleVehicleInputChange}
-                                className={`bg-transparent w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${newVehicle.availableSeats &&
+                                className={`text-neutral-50 bg-transparent w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${newVehicle.availableSeats &&
                                     (isNaN(newVehicle.availableSeats) ||
                                         newVehicle.availableSeats < 0 ||
                                         (newVehicle.seatCount &&
@@ -576,13 +567,13 @@ const Vehicles = () => {
                             {newVehicle.availableSeats &&
                                 (isNaN(newVehicle.availableSeats) ||
                                     newVehicle.availableSeats < 0) && (
-                                    <p className="text-red-500 text-sm font-bold">
+                                    <p className="text-yellow-500 text-sm font-bold">
                                         Số ghế trống phải là một số không âm
                                     </p>
                                 )}
                             {newVehicle.seatCount &&
                                 newVehicle.availableSeats > newVehicle.seatCount && (
-                                    <p className="text-red-500 text-sm font-bold ">
+                                    <p className="text-yellow-500 text-sm font-bold ">
                                         Số ghế trống không thể lớn hơn tổng số ghế
                                     </p>
                                 )}
@@ -611,7 +602,7 @@ const Vehicles = () => {
                                     Number(newVehicle.availableSeats) < 0 ||
                                     Number(newVehicle.availableSeats) > Number(newVehicle.seatCount)
                                 }
-                                className={`px-4 py-2 rounded-md text-white transition ${isSubmitting ? "bg-emerald-500" : "bg-emerald-500 hover:bg-emerald-700"
+                                className={`px-4 py-2 rounded-md text-white transition ${isSubmitting ? "bg-amber-300" : "bg-amber-400 hover:bg-amber-500"
                                     }`}
                             >
                                 {isSubmitting ? (
@@ -647,8 +638,8 @@ const Vehicles = () => {
             {/* Edit Vehicle Dialog */}
             {openEditVehicleDialog && editVehicle && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-primary rounded-lg shadow-lg max-w-md w-full p-6 shadow-neutral-200">
-                        <h3 className="text-lg font-semibold text-gray-50 mb-4 text-center uppercase">
+                    <div className="bg-emerald-700 rounded-lg shadow-lg max-w-md w-full p-6 shadow-neutral-200">
+                        <h3 className="text-2xl font-semibold text-gray-50 mb-4 text-center uppercase">
                             Chỉnh sửa Xe
                         </h3>
                         <div className="space-y-4">
@@ -658,7 +649,7 @@ const Vehicles = () => {
                                 placeholder="ID xe"
                                 value={editVehicle.vehicleId}
                                 disabled
-                                className="bg-transparent w-full p-3 border border-gray-300 rounded-md bg-gray-100"
+                                className="text-neutral-50 bg-transparent w-full p-3 border border-gray-300 rounded-md bg-gray-100"
                             />
                             <input
                                 name="companyId"
@@ -666,7 +657,7 @@ const Vehicles = () => {
                                 placeholder="ID công ty"
                                 value={editVehicle.companyId}
                                 disabled
-                                className="bg-transparent w-full p-3 border border-gray-300 rounded-md bg-gray-100"
+                                className="text-neutral-50 bg-transparent w-full p-3 border border-gray-300 rounded-md bg-gray-100"
                             />
                             <input
                                 name="lisencePlate"
@@ -676,7 +667,7 @@ const Vehicles = () => {
                                 onChange={(e) =>
                                     setEditVehicle({ ...editVehicle, lisencePlate: e.target.value })
                                 }
-                                className="bg-transparent w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="text-neutral-50 bg-transparent w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
                             />
                             <select
@@ -685,12 +676,12 @@ const Vehicles = () => {
                                 onChange={(e) =>
                                     setEditVehicle({ ...editVehicle, vehicleType: e.target.value })
                                 }
-                                className="bg-transparent w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="text-neutral-50 bg-transparent w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
                             >
-                                <option value="" className="bg-slate-500">Chọn loại xe</option>
-                                <option value="GIUONGNAM" className="bg-slate-500">GIUONGNAM</option>
-                                <option value="NGOI" className="bg-slate-500">NGOI</option>
+                                <option value="" className="text-neutral-950">Chọn loại xe</option>
+                                <option value="GIUONGNAM" className="text-neutral-950">GIUONGNAM</option>
+                                <option value="NGOI" className="text-neutral-950">NGOI</option>
                             </select>
                             <input
                                 name="seatCount"
@@ -703,7 +694,7 @@ const Vehicles = () => {
                                         seatCount: Number(e.target.value),
                                     })
                                 }
-                                className={`bg-transparent w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${isNaN(editVehicle.seatCount) || editVehicle.seatCount <= 0
+                                className={`text-neutral-50 bg-transparent w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${isNaN(editVehicle.seatCount) || editVehicle.seatCount <= 0
                                     ? "border-red-500"
                                     : "border-gray-300 focus:ring-blue-500"
                                     }`}
@@ -711,7 +702,7 @@ const Vehicles = () => {
                                 min="1"
                             />
                             {isNaN(editVehicle.seatCount) || editVehicle.seatCount <= 0 ? (
-                                <p className="text-red-500 text-sm font-bold">
+                                <p className="text-yellow-500 text-sm font-bold">
                                     Tổng số ghế phải là một số lớn hơn 0
                                 </p>
                             ) : null}
@@ -726,7 +717,7 @@ const Vehicles = () => {
                                         availableSeats: Number(e.target.value),
                                     })
                                 }
-                                className={`bg-transparent w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${isNaN(editVehicle.availableSeats) ||
+                                className={`text-neutral-50 bg-transparent w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${isNaN(editVehicle.availableSeats) ||
                                     editVehicle.availableSeats < 0 ||
                                     editVehicle.availableSeats > editVehicle.seatCount
                                     ? "border-red-500"
@@ -737,11 +728,11 @@ const Vehicles = () => {
                             />
                             {isNaN(editVehicle.availableSeats) ||
                                 editVehicle.availableSeats < 0 ? (
-                                <p className="text-red-500 text-sm font-bold">
+                                <p className="text-yellow-500 text-sm font-bold">
                                     Số ghế trống phải là một số không âm
                                 </p>
                             ) : editVehicle.availableSeats > editVehicle.seatCount ? (
-                                <p className="text-red-500 text-sm font-bold">
+                                <p className="text-yellow-500 text-sm font-bold">
                                     Số ghế trống không thể lớn hơn tổng số ghế
                                 </p>
                             ) : null}

@@ -59,8 +59,8 @@ const TicketAreaChart = ({ tickets }) => {
   const data = groupTicketsByDate(tickets);
 
   return (
-    <div className="bg-transparent p-4 rounded-lg shadow-lg">
-      <h3 className="text-lg font-semibold text-white mb-4">Thống kê số lượng vé theo ngày</h3>
+    <div className="">
+      <h3 className="text-lg font-semibold text-neutral-950 mb-4">Thống kê số lượng vé theo ngày</h3>
       <ResponsiveContainer width="100%" height={400}>
         <AreaChart
           data={data}
@@ -71,9 +71,9 @@ const TicketAreaChart = ({ tickets }) => {
             bottom: 5,
           }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-          <XAxis dataKey="name" stroke="#ffffff" label={{ value: "", position: "insideBottom", offset: -5, fill: "#ffffff" }} />
-          <YAxis stroke="#ffffff" label={{ value: "Số lượng vé", angle: -90, position: "insideLeft", fill: "#ffffff" }} />
+          <CartesianGrid  strokeDasharray="3 3" stroke="#4b5563" horizontal={true} vertical={false} strokeOpacity={0.3} />
+          <XAxis dataKey="name" stroke="#222222" label={{ value: "", position: "insideBottom", offset: -5, fill: "#222222" }} />
+          <YAxis stroke="#222222" label={{ value: "Số lượng vé", angle: -90, position: "insideLeft", fill: "#222222" }} />
           <Tooltip
             contentStyle={{
               backgroundColor: "#1f2937",
