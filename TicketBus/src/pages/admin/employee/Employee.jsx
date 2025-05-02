@@ -117,15 +117,15 @@ const Employees = () => {
   };
 
   return (
-    <div className="w-full mx-auto text-white">
+    <div className="w-full mx-auto text-neutral-950">
 
       <h2 className="text-3xl font-bold mb-4 uppercase">quản lí danh sách tài xế</h2>
       {showForm && (
         <form
           onSubmit={editingDriver ? handleUpdate : handleSubmit}
-          className="bg-gray-800 p-6 rounded-xl mt-4 space-y-4"
+          className="bg-emerald-600 shadow-md border-gray-700 shadow-emerald-500 p-6 rounded-xl mt-4 space-y-4"
         >
-          <h2 className="text-lg font-semibold">{editingDriver ? "Chỉnh sửa Tài xế" : "Thêm Tài xế mới"}</h2>
+          <h2 className="text-lg font-semibold text-neutral-50">{editingDriver ? "Chỉnh sửa Tài xế" : "Thêm Tài xế mới"}</h2>
 
           <input
             type="text"
@@ -133,7 +133,7 @@ const Employees = () => {
             placeholder="Tên tài xế"
             value={formData.driverName}
             onChange={handleChange}
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded text-black"
             required
           />
 
@@ -143,7 +143,7 @@ const Employees = () => {
             placeholder="Số điện thoại"
             value={formData.phone}
             onChange={handleChange}
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded text-black"
             required
           />
 
@@ -153,7 +153,7 @@ const Employees = () => {
             placeholder="Địa chỉ"
             value={formData.address}
             onChange={handleChange}
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded text-black"
           />
 
           <input
@@ -162,7 +162,7 @@ const Employees = () => {
             placeholder="Mã tài xế"
             value={formData.driverId}
             onChange={handleChange}
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded text-black"
           />
 
           <input
@@ -171,20 +171,20 @@ const Employees = () => {
             placeholder="Mã công ty"
             value={formData.companyId}
             onChange={handleChange}
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded text-black"
           />
 
           <div className="flex gap-2">
             <button
               type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+              className="bg-sky-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
             >
               {editingDriver ? "Lưu thay đổi" : "Lưu"}
             </button>
             <button
               type="button"
               onClick={handleCancelEdit}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+              className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded"
             >
               Hủy
             </button>
@@ -222,28 +222,30 @@ const Employees = () => {
           <p>Đang tải...</p>
         ) : (
           <table className="min-w-full table-auto border-collapse border border-gray-700 shadow-lg shadow-neutral-400 text-white">
-            <thead className="bg-gray-800">
+            <thead className="bg-emerald-700">
               <tr>
+              <th className="  px-4 py-2">Mã tài xế</th>
                 <th className="  px-4 py-2">Tên tài xế</th>
                 <th className="  px-4 py-2">SĐT</th>
                 <th className="  px-4 py-2">Địa chỉ</th>
-                <th className="  px-4 py-2">Mã tài xế</th>
+               
                 <th className="  px-4 py-2">Mã công ty</th>
                 <th className="  px-4 py-2">Hành động</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-500">
               {drivers.map((driver) => (
-                <tr key={driver.driverId} className="text-center">
+                <tr key={driver.driverId} className="text-center text-neutral-950">
+                   <td className="  px-4 py-2 text-blue-500 underline font-semibold">{driver.driverId}</td>
                   <td className=" px-4 py-2">{driver.driverName}</td>
                   <td className=" px-4 py-2">{driver.phone}</td>
                   <td className="  px-4 py-2">{driver.address}</td>
-                  <td className="  px-4 py-2">{driver.driverId}</td>
+                 
                   <td className="  px-4 py-2">{driver.companyId}</td>
                   <td className="px-2 py-4 text-sm flex space-x-2 justify-center ">
                     <button
                       onClick={() => handleDelete(driver.driverId)}
-                      className="border border-red-500 text-red-500 px-3 py-1 rounded flex items-center hover:bg-red-500 hover:text-white"
+                      className="font-semibold border border-red-500 text-red-500 px-3 py-1 rounded flex items-center hover:bg-red-500 hover:text-white"
                     >
                       <svg
                         className="w-4 h-4 mr-2"
@@ -263,7 +265,7 @@ const Employees = () => {
                     </button>
                     <button
                       onClick={() => handleEdit(driver)}
-                      className="border border-blue-500 text-blue-500 px-3 py-1 rounded flex items-center hover:bg-blue-500 hover:text-white"
+                      className="font-semibold border border-blue-500 text-blue-500 px-3 py-1 rounded flex items-center hover:bg-blue-500 hover:text-white"
                     >
                       <svg
                         className="w-4 h-4 mr-2"
@@ -279,7 +281,7 @@ const Employees = () => {
                           d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                         ></path>
                       </svg>
-                      Sửa
+                      Chỉnh Sửa
                     </button>
 
                   </td>

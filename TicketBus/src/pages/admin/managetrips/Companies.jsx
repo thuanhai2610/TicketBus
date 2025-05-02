@@ -155,7 +155,7 @@ const Companies = () => {
     <div className="p-4">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h6 className="text-xl font-semibold">Danh sách Bến Xe</h6>
+        <h6 className="text-2xl font-semibold">Danh sách Bến Xe</h6>
         <button
           className="bg-emerald-600 text-white px-4 py-2 rounded flex items-center hover:bg-emerald-700"
           onClick={() => setOpenCreateCompanyDialog(true)}
@@ -181,21 +181,21 @@ const Companies = () => {
       {/* Table */}
       <div className=" shadow-md rounded overflow-x-auto shadow-neutral-200">
         <table className="min-w-full divide-y divide-gray-700">
-          <thead className="bg-slate-500">
+          <thead className="bg-emerald-700">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-base font-semibold text-neutral-50 uppercase tracking-wider">
                 ID
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-base font-semibold text-neutral-50 uppercase tracking-wider">
                 Tên Bến Xe
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-base font-semibold text-neutral-50 uppercase tracking-wider">
                 Số Điện Thoại
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-base font-semibold text-neutral-50 uppercase tracking-wider">
                 Địa Chỉ
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-50 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-base font-semibold text-neutral-50 uppercase tracking-wider">
                 Chỉnh Sửa
               </th>
             </tr>
@@ -205,23 +205,23 @@ const Companies = () => {
               companies.map((company) => (
                 <tr
                   key={company._id || company.companyId}
-                  className="hover:bg-slate-600"
+                  className="hover:bg-emerald-100"
                 >
-                  <td className="px-6 py-4  text-sm text-gray-50">
+                  <td className="px-6 py-4  text-sm text-blue-500 underline">
                     {company.companyId}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-950">
                     {company.companyName}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-950">
                     {company.phone}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-950">
                     {company.address}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
-                      className="border border-blue-500 text-blue-400 px-3 py-1 rounded flex items-center hover:bg-blue-500 hover:text-white"
+                      className="border border-blue-500 text-blue-700 px-3 py-1 rounded flex items-center hover:bg-blue-500 hover:text-white"
                       onClick={() => {
                         setEditCompany(company);
                         setOpenEditCompanyDialog(true);
@@ -263,8 +263,8 @@ const Companies = () => {
       {/* Create Company Dialog */}
       {openCreateCompanyDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-primary rounded-lg w-full max-w-md p-6 shadow-lg shadow-neutral-200">
-            <h2 className="text-xl font-semibold mb-4 bg-primary text-center uppercase">Thêm Bến Xe Mới</h2>
+          <div className="bg-emerald-700 rounded-lg w-full max-w-md p-6 shadow-lg shadow-neutral-200">
+            <h2 className="text-2xl font-semibold mb-4 text-center uppercase text-neutral-50">Thêm Bến Xe Mới</h2>
             <form className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-50">
@@ -275,7 +275,7 @@ const Companies = () => {
                   name="companyId"
                   value={newCompany.companyId}
                   onChange={handleInputChange}
-                  className="bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="text-neutral-50 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -288,7 +288,7 @@ const Companies = () => {
                   name="companyName"
                   value={newCompany.companyName}
                   onChange={handleInputChange}
-                  className="bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="text-neutral-50 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -301,7 +301,7 @@ const Companies = () => {
                   name="phone"
                   value={newCompany.phone}
                   onChange={handleInputChange}
-                  className="bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="text-neutral-50 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -314,7 +314,7 @@ const Companies = () => {
                   name="address"
                   value={newCompany.address}
                   onChange={handleInputChange}
-                  className="bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="text-neutral-50 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -327,7 +327,7 @@ const Companies = () => {
                 Hủy
               </button>
               <button
-                className={`px-4 py-2 text-white bg-emerald-500 rounded hover:bg-emerald-700 ${
+                className={`px-4 py-2 text-white bg-sky-500 rounded hover:bg-emerald-700 ${
                   !newCompany.companyId ||
                   !newCompany.companyName ||
                   !newCompany.phone ||
@@ -353,8 +353,8 @@ const Companies = () => {
       {/* Edit Company Dialog */}
       {openEditCompanyDialog && editCompany && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-primary rounded-lg w-full max-w-md p-6 shadow-lg shadow-neutral-200">
-            <h2 className="text-xl font-semibold mb-4 text-center uppercase">Chỉnh sửa Bến Xe</h2>
+          <div className="bg-emerald-700 rounded-lg w-full max-w-md p-6 shadow-lg shadow-neutral-200">
+            <h2 className="text-2xl text-neutral-50 font-semibold mb-4 text-center uppercase">Chỉnh sửa Bến Xe</h2>
             <form className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-50">
@@ -365,7 +365,7 @@ const Companies = () => {
                   name="companyId"
                   value={editCompany.companyId}
                   onChange={handleEditInputChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="text-neutral-200 mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                   disabled
                 />
               </div>
@@ -378,7 +378,7 @@ const Companies = () => {
                   name="companyName"
                   value={editCompany.companyName}
                   onChange={handleEditInputChange}
-                  className=" bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                  className=" text-neutral-50 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -391,7 +391,7 @@ const Companies = () => {
                   name="phone"
                   value={editCompany.phone}
                   onChange={handleEditInputChange}
-                  className="bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="text-neutral-50 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -404,7 +404,7 @@ const Companies = () => {
                   name="address"
                   value={editCompany.address}
                   onChange={handleEditInputChange}
-                  className="bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="text-neutral-50 bg-transparent mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>

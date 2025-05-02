@@ -1,45 +1,48 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
-import Logo from "../../assets/logo.png";
-import { FaBus, FaTicketAlt, FaUsers, FaCog, FaUserCircle, FaHome, FaMoneyBillAlt, FaSignOutAlt, FaSignInAlt, FaStar, FaUser, FaCreditCard, FaBell, FaChevronDown, FaChevronRight } from "react-icons/fa";
-import { MdOutlineLogout , MdDiscount ,MdSupportAgent  } from "react-icons/md";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
+import Logo from "../../assets/logoxanh.png";
+import {
+  FaBus, FaTicketAlt, FaUsers, FaCog, FaUserCircle,
+  FaHome, FaMoneyBillAlt, FaSignOutAlt, FaSignInAlt,
+  FaChevronDown, FaChevronRight
+} from "react-icons/fa";
+import { MdOutlineLogout, MdDiscount, MdSupportAgent } from "react-icons/md";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
 const AdminLayout = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [email, setEmail] = useState(""); // State for email
+  const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [avatar, setAvatar] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isTripsOpen, setIsTripsOpen] = useState(false); // State for collapsing "Nhà xe" section
-  const [isTicketsOpen, setIsTicketsOpen] = useState(false); // State for collapsing "Đơn đặt vé" section
+  const [isTripsOpen, setIsTripsOpen] = useState(true);
+  const [isTicketsOpen, setIsTicketsOpen] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
+  const isParentActive = (prefix) => location.pathname.startsWith(prefix);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        // Check if the JWT token contains an email field
-        setEmail(decoded.email || decoded.username || "user@example.com"); // Fallback to username if email is not present
+        setEmail(decoded.email || decoded.username || "user@example.com");
         setIsLoggedIn(true);
 
         const fetchUserData = async () => {
           try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile?username=${decoded.username}`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-       
+            const response = await axios.get(
+              `${import.meta.env.VITE_API_URL}/user/profile?username=${decoded.username}`,
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
             localStorage.setItem("avatarAdmin", response.data.avatar);
             setFirstName(response.data.firstName || "");
             setLastName(response.data.lastName || "");
-            // Check if the API response contains an email field
-            if (response.data.email) {
-              setEmail(response.data.email);
-            }
+            if (response.data.email) setEmail(response.data.email);
             if (response.data.avatar) {
               if (response.data.avatar.startsWith("http")) {
                 setAvatar(response.data.avatar);
@@ -76,53 +79,59 @@ const AdminLayout = () => {
     window.location.reload();
   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen((prev) => !prev);
-  };
-
-  const toggleTrips = () => {
-    setIsTripsOpen((prev) => !prev);
-  };
-
-  const toggleTickets = () => {
-    setIsTicketsOpen((prev) => !prev);
-  };
+  const toggleTrips = () => setIsTripsOpen(!isTripsOpen);
+  const toggleTickets = () => setIsTicketsOpen(!isTicketsOpen);
 
   return (
-    <div className="flex min-h-screen bg-gray-900 text-white">
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col max-h-screen">
-        {/* Header with Logo */}
-        <div className="flex items-center p-4 border-b border-gray-700">
+    <div className="flex min-h-screen bg-emerald-500 text-neutral-50">
+      <aside className="w-64 bg-teal-800 flex flex-col max-h-screen">
+        <div className="flex items-center p-4 border-b border-gray-300">
           <Link to="/admin" className="flex items-center space-x-2">
             <img src={Logo} alt="Logo" className="h-8 w-8" />
             <span className="text-xl font-semibold">TICKETBUS</span>
-            <span className="text-gray-400 text-xl">ADMIN</span>
+            <span className="text-neutral-400 text-xl">ADMIN</span>
           </Link>
         </div>
 
-        {/* Scrollable Menu */}
-        <div className="flex-1 overflow-y-auto p-2">
-          {/* Platform Section */}
-          <div className="mb-4">
-            <span className="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        <div className="flex-1 overflow-y-auto p-0">
+          <div className="mb-4v pt-2">
+            <span className="px-4 py-2 text-xs font-semibold text-gray-50 uppercase tracking-wider">
               Platform
             </span>
             <ul className="mt-1 space-y-1">
-              <li>
+              <li className="relative w-full pl-2">
+                <div
+                  className={`absolute inset-y-0 left-0 right-0 ${isActive("/admin") ? "bg-white" : "bg-transparent"
+                    } -z-10`}
+                />
                 <Link
                   to="/admin"
-                  className="flex items-center px-2 py-1.5 text-sm text-gray-200 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                  className={`flex items-center pl-2 py-2 text-base rounded-tl-lg rounded-bl-lg transition-colors w-full ${isActive("/admin")
+                    ? "bg-white text-black"
+                    : "text-gray-200 hover:bg-emerald-600 hover:text-white"
+                    }`}
                 >
                   <FaHome className="mr-3 h-4 w-4" />
                   Trang chủ
                 </Link>
+                {isActive("/admin") && (
+                  <>
+                    <div
+                      className="absolute top-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-br-full shadow-[0_12px_0_0_white]"
+                    ></div>
+                    <div
+                      className="absolute bottom-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-tr-full shadow-[0_-12px_0_0_white]"
+                    ></div>
+                  </>
+                )}
               </li>
-              {/* Nhà xe with collapsible sub-menu */}
-              <li className=" border-transparent hover:border-gray-500">
+
+              <li className="relative w-full">
                 <button
                   onClick={toggleTrips}
-                  className="flex items-center w-full px-2 py-1.5 text-sm text-gray-200 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                  className={`flex items-center w-full px-4 py-2 text-base font-semibold rounded-tl-lg rounded-bl-lg transition-colors ${isParentActive("/admin/manage-")
+
+                    }`}
                 >
                   <FaBus className="mr-3 h-4 w-4" />
                   Nhà xe
@@ -133,34 +142,71 @@ const AdminLayout = () => {
                   )}
                 </button>
                 {isTripsOpen && (
-                  <ul className="mt-1 space-y-1 pl-6">
-                    <li className="border-l-4 border-transparent hover:border-gray-500">
+                  <ul className="mt-1 space-y-1 pl-2 border-l border-gray-300 ml-8">
+                    <li className="relative w-full">
+                      <div
+                        className={`absolute inset-y-0 left-0 right-0 ${isActive("/admin/manage-trips") ? "bg-amber-600" : "bg-transparent"
+                          } -z-10`}
+                      />
                       <Link
                         to="/admin/manage-trips"
-                        className="flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                        className={`flex items-center px-4 py-2 text-sm rounded-tl-lg rounded-bl-lg transition-colors w-full ${isActive("/admin/manage-trips")
+                          ? "bg-white text-black"
+                          : "text-gray-200 hover:bg-emerald-600 hover:text-white"
+                          }`}
                       >
-                        <FaBus className="mr-3 h-4 w-4" />
+                        <FaBus className="mr-2 h-3 w-3" />
                         Quản lý Bến Xe
                       </Link>
+                      {isActive("/admin/manage-trips") && (
+                        <>
+                          <div
+                            className="absolute top-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-br-full shadow-[0_12px_0_0_white]"
+                          ></div>
+                          <div
+                            className="absolute bottom-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-tr-full shadow-[0_-12px_0_0_white]"
+                          ></div>
+                        </>
+                      )}
                     </li>
-                    <li className="border-l-4 border-transparent hover:border-gray-500">
+                    <li className="relative w-full">
+                      <div
+                        className={`absolute inset-y-0 left-0 right-0 ${isActive("/admin/manage-employees") ? "bg-amber-600" : "bg-transparent"
+                          } -z-10`}
+                      />
                       <Link
                         to="/admin/manage-employees"
-                        className="flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                        className={`flex items-center px-4 py-2 text-sm rounded-tl-lg rounded-bl-lg transition-colors w-full ${isActive("/admin/manage-employees")
+                          ? "bg-white text-black"
+                          : "text-gray-200 hover:bg-emerald-600 hover:text-white"
+                          }`}
                       >
-                        <FaUsers className="mr-3 h-4 w-4" />
+                        <FaUsers className="mr-2 h-3 w-3" />
                         Nhân Viên
                       </Link>
+                      {isActive("/admin/manage-employees") && (
+                        <>
+                            <div
+                            className="absolute top-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-br-full shadow-[0_12px_0_0_white]"
+                          ></div>
+                          <div
+                            className="absolute bottom-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-tr-full shadow-[0_-12px_0_0_white]"
+                          ></div>
+                        </>
+                      )}
                     </li>
                   </ul>
                 )}
               </li>
 
-              {/* Đơn đặt vé with collapsible sub-menu */}
-              <li>
+              <li className="relative w-full">
                 <button
                   onClick={toggleTickets}
-                  className="flex items-center w-full px-2 py-1.5 text-sm text-gray-200 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                  className={`flex items-center w-full px-4 py-2 text-base font-semibold rounded-tl-lg rounded-bl-lg transition-colors ${isParentActive("/admin/manage-tickets") ||
+                    isParentActive("/admin/revenue") ||
+                    isParentActive("/admin/discount")
+
+                    }`}
                 >
                   <FaTicketAlt className="mr-3 h-4 w-4" />
                   Đơn đặt vé
@@ -171,101 +217,202 @@ const AdminLayout = () => {
                   )}
                 </button>
                 {isTicketsOpen && (
-                  <ul className="mt-1 space-y-1 pl-6">
-                    <li>
+                  <ul className="mt-1 space-y-1 pl-2 border-l border-gray-300 ml-8">
+                    <li className="relative w-full">
+                      <div
+                        className={`absolute inset-y-0 left-0 right-0 ${isActive("/admin/manage-tickets") ? "bg-amber-600" : "bg-transparent"
+                          } -z-10`}
+                      />
                       <Link
                         to="/admin/manage-tickets"
-                        className=" border-l-4 border-transparent hover:border-gray-500 flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                        className={`flex items-center px-4 py-2 text-sm rounded-tl-lg rounded-bl-lg transition-colors w-full ${isActive("/admin/manage-tickets")
+                          ? "bg-white text-black"
+                          : "text-gray-200 hover:bg-emerald-600 hover:text-white"
+                          }`}
                       >
-                        <FaTicketAlt className="mr-3 h-4 w-4" />
+                        <FaTicketAlt className="mr-2 h-3 w-3" />
                         Vé đã bán
                       </Link>
+                      {isActive("/admin/manage-tickets") && (
+                        <>
+                            <div
+                            className="absolute top-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-br-full shadow-[0_12px_0_0_white]"
+                          ></div>
+                          <div
+                            className="absolute bottom-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-tr-full shadow-[0_-12px_0_0_white]"
+                          ></div>
+                        </>
+                      )}
                     </li>
-                    <li>
+                    <li className="relative w-full">
+                      <div
+                        className={`absolute inset-y-0 left-0 right-0 ${isActive("/admin/revenue") ? "bg-amber-600" : "bg-transparent"
+                          } -z-10`}
+                      />
                       <Link
                         to="/admin/revenue"
-                        className="border-l-4 border-transparent hover:border-gray-500 flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                        className={`flex items-center px-4 py-2 text-sm rounded-tl-lg rounded-bl-lg transition-colors w-full ${isActive("/admin/revenue")
+                          ? "bg-white text-black"
+                          : "text-gray-200 hover:bg-emerald-600 hover:text-white"
+                          }`}
                       >
-                        <FaMoneyBillAlt className="mr-3 h-4 w-4" />
+                        <FaMoneyBillAlt className="mr-2 h-3 w-3" />
                         Doanh thu
                       </Link>
+                      {isActive("/admin/revenue") && (
+                        <>
+                            <div
+                            className="absolute top-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-br-full shadow-[0_12px_0_0_white]"
+                          ></div>
+                          <div
+                            className="absolute bottom-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-tr-full shadow-[0_-12px_0_0_white]"
+                          ></div>
+                        </>
+                      )}
                     </li>
-                    <li>
+                    <li className="relative w-full">
+                      <div
+                        className={`absolute inset-y-0 left-0 right-0 ${isActive("/admin/discount") ? "bg-amber-600" : "bg-transparent"
+                          } -z-10`}
+                      />
                       <Link
                         to="/admin/discount"
-                        className="border-l-4 border-transparent hover:border-gray-500 flex items-center px-2 py-1.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                        className={`flex items-center px-4 py-2 text-sm rounded-tl-lg rounded-bl-lg transition-colors w-full ${isActive("/admin/discount")
+                          ? "bg-white text-black"
+                          : "text-gray-200 hover:bg-emerald-600 hover:text-white"
+                          }`}
                       >
-                        <MdDiscount  className="mr-3 h-4 w-4" />
+                        <MdDiscount className="mr-2 h-3 w-3" />
                         Giảm giá
                       </Link>
+                      {isActive("/admin/discount") && (
+                        <>
+                            <div
+                            className="absolute top-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-br-full shadow-[0_12px_0_0_white]"
+                          ></div>
+                          <div
+                            className="absolute bottom-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-tr-full shadow-[0_-12px_0_0_white]"
+                          ></div>
+                        </>
+                      )}
                     </li>
                   </ul>
                 )}
               </li>
-              <li>
+
+              <li className="relative w-full pl-2">
+                <div
+                  className={`absolute inset-y-0 left-0 right-0 ${isActive("/admin/manage-customers") ? "bg-amber-600" : "bg-transparent"
+                    } -z-10`}
+                />
                 <Link
                   to="/admin/manage-customers"
-                  className="flex items-center px-2 py-1.5 text-sm text-gray-200 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                  className={`flex items-center px-4 py-2 text-base rounded-tl-lg rounded-bl-lg transition-colors w-full ${isActive("/admin/manage-customers")
+                    ? "bg-white text-black"
+                    : "text-gray-200 hover:bg-emerald-600 hover:text-white"
+                    }`}
                 >
                   <FaUsers className="mr-3 h-4 w-4" />
                   Khách hàng
                 </Link>
+                {isActive("/admin/manage-customers") && (
+                  <>
+                     <div
+                            className="absolute top-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-br-full shadow-[0_12px_0_0_white]"
+                          ></div>
+                          <div
+                            className="absolute bottom-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-tr-full shadow-[0_-12px_0_0_white]"
+                          ></div>
+                  </>
+                )}
+              </li>
+
+              <li className="relative w-full pl-2">
+                <div
+                  className={`absolute inset-y-0 left-0 right-0 ${isActive("/admin/support-user") ? "bg-amber-600" : "bg-transparent"
+                    } -z-10`}
+                />
                 <Link
                   to="/admin/support-user"
-                  className="flex items-center px-2 py-1.5 text-sm text-gray-200 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                  className={`flex items-center px-4 py-2 text-base rounded-tl-lg rounded-bl-lg transition-colors w-full ${isActive("/admin/support-user")
+                    ? "bg-white text-black"
+                    : "text-gray-200 hover:bg-emerald-600 hover:text-white"
+                    }`}
                 >
-                  <MdSupportAgent  className="mr-3 h-4 w-4" />
+                  <MdSupportAgent className="mr-3 h-4 w-4" />
                   Chăm sóc Khách hàng
                 </Link>
+                {isActive("/admin/support-user") && (
+                  <>
+                     <div
+                            className="absolute top-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-br-full shadow-[0_12px_0_0_white]"
+                          ></div>
+                          <div
+                            className="absolute bottom-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-tr-full shadow-[0_-12px_0_0_white]"
+                          ></div>
+                  </>
+                )}
               </li>
             </ul>
           </div>
-          {/* Settings Section */}
+
           <div className="mb-4">
-            <span className="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <span className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
               Settings
             </span>
             <ul className="mt-1 space-y-1">
-              <li>
+              <li className="relative w-full pl-2">
+                <div
+                  className={`absolute inset-y-0 left-0 right-0 ${isActive("/admin/settings") ? "bg-amber-600" : "bg-transparent"
+                    } -z-10`}
+                />
                 <Link
                   to="/admin/settings"
-                  className="flex items-center px-2 py-1.5 text-sm text-gray-200 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+                  className={`flex items-center px-4 py-2 text-base rounded-tl-lg rounded-bl-lg transition-colors w-full ${isActive("/admin/settings")
+                    ? "bg-white text-black"
+                    : "text-gray-200 hover:bg-emerald-600 hover:text-white"
+                    }`}
                 >
                   <FaCog className="mr-3 h-4 w-4" />
                   Cài đặt
                 </Link>
+                {isActive("/admin/settings") && (
+                  <>
+                     <div
+                            className="absolute top-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-br-full shadow-[0_12px_0_0_white]"
+                          ></div>
+                          <div
+                            className="absolute bottom-[-24px] right-[-3px] w-16 h-6 bg-transparent rounded-tr-full shadow-[0_-12px_0_0_white]"
+                          ></div>
+                  </>
+                )}
               </li>
             </ul>
           </div>
         </div>
 
-        {/* User Profile with Dropdown */}
-        <div className="p-4 border-t border-gray-700 top-0 bg-gray-800 z-10">
+        <div className="p-4 border-t border-gray-300 top-0 bg-teal-800 z-10">
           {isLoggedIn ? (
             <div className="flex items-center space-x-3">
               {avatar ? (
                 <img
                   src={avatar}
                   alt="User Avatar"
-                  className="w-8 h-8 rounded-full border border-gray-500 object-cover"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                    const parent = e.target.parentNode;
-                    if (parent) {
-                      const icon = document.createElement("span");
-                      icon.innerHTML = '<svg class="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>';
-                      parent.appendChild(icon);
-                    }
-                  }}
+                  className="w-10 h-10 rounded-full border border-gray-500 object-cover"
                 />
               ) : (
-                <FaUserCircle className="h-8 w-8 text-gray-400" />
+                <FaUserCircle className="h-10 w-10 text-gray-400" />
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-200 truncate">{firstName} {lastName}</p>
-                <p className="text-xs text-gray-400 truncate">{email}</p>
+                <p className="text-base font-bold text-gray-100 truncate">
+                  {firstName} {lastName}
+                </p>
+                <p className="text-xs text-gray-300 truncate underline">{email}</p>
               </div>
-              <button onClick={handleLogout} className="text-red-400 hover:text-red-300">
+              <button
+                onClick={handleLogout}
+                className="text-red-500 hover:text-red-300"
+              >
                 <MdOutlineLogout className="h-6 w-6" />
               </button>
             </div>
@@ -279,11 +426,9 @@ const AdminLayout = () => {
             </Link>
           )}
         </div>
-
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-6 bg-gray-900">
+      <main className="flex-1 p-6 bg-gray-50">
         <Outlet />
       </main>
     </div>
