@@ -99,19 +99,19 @@ export default function AreaChartOnly({ chartHeight = 300 }) {
   if (error) return <p className="text-red-500">Lỗi: {error.message}</p>;
 
   return (
-    <div className="p-6">
-      <h2 className="font-bold uppercase text-3xl mb-6">Doanh Thu</h2>
+    <div className="p-2">
+      <h2 className="font-bold uppercase text-2xl mb-6">Doanh Thu</h2>
       <div className="mb-6">
         <div className="flex justify-between items-center">
           <div className="flex space-x-2">
             <button
-              className={`px-4 py-2 text-sm rounded-lg ${view === "daily" ? "bg-primaryblue text-neutral-950" : "bg-primary text-white hover:bg-slate-500"}`}
+              className={`px-4 py-2 text-sm rounded-lg ${view === "daily" ? "bg-emerald-700 text-neutral-50" : "bg-emerald-500 text-black hover:bg-emerald-400"}`}
               onClick={() => handleViewChange("daily")}
             >
               Doanh thu ngày
             </button>
             <button
-              className={`px-4 py-2 text-sm rounded-lg ${view === "monthly" ? "bg-primaryblue text-neutral-950" : "bg-primary text-white hover:bg-slate-500"}`}
+              className={`px-4 py-2 text-sm rounded-lg ${view === "monthly" ? "bg-emerald-700 text-neutral-50" : "bg-emerald-500 text-black hover:bg-emerald-400"}`}
               onClick={() => handleViewChange("monthly")}
             >
               Doanh thu tháng
@@ -121,7 +121,16 @@ export default function AreaChartOnly({ chartHeight = 300 }) {
         <div className="mt-4">
           <ResponsiveContainer width="100%" height={chartHeight}>
             <AreaChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="transparent" />
+              <defs>
+                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#008C5E" stopOpacity={1} />
+                  <stop offset="95%" stopColor="#008C5E" stopOpacity={0.1} />
+                </linearGradient>
+              </defs>
+
+              <CartesianGrid
+                strokeDasharray="3 3" stroke="#4b5563" horizontal={true} vertical={false} strokeOpacity={0.3}
+              />
               <XAxis dataKey="date" stroke="#9ca3af" />
               <YAxis tickFormatter={formatYAxis} domain={[0, "auto"]} stroke="#9ca3af" />
               <Tooltip
@@ -131,12 +140,13 @@ export default function AreaChartOnly({ chartHeight = 300 }) {
               <Area
                 type="monotone"
                 dataKey="revenue"
-                stroke="#4169E1"
-                fill="#1874CD"
-                fillOpacity={0.2}
+                stroke="#10b981"
+                strokeWidth={3}
+                fill="url(#colorRevenue)"
               />
             </AreaChart>
           </ResponsiveContainer>
+
         </div>
       </div>
 
