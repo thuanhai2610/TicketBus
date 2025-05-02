@@ -38,6 +38,7 @@ import Discount from "./pages/admin/Discout";
 import SupportUser from "./pages/admin/SupportUser";
 import AdminChatButton from "./components/chatbox/AdminChatButton";
 import Support from "./pages/ticket/Support";
+import ChatBot from "./components/Chatbot";
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
@@ -70,6 +71,7 @@ function App() {
           <Routes>
             {/* Client Routes */}
             <Route path="/" element={<Home />} />
+            <Route path="/chatbot" element={<ChatBot />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<BlogDetail />} />
             <Route path="/offer" element={<Offer />} />

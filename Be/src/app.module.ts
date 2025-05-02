@@ -25,6 +25,8 @@ import { OtpModule } from './otp/otp.module';
 import { ChatModule } from './chat/chat.module';
 import { ChatGateway } from './chat/chat.gateway';
 import { ChatService } from './chat/chat.service';
+import { ChatbotController } from './chatbot/chatbot.controller';
+import { ChatbotService } from './chatbot/chatbot.service';
 @Module({
   imports: [AuthModule, PendingUsersModule,ScheduleModule.forRoot(), ItemsModule, MongooseModule.forRoot('mongodb+srv://thuanhai:thuanhai123@cluster0.zeum7vn.mongodb.net/tickets?retryWrites=true&w=majority&appName=Cluster0'),
     ConfigModule.forRoot({
@@ -54,11 +56,11 @@ import { ChatService } from './chat/chat.service';
     }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule, PaymentModule, MailerModule, OtpModule, ChatModule
   ],
 
-  controllers: [AppController],
+  controllers: [AppController, ChatbotController],
   providers: [AppService, {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
-  }],
+  }, ChatbotService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer){
