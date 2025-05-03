@@ -37,7 +37,7 @@ import Discount from "./pages/admin/Discout";
 import SupportUser from "./pages/admin/SupportUser";
 import AdminChatButton from "./components/chatbox/AdminChatButton";
 import Support from "./pages/ticket/Support";
-import ChatBot from "./components/Chatbot";
+import ChatBot from "./components/chatbot/Chatbot";
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";

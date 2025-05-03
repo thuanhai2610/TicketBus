@@ -150,6 +150,7 @@ const Navbar = () => {
                                     <Link to="/offer">Chương trình khuyến mãi</Link>
                                     <Link to="/bus-tickets">Tra cứu vé</Link>
                                     <Link to="/blog">Tin tức</Link>
+                                    <Link to="/chatbot">Hướng Dẫn Đặt Vé</Link>
                                 </div>
                             </SheetContent>
                         </Sheet>
@@ -159,6 +160,7 @@ const Navbar = () => {
                             <li><Link to="/offer" className='hover:text-primary ease-in-out duration-300'>Chương trình khuyến mãi</Link></li>
                             <li><Link to="/bus-tickets" className='hover:text-primary ease-in-out duration-300'>Tra cứu vé</Link></li>
                             <li><Link to="/blog" className='hover:text-primary ease-in-out duration-300'>Tin tức</Link></li>
+                            <li><Link to="/chatbot" className='hover:text-primary ease-in-out duration-300'>Hướng Dẫn Đặt Vé</Link></li>
                         </ul>
                     )}
                 </div>
