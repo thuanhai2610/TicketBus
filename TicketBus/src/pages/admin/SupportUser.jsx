@@ -12,6 +12,15 @@ const socket = io(import.meta.env.VITE_API_URL, {
 
 const ADMIN_ID = import.meta.env.VITE_ADMIN_ID; // id admin cố định
 
+const defaultAvatar = "https://i.pravatar.cc/40";
+
+const getAvatarUrl = (avatar) => {
+  if (!avatar) return defaultAvatar;
+  return avatar.startsWith("https://res.cloudinary.com")
+    ? avatar
+    : `${import.meta.env.VITE_API_URL}${avatar}`;
+};
+
 const SupportUser = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -21,7 +30,6 @@ const SupportUser = () => {
   const [users, setUsers] = useState([]);
   const chatContainerRef = useRef(null);
   const adminAvatar = localStorage.getItem("avatarAdmin");
-  const defaultAvatar = "https://i.pravatar.cc/40";
 
   const formatDateTime = (dateString) => {
     if (!dateString) return "N/A";
@@ -36,26 +44,19 @@ const SupportUser = () => {
     });
   };
 
-  // Connect socket and set up listeners when component mounts
   useEffect(() => {
     socket.connect();
-    socket.emit("join", ADMIN_ID); // Admin joins their room
-
-    // Fetch user list initially and set up interval to refresh
+    socket.emit("join", ADMIN_ID);
     fetchUserList();
-    const intervalId = setInterval(fetchUserList, 30000); // Refresh every 30 seconds
+    const intervalId = setInterval(fetchUserList, 30000);
 
-    // Listen for new messages
     socket.on("receiveMessage", (message) => {
-      // Check if message is part of current conversation
       if (
         currentUserId &&
         (message.sender._id === currentUserId ||
           message.receiver._id === currentUserId)
       ) {
         setMessages((prev) => [...prev, message]);
-
-        // Update users list if there's a new message from someone not in current view
         if (
           message.sender._id !== ADMIN_ID &&
           message.sender._id !== currentUserId
@@ -63,15 +64,12 @@ const SupportUser = () => {
           fetchUserList();
         }
       } else {
-        // If not viewing the sender's conversation, refresh user list
         fetchUserList();
       }
     });
 
-    // Listen for errors
     socket.on("error", (error) => {
       console.error("Socket error:", error);
-      // You could add toast notification here
     });
 
     return () => {
@@ -84,7 +82,6 @@ const SupportUser = () => {
     };
   }, [currentUserId]);
 
-  // Fetch user list function
   const fetchUserList = () => {
     socket.emit("getUserList");
     socket.once("userList", (userList) => {
@@ -92,7 +89,6 @@ const SupportUser = () => {
     });
   };
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -100,7 +96,6 @@ const SupportUser = () => {
     }
   }, [messages]);
 
-  // Select a user and load their messages
   const loadMessages = (userId) => {
     setCurrentUserId(userId);
     socket.emit("getMessages", { senderId: userId });
@@ -124,7 +119,7 @@ const SupportUser = () => {
       sender: {
         _id: ADMIN_ID,
         username: "Admin",
-        avatar: adminAvatar || null, // <-- lấy avatar từ localStorage
+        avatar: adminAvatar || null,
       },
       receiver: { _id: currentUserId },
       content: newMessage,
@@ -133,7 +128,6 @@ const SupportUser = () => {
 
     setMessages((prev) => [...prev, tempMessage]);
 
-    // Send to server
     socket.emit("sendMessage", messageData);
 
     setNewMessage("");
@@ -153,29 +147,28 @@ const SupportUser = () => {
     <div className="mt-12 flex items-center justify-center ">
       <div className="flex w-full max-w-6xl h-[80vh] rounded-2xl shadow-lg shadow-teal-800 overflow-hidden">
         {/* Sidebar danh sách users */}
-        <div className="w-1/4 bg-teal-800 text-white p-4 flex flex-col boder-b border-gray-300">
-        <div className=" border-b border-gray-300 flex items-center">
-          <h2 className="text-lg font-semibold mb-4 mt-3 uppercase tracking-wide">
-            Tin Nhắn
-          </h2>
+        <div className="w-1/4 bg-teal-800 text-white p-4 flex flex-col border-b border-gray-300">
+          <div className="border-b border-gray-300 flex items-center">
+            <h2 className="text-lg font-semibold mb-4 mt-3 uppercase tracking-wide">
+              Tin Nhắn
+            </h2>
           </div>
-          <div className=" flex-1 overflow-y-auto mt-2">
+          <div className="flex-1 overflow-y-auto mt-2">
             {users.length ? (
               users.map((user) => (
                 <div
                   key={user._id}
-                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-teal-700 transition-colors ${currentUserId === user._id ? "bg-teal-600" : " text-neutral-50"
-                    }`}
+                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-teal-700 transition-colors ${
+                    currentUserId === user._id
+                      ? "bg-teal-600"
+                      : "text-neutral-50"
+                  }`}
                   onClick={() => loadMessages(user._id)}
                 >
                   <img
-                    src={
-                      user.avatar
-                        ? `${import.meta.env.VITE_API_URL}${user.avatar}`
-                        : defaultAvatar
-                    }
+                    src={getAvatarUrl(user.avatar)}
                     alt="avatar"
-                    className="w-10 h-10 rounded-full object-cover boder border-neutral-300"
+                    className="w-10 h-10 rounded-full object-cover border border-neutral-300"
                   />
                   <div>
                     <span className="text-white font-medium">
@@ -199,11 +192,9 @@ const SupportUser = () => {
           {currentUserId ? (
             <div className="p-4 border-b border-[#2A3435] flex items-center gap-3">
               <img
-                src={
+                src={getAvatarUrl(
                   users.find((u) => u._id === currentUserId)?.avatar
-                    ? `${import.meta.env.VITE_API_URL}${users.find((u) => u._id === currentUserId).avatar}`
-                    : defaultAvatar
-                }
+                )}
                 alt="User"
                 className="w-10 h-10 rounded-full"
               />
@@ -226,7 +217,7 @@ const SupportUser = () => {
                   const showDate =
                     index === 0 ||
                     new Date(messages[index - 1].createdAt).toDateString() !==
-                    new Date(m.createdAt).toDateString();
+                      new Date(m.createdAt).toDateString();
 
                   return (
                     <div key={m._id}>
@@ -240,29 +231,31 @@ const SupportUser = () => {
                         </div>
                       )}
                       <div
-                        className={`flex items-end ${mine ? "justify-end" : "justify-start"}`}
+                        className={`flex items-end ${
+                          mine ? "justify-end" : "justify-start"
+                        }`}
                       >
                         {!mine && (
                           <img
-                            src={
-                              m.sender?.avatar
-                                ? `${import.meta.env.VITE_API_URL}${m.sender.avatar}`
-                                : defaultAvatar
-                            }
+                            src={getAvatarUrl(m.sender?.avatar)}
                             alt="Avatar"
                             className="w-8 h-8 rounded-full mr-2 object-cover"
                           />
                         )}
                         <div
-                          className={`max-w-lg p-3 rounded-2xl ${mine ? "bg-teal-700 text-neutral-50" : "bg-neutral-200 text-neutral-950 shadow-sm"
-                            }`}
+                          className={`max-w-lg p-3 rounded-2xl ${
+                            mine
+                              ? "bg-teal-700 text-neutral-50"
+                              : "bg-neutral-200 text-neutral-950 shadow-sm"
+                          }`}
                         >
                           <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">
                             {m.content}
                           </p>
                           <p
-                            className={`text-xs opacity-70 mt-1 ${mine ? "text-right" : "text-left"
-                              }`}
+                            className={`text-xs opacity-70 mt-1 ${
+                              mine ? "text-right" : "text-left"
+                            }`}
                           >
                             {new Date(m.createdAt).toLocaleTimeString("vi-VN", {
                               hour: "2-digit",
@@ -272,11 +265,7 @@ const SupportUser = () => {
                         </div>
                         {mine && (
                           <img
-                            src={
-                              m.sender?.avatar
-                                ? `${import.meta.env.VITE_API_URL}${m.sender.avatar}`
-                                : defaultAvatar
-                            }
+                            src={getAvatarUrl(m.sender?.avatar)}
                             alt="Admin"
                             className="w-8 h-8 rounded-full ml-2 object-cover"
                           />
@@ -305,7 +294,7 @@ const SupportUser = () => {
           </div>
 
           {/* Input */}
-          <div className="p-4  border-t border-teal-800 relative">
+          <div className="p-4 border-t border-teal-800 relative">
             {currentUserId ? (
               <div className="flex items-center space-x-3">
                 <button
