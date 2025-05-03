@@ -49,19 +49,19 @@ export default function Charts({ chartData, completedPayments, chartHeight, form
             name: "7 ngày",
             value: revenueLast7Days,
             percentage: totalRevenue > 0 ? ((revenueLast7Days / totalRevenue) * 100).toFixed(0) : 0,
-            color: "#00FF99",
+            color: "#33CC00",
         },
         {
             name: "30 ngày",
             value: revenueLast30Days,
             percentage: totalRevenue > 0 ? ((revenueLast30Days / totalRevenue) * 100).toFixed(0) : 0,
-            color: "#00CDCD",
+            color: "#FFB90F",
         },
         {
             name: "1 năm",
             value: revenueLast1Year,
             percentage: totalRevenue > 0 ? ((revenueLast1Year / totalRevenue) * 100).toFixed(0) : 0,
-            color: "#CD5555",
+            color: "#6666FF",
         },
     ];
 
@@ -73,7 +73,13 @@ export default function Charts({ chartData, completedPayments, chartHeight, form
                 <div className="mb-6">
                     <ResponsiveContainer width="100%" height={chartHeight}>
                         <AreaChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="transparent" />
+                            <defs>
+                                <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#0066FF" stopOpacity={1} />
+                                    <stop offset="95%" stopColor="#0066FF" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid  strokeDasharray="3 3" stroke="#4b5563" horizontal={true} vertical={false} strokeOpacity={0.2}/>
                             <XAxis dataKey="date" stroke="#9ca3af" />
                             <YAxis tickFormatter={formatYAxis} domain={[0, "auto"]} stroke="#9ca3af" />
                             <Tooltip
@@ -84,10 +90,10 @@ export default function Charts({ chartData, completedPayments, chartHeight, form
                                 type="monotone"
                                 dataKey="revenue"
                                 stroke="#0066FF"
-                                fill="#0099FF"
-                                fillOpacity={0.2}
+                                fill="url(#revenueGradient)"
                             />
                         </AreaChart>
+
                     </ResponsiveContainer>
                 </div>
 
@@ -98,7 +104,7 @@ export default function Charts({ chartData, completedPayments, chartHeight, form
                         <h3 className="text-lg font-semibold mb-4">Phân bổ doanh thu (Cột dọc)</h3>
                         <ResponsiveContainer width="100%" height={chartHeight}>
                             <BarChart data={chartData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="transparent" />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#4b5563" horizontal={true} vertical={false} strokeOpacity={0.2} />
                                 <XAxis dataKey="date" stroke="#9ca3af" />
                                 <YAxis tickFormatter={formatYAxis} domain={[0, "auto"]} stroke="#9ca3af" />
                                 <Tooltip
@@ -115,7 +121,7 @@ export default function Charts({ chartData, completedPayments, chartHeight, form
                         <h3 className="text-lg font-semibold mb-4">Phân bổ doanh thu (Cột ngang)</h3>
                         <ResponsiveContainer width="100%" height={chartHeight}>
                             <BarChart data={chartData} layout="vertical">
-                                <CartesianGrid strokeDasharray="3 3" stroke="transparent" />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#4b5563" horizontal={true} vertical={false} strokeOpacity={0.2} />
                                 <XAxis type="number" tickFormatter={formatYAxis} domain={[0, "auto"]} stroke="#9ca3af" />
                                 <YAxis type="category" dataKey="date" stroke="#9ca3af" />
                                 <Tooltip
@@ -143,7 +149,7 @@ export default function Charts({ chartData, completedPayments, chartHeight, form
                                         cy="18"
                                         r="16"
                                         fill="none"
-                                        stroke="#e5e7eb"
+                                        stroke="#33CC00"
                                         strokeWidth="4"
                                     />
                                     <circle
@@ -170,7 +176,7 @@ export default function Charts({ chartData, completedPayments, chartHeight, form
                                 </svg>
                             </div>
                             <div className="text-right">
-                                <p className="text-sm text-primaryblue">{item.name}</p>
+                                <p className="text-sm text-emerald-800 font-semibold">{item.name}</p>
                                 <p className="text-lg font-semibold">{formatVND(item.value)}</p>
                             </div>
                         </div>

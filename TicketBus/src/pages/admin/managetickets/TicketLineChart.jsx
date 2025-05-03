@@ -94,7 +94,7 @@ const TicketAreaChart = ({ tickets }) => {
           <Area
             type="monotone"
             dataKey="pending"
-            stroke="#facc15"
+            stroke="#FFCC00"
             fill="#facc15"
             name="Đang chờ xử lý"
             activeDot={{ r: 8 }}

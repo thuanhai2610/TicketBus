@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { FaUserCircle, FaTimes } from 'react-icons/fa';
+import { FaUserCircle, FaTimes, FaRegUser, FaEnvelope, FaPhoneAlt } from 'react-icons/fa';
 import { ClipLoader } from 'react-spinners';
 
 
@@ -108,8 +108,8 @@ const ManageCustomers = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="container mx-auto p-6 bg-gray-900 min-h-screen text-white">
-      <h2 className="text-4xl font-extrabold mb-6 uppercase text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+    <div className="container text-neutral-950">
+      <h2 className="text-4xl font-extrabold mb-6 uppercase">
         Quản Lý Khách Hàng
       </h2>
 
@@ -126,7 +126,7 @@ const ManageCustomers = () => {
       )}
 
       {!loading && !error && (
-        <div className="space-y-6">
+        <div className="space-y-6 mt-28">
 
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -134,20 +134,60 @@ const ManageCustomers = () => {
               currentUsers.map((user, index) => (
                 <div
                   key={index}
-                  className="bg-gray-800 rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow cursor-pointer"
+                  className="bg-emerald-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer w-11/12 mx-auto"
                   onClick={() => setSelectedUser(user)}
                 >
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center relative">
+                    {/* Avatar */}
                     {user.avatarUrl ? (
                       <img
                         src={user.avatarUrl}
-                        alt={`${user.username}'s avatar`}
-                        className="w-16 h-16 rounded-full border border-blue-500 object-cover mb-2"
+                        className="w-44 h-44 border-4 border-white rounded-3xl object-cover absolute -top-24"
                       />
                     ) : (
-                      <FaUserCircle className="w-16 h-16 text-gray-400 mb-2" />
+                      <FaUserCircle className="w-48 h-48 text-gray-400 absolute -top-28" />
                     )}
-                    <h3 className="text-lg font-semibold text-white">{user.username || 'N/A'}</h3>
+                    {/* Content */}
+                    <div className="pt-20 flex flex-col items-center w-full">
+                      <h3 className="text-2xl font-bold text-white mt-4">{user.username || 'N/A'}</h3>
+                      <span className="text-sm text-blue-500 bg-blue-100 rounded-full px-3 py-1 mt-2">
+                        {user.role || 'Director'}
+                      </span>
+
+                      <div className="mt-4 text-gray-300 space-y-2 w-full ">
+                        <div className="flex justify-between items-center w-full">
+                          <div className="flex items-center space-x-2 text-yellow-500">
+                            <FaRegUser />
+                            <span className="text-white text-sm">Họ Tên:</span>
+                          </div>
+                          <span className="text-neutral-50 text-right text-sm">
+                            {user.firstName || 'N/A'} {user.lastName || 'N/A'}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between items-center w-full">
+                          <div className="flex items-center space-x-2 text-red-400">
+                            <FaEnvelope />
+                            <span className="text-white text-sm">Email:</span>
+                          </div>
+                          <span className="text-neutral-50 text-right text-sm">
+                            {user.email || 'N/A'}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between items-center w-full">
+                          <div className="flex items-center space-x-2 text-sky-400">
+                            <FaPhoneAlt />
+                            <span className="text-white text-sm">Số Điện Thoại:</span>
+                          </div>
+                          <span className="text-neutral-50 text-right text-sm">
+                            {user.phone || 'N/A'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+
                   </div>
                 </div>
               ))
@@ -157,7 +197,6 @@ const ManageCustomers = () => {
               </div>
             )}
           </div>
-
           {totalPages > 1 && (
             <div className="flex justify-center py-4">
               <nav className="flex space-x-2">
@@ -178,10 +217,10 @@ const ManageCustomers = () => {
           )}
 
           {selectedUser && (
-            <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center backdrop-blur-sm transition-opacity duration-300 animate-fadeIn">
+            <div className="fixed inset-0 bg-black bg-opacity-60  flex items-center justify-center backdrop-blur-sm transition-opacity duration-300 animate-fadeIn">
               <div
                 ref={modalRef}
-                className="bg-gray-900 rounded-2xl p-8 w-full max-w-2xl relative shadow-2xl border border-gray-700 transform transition-all scale-100 animate-slideIn"
+                className="bg-teal-800 rounded-2xl p-8 w-full max-w-2xl relative shadow-2xl border border-gray-700 transform transition-all scale-100 animate-slideIn"
               >
                 {/* Nút đóng */}
                 <button

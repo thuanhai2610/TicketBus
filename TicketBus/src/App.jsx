@@ -9,7 +9,6 @@ import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import ForgotPassword from "./pages/login/ForgotPassword";
 import AdminLayout from "./layout/adminlayout/AdminLayout";
-import Settings from "./pages/admin/settings/Settings";
 import ManageTrips from "./pages/admin/managetrips/ManageTrips";
 import ManageTickets from "./pages/admin/managetickets/ManageTickets";
 import ManageCustomers from "./pages/admin/managecustomers/ManageCustomers";
@@ -105,7 +104,6 @@ function App() {
               <Route path="manage-tickets" element={<ManageTickets />} />
               <Route path="manage-customers" element={<ManageCustomers />} />
               <Route path="manage-employees" element={<Employees />} />
-              <Route path="settings" element={<Settings />} />
               <Route path="revenue" element={<RevenueChart />} />
               <Route path="discount" element={<Discount />} />
               <Route path="support-user" element={<SupportUser />} />

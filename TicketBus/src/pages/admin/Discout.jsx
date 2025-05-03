@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { BsCalendar2Date } from "react-icons/bs";
+import gif from "../../assets/gif.png";
 
 const Discount = () => {
   const [coupons, setCoupons] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState({
     code: "",
     discountType: "percentage",
@@ -54,6 +56,7 @@ const Discount = () => {
 
       await fetchCoupons();
       resetForm();
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Lỗi khi lưu mã giảm:", error);
     }
@@ -79,6 +82,7 @@ const Discount = () => {
       expiresAt: coupon.expiresAt?.slice(0, 10) || "",
     });
     setEditingId(coupon._id);
+    setIsModalOpen(true);
   };
 
   const handleDelete = async (id) => {
@@ -92,185 +96,228 @@ const Discount = () => {
     }
   };
 
+  const gradientColors = [
+    "from-emerald-500 to-teal-500",
+    "from-sky-500 to-blue-500",
+    "from-amber-500 to-yellow-500",
+    "from-teal-500 to-emerald-500",
+    "from-sky-400 to-sky-500",
+    "from-amber-400 to-amber-500",
+  ];
+
+  const getRandomGradient = (index) => {
+    return gradientColors[index % gradientColors.length];
+  };
+
   return (
-    <div className="w-full mx-auto px-4 py-6">
-      <h2 className="text-3xl font-bold text-white uppercase mb-6">Quản lý mã giảm giá</h2>
+    <div className="w-full text-neutral-950">
+        <h2 className="text-3xl font-bold uppercase mb-6">Quản lý mã giảm giá</h2>
 
-      {/* FORM */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-slate-800 border border-gray-700 rounded-2xl p-6 shadow-lg mb-10 space-y-6"
-      >
-        <h3 className="text-xl font-semibold text-white mb-4">
-          {editingId ? "Cập nhật mã giảm giá" : "Tạo mã giảm giá"}
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <label className="text-sm text-gray-300 mb-1 block">Mã code</label>
-            <input
-              name="code"
-              placeholder="VD: SUMMER2024"
-              value={form.code}
-              onChange={handleChange}
-              className="w-full bg-gray-900 text-white border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary uppercase"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-300 mb-1 block">Loại giảm giá</label>
-            <select
-              name="discountType"
-              value={form.discountType}
-              onChange={handleChange}
-              className="w-full bg-gray-900 text-white border border-gray-600 rounded-lg px-4 py-2"
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-teal-800 rounded-lg p-6 w-full max-w-md shadow-neutral-200 shadow-lg">
+            <h3 className="text-2xl font-semibold text-white mb-4 text-center uppercase">
+              {editingId ? "Cập nhật mã giảm giá" : "Tạo mã giảm giá"}
+            </h3>
+            <form
+              onSubmit={handleSubmit}
+              className=" rounded-2xl p-6 mb-10 space-y-6"
             >
-              <option value="percentage">Giảm theo %</option>
-              <option value="fixed">Giảm số tiền</option>
-            </select>
-          </div>
+          <div className="grid grid-cols-1 gap-6">
+  <div>
+    <label className="text-sm text-gray-200 mb-1 block">Mã code</label>
+    <input
+      name="code"
+      placeholder="VD: SUMMER2024"
+      value={form.code}
+      onChange={handleChange}
+      className="w-full bg-transparent text-white border border-gray-400 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary uppercase"
+      required
+    />
+  </div>
 
-          <div>
-            <label className="text-sm text-gray-300 mb-1 block">Giá trị giảm</label>
-            <input
-              name="discountValue"
-              type="text"
-              placeholder="VD: 100000 hoặc 15"
-              value={
-                form.discountValue
-                  ? Number(form.discountValue).toLocaleString("vi-VN")
-                  : ""
-              }
-              onChange={(e) => {
-                const raw = e.target.value.replace(/\D/g, "");
-                setForm({ ...form, discountValue: raw });
-              }}
-              className="w-full bg-gray-900 text-white border border-gray-600 rounded-lg px-4 py-2"
-              required
-            />
-          </div>
+  <div>
+    <label className="text-sm text-gray-200 mb-1 block">Loại giảm giá</label>
+    <select
+      name="discountType"
+      value={form.discountType}
+      onChange={handleChange}
+      className="w-full bg-transparent text-white border border-gray-400 rounded-lg px-4 py-2"
+    >
+      <option value="percentage" className="text-neutral-950">Giảm theo %</option>
+      <option value="fixed" className="text-neutral-950">Giảm số tiền</option>
+    </select>
+  </div>
 
-          <div>
-            <label className="text-sm text-gray-300 mb-1 block">Ngày hết hạn</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full h-12 justify-start bg-gray-900 border border-gray-600 text-white"
-                >
-                  <BsCalendar2Date className="mr-2" />
-                  {form.expiresAt
-                    ? format(new Date(form.expiresAt), "dd 'tháng' MM 'năm' yyyy", { locale: vi })
-                    : "Chọn ngày"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-2 bg-white shadow-xl rounded-xl">
-                <Calendar
-                  mode="single"
-                  selected={form.expiresAt ? new Date(form.expiresAt) : undefined}
-                  onSelect={(selectedDate) => {
-                    if (selectedDate) {
-                      const formattedDate = selectedDate.toISOString().split("T")[0];
-                      handleChange({ target: { name: "expiresAt", value: formattedDate } });
-                    }
+  <div>
+    <label className="text-sm text-gray-200 mb-1 block">Giá trị giảm</label>
+    <input
+      name="discountValue"
+      type="text"
+      placeholder="VD: 100000 hoặc 15"
+      value={
+        form.discountValue
+          ? Number(form.discountValue).toLocaleString("vi-VN")
+          : ""
+      }
+      onChange={(e) => {
+        const raw = e.target.value.replace(/\D/g, "");
+        setForm({ ...form, discountValue: raw });
+      }}
+      className="w-full bg-transparent text-white border border-gray-400 rounded-lg px-4 py-2"
+      required
+    />
+  </div>
+
+  <div>
+    <label className="text-sm text-gray-200 mb-1 block">Ngày hết hạn</label>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className="w-full h-12 justify-start bg-transparent border border-gray-400 text-white"
+        >
+          <BsCalendar2Date className="mr-2" />
+          {form.expiresAt
+            ? format(new Date(form.expiresAt), "dd 'tháng' MM 'năm' yyyy", {
+                locale: vi,
+              })
+            : "Chọn ngày"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-2 bg-white shadow-xl rounded-xl">
+        <Calendar
+          mode="single"
+          selected={form.expiresAt ? new Date(form.expiresAt) : undefined}
+          onSelect={(selectedDate) => {
+            if (selectedDate) {
+              const formattedDate =
+                selectedDate.toISOString().split("T")[0];
+              handleChange({
+                target: { name: "expiresAt", value: formattedDate },
+              });
+            }
+          }}
+          disabled={(date) =>
+            date < new Date(new Date().setHours(0, 0, 0, 0))
+          }
+        />
+      </PopoverContent>
+    </Popover>
+  </div>
+
+  <div>
+    <label className="text-sm text-gray-200 mb-1 block">Mô tả</label>
+    <input
+      name="description"
+      placeholder="VD: Áp dụng cho khách hàng mới"
+      value={form.description}
+      onChange={handleChange}
+      className="w-full bg-transparent text-white border border-gray-400 rounded-lg px-4 py-2"
+    />
+  </div>
+</div>
+
+              <div className="flex justify-end items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    resetForm();
+                    setIsModalOpen(false);
                   }}
-                  disabled={(date) =>
-                    date < new Date(new Date().setHours(0, 0, 0, 0))
-                  }
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div className="sm:col-span-2">
-            <label className="text-sm text-gray-300 mb-1 block">Mô tả</label>
-            <input
-              name="description"
-              placeholder="VD: Áp dụng cho khách hàng mới"
-              value={form.description}
-              onChange={handleChange}
-              className="w-full bg-gray-900 text-white border border-gray-600 rounded-lg px-4 py-2"
-            />
+                  className="text-red-400 hover:underline font-semibold"
+                >
+                  Huỷ
+                </button>
+                <button
+                  type="submit"
+                  className="bg-green-600 hover:bg-green-500 transition text-white px-6 py-2 rounded-lg font-semibold"
+                >
+                  {editingId ? "Cập nhật mã" : "Tạo mã"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
+      )}
 
-        <div className="flex justify-end items-center gap-4">
-          {editingId && (
-            <button
-              type="button"
-              onClick={resetForm}
-              className="text-red-400 hover:underline font-semibold"
-            >
-              Huỷ
-            </button>
-          )}
+      {/* Danh sách */}
+      <div className="rounded-xl text-neutral-950">
+      <div className="flex justify-between items-center mb-6">
+          <div>
+          <h2 className=" text-xl font-bold uppercase"></h2>
+          </div>
+         
           <button
-            type="submit"
-            className="bg-green-600 hover:bg-green-500 transition text-white px-6 py-2 rounded-lg font-semibold"
-          >
-            {editingId ? "Cập nhật mã" : "Tạo mã"}
-          </button>
+          onClick={() => setIsModalOpen(true)}
+          className="bg-green-600 hover:bg-green-500 transition text-white px-6 py-2 rounded-lg font-semibold"
+        >
+          Tạo mã giảm giá
+        </button>
         </div>
-      </form>
 
-      {/* DANH SÁCH */}
-      <div className="bg-slate-800 border border-gray-700 rounded-2xl shadow-lg overflow-hidden">
-        <h3 className="text-lg font-semibold text-white px-6 py-4 border-b border-gray-700 uppercase">
-          Danh sách mã giảm giá
-        </h3>
-        <table className="w-full text-sm text-gray-300">
-          <thead className="text-left bg-slate-800 border-b border-gray-700">
-            <tr>
-              <th className="px-6 py-3">Mã</th>
-              <th className="px-6 py-3">Kiểu</th>
-              <th className="px-6 py-3">Giá trị</th>
-              <th className="px-6 py-3">Hết hạn</th>
-              <th className="px-6 py-3">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {coupons.map((coupon) => (
-              <tr
+        {coupons.length === 0 ? (
+          <p className="text-gray-400 text-center py-10">Không có mã giảm giá nào.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {coupons.map((coupon, index) => (
+              <div
                 key={coupon._id}
-                className="border-t border-gray-700 hover:bg-gray-700/50 transition"
+                className={`relative rounded-2xl p-5 shadow-md text-white overflow-hidden bg-gradient-to-br ${getRandomGradient(index)} hover:scale-[1.02] transition-transform`}
               >
-                <td className="px-6 py-4 font-semibold uppercase">{coupon.code}</td>
-                <td className="px-6 py-4">{coupon.discountType === "percentage" ? "%" : "VNĐ"}</td>
-                <td className="px-6 py-4">
-                  {coupon.discountType === "percentage"
-                    ? `${coupon.discountValue}%`
-                    : `${coupon.discountValue.toLocaleString()} VNĐ`}
-                </td>
-                <td className="px-6 py-4">
-                  {coupon.expiresAt
-                    ? new Date(coupon.expiresAt).toLocaleDateString("vi-VN")
-                    : "Không giới hạn"}
-                </td>
-                <td className="px-6 py-4 space-x-4">
-                  <button
-                    onClick={() => handleEdit(coupon)}
-                    className="text-blue-400 hover:underline"
-                  >
-                    Sửa
-                  </button>
-                  <button
-                    onClick={() => handleDelete(coupon._id)}
-                    className="text-red-400 hover:underline"
-                  >
-                    Xoá
-                  </button>
-                </td>
-              </tr>
+                <img
+                  src={gif}
+                  alt="Gift Icon"
+                  className="absolute top-3 right-3 w-56 h-48 opacity-50"
+                />
+
+                <div className="mb-4">
+                  <h3 className="text-4xl mt-8 font-extralight uppercase tracking-widest text-white/80">Gift Card</h3>
+                  <h2 className="text-3xl font-extrabold mt-8">
+                    {coupon.discountType === "percentage"
+                      ? `${coupon.discountValue}% OFF`
+                      : `${coupon.discountValue.toLocaleString()} VNĐ`}
+                  </h2>
+                </div>
+                <p className="text-white/70 text-sm italic mb-4">
+                  {coupon.description || "Áp dụng mã để nhận ưu đãi"}
+                </p>
+
+                <div className="flex gap-20 text-white/90 text-sm mb-2">
+                  <div>ID: {coupon._id.slice(-6)}</div>
+                  <div className="font-semibold text-sm">
+                    Mã: <span className="underline font-bold">{coupon.code}</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center border-t border-white/30 pt-3 mt-2">
+                  <div className="text-sm text-white/80 mb-1">
+                    Hết hạn:{" "}
+                    {coupon.expiresAt
+                      ? new Date(coupon.expiresAt).toLocaleDateString("vi-VN")
+                      : "Không giới hạn"}
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => handleEdit(coupon)}
+                      className="text-sm underline hover:text-white"
+                    >
+                      Sửa
+                    </button>
+                    <button
+                      onClick={() => handleDelete(coupon._id)}
+                      className="text-sm text-red-50 font-semibold underline hover:text-red-300"
+                    >
+                      Xoá
+                    </button>
+                  </div>
+                </div>
+              </div>
             ))}
-            {coupons.length === 0 && (
-              <tr>
-                <td colSpan={5} className="text-center py-6 text-gray-400">
-                  Không có mã giảm giá nào.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+          </div>
+        )}
       </div>
     </div>
   );

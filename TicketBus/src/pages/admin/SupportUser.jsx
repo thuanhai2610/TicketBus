@@ -150,19 +150,21 @@ const SupportUser = () => {
   };
 
   return (
-    <div className="min-h-screen  flex items-center justify-center p-4">
-      <div className="flex w-full max-w-6xl h-[80vh] rounded-2xl shadow-2xl overflow-hidden">
+    <div className="mt-12 flex items-center justify-center ">
+      <div className="flex w-full max-w-6xl h-[80vh] rounded-2xl shadow-lg shadow-teal-800 overflow-hidden">
         {/* Sidebar danh sách users */}
-        <div className="w-1/4 bg-[#1C2526] text-white p-4 flex flex-col">
-          <h2 className="text-lg font-semibold mb-4 uppercase tracking-wide">
-            Chăm Sóc Khách Hàng
+        <div className="w-1/4 bg-teal-800 text-white p-4 flex flex-col boder-b border-gray-300">
+        <div className=" border-b border-gray-300 flex items-center">
+          <h2 className="text-lg font-semibold mb-4 mt-3 uppercase tracking-wide">
+            Tin Nhắn
           </h2>
-          <div className="flex-1 overflow-y-auto">
+          </div>
+          <div className=" flex-1 overflow-y-auto mt-2">
             {users.length ? (
               users.map((user) => (
                 <div
                   key={user._id}
-                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-[#2A3435] transition-colors ${currentUserId === user._id ? "bg-[#2A3435]" : ""
+                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-teal-700 transition-colors ${currentUserId === user._id ? "bg-teal-600" : " text-neutral-50"
                     }`}
                   onClick={() => loadMessages(user._id)}
                 >
@@ -173,13 +175,13 @@ const SupportUser = () => {
                         : defaultAvatar
                     }
                     alt="avatar"
-                    className="w-10 h-10 rounded-full object-cover"
+                    className="w-10 h-10 rounded-full object-cover boder border-neutral-300"
                   />
                   <div>
                     <span className="text-white font-medium">
                       {user.username || "Khách hàng"}
                     </span>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-500">
                       {user.lastMessage || ""}
                     </p>
                   </div>
@@ -192,7 +194,7 @@ const SupportUser = () => {
         </div>
 
         {/* Chat container */}
-        <div className="flex-1 bg-[#252D2E] flex flex-col">
+        <div className="flex-1 bg-white border-teal-800 border flex flex-col">
           {/* Chat header */}
           {currentUserId ? (
             <div className="p-4 border-b border-[#2A3435] flex items-center gap-3">
@@ -203,9 +205,9 @@ const SupportUser = () => {
                     : defaultAvatar
                 }
                 alt="User"
-                className="w-8 h-10 rounded-full"
+                className="w-10 h-10 rounded-full"
               />
-              <span className="text-white font-medium">
+              <span className="text-neutral-950 font-medium">
                 {users.find((u) => u._id === currentUserId)?.username ||
                   "Khách hàng"}
               </span>
@@ -215,7 +217,7 @@ const SupportUser = () => {
           {/* Chat messages */}
           <div
             ref={chatContainerRef}
-            className="flex-1 overflow-y-auto p-6 space-y-6"
+            className="flex-1 overflow-y-auto p-6 space-y-6 mt-2"
           >
             {currentUserId ? (
               messages.length ? (
@@ -229,7 +231,7 @@ const SupportUser = () => {
                   return (
                     <div key={m._id}>
                       {showDate && (
-                        <div className="text-center text-gray-400 text-sm my-4">
+                        <div className="text-center text-gray-600 text-sm my-4">
                           {new Date(m.createdAt).toLocaleDateString("vi-VN", {
                             day: "2-digit",
                             month: "2-digit",
@@ -252,7 +254,7 @@ const SupportUser = () => {
                           />
                         )}
                         <div
-                          className={`max-w-lg p-3 rounded-2xl ${mine ? "bg-blue-600 text-white" : "bg-[#828282] text-white"
+                          className={`max-w-lg p-3 rounded-2xl ${mine ? "bg-teal-700 text-neutral-50" : "bg-neutral-200 text-neutral-950 shadow-sm"
                             }`}
                         >
                           <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">
@@ -293,9 +295,9 @@ const SupportUser = () => {
                 <img
                   src={CSKH}
                   alt="Chọn khách hàng"
-                  className="w-40 h-36 mb-6 opacity-80"
+                  className="w-96 h-80 mb-6 opacity-80"
                 />
-                <p className="text-center text-gray-400">
+                <p className="text-center text-gray-700 text-xl">
                   Chọn khách hàng để xem tin nhắn
                 </p>
               </div>
@@ -303,12 +305,12 @@ const SupportUser = () => {
           </div>
 
           {/* Input */}
-          <div className="p-4 bg-[#252D2E] border-t border-[#2A3435] relative">
+          <div className="p-4  border-t border-teal-800 relative">
             {currentUserId ? (
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setShowEmojiPicker((v) => !v)}
-                  className="text-xl text-gray-400 hover:text-white transition-colors"
+                  className="text-xl text-teal-800 hover:text-teal-950 transition-colors"
                 >
                   <FaSmile />
                 </button>
@@ -317,13 +319,13 @@ const SupportUser = () => {
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Type Something..."
-                  className="flex-1 p-3 bg-[#2A3435] text-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+                  placeholder="Aa"
+                  className="flex-1 p-3 bg-neutral-200 text-neutral-950 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
                 />
                 <button
                   onClick={sendMessage}
                   disabled={isSending || !newMessage.trim()}
-                  className="p-3 rounded-full bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  className="p-3 rounded-full bg-teal-800 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
                   <FaPaperPlane />
                 </button>
