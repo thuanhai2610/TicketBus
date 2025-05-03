@@ -103,7 +103,7 @@ const PieChartRecharts = ({ tickets }) => {
                     </ResponsiveContainer>
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
                         <div className="text-3xl font-bold text-gray-800">{total.toLocaleString()}</div>
-                        <div className="text-sm text-gray-500 mt-1">Tổng Đơn Hàng</div>
+                        <div className="text-sm text-gray-500 mt-1">Tổng Vé</div>
                     </div>
                 </div>
                 <div className="flex flex-row justify-center space-x-4 flex-wrap text-gray-800 mt-4">
