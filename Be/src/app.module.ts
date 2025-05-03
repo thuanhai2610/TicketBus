@@ -23,8 +23,6 @@ import { PaymentModule } from './function/payments/payment.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { OtpModule } from './otp/otp.module';
 import { ChatModule } from './chat/chat.module';
-import { ChatGateway } from './chat/chat.gateway';
-import { ChatService } from './chat/chat.service';
 import { ChatbotController } from './chatbot/chatbot.controller';
 import { ChatbotService } from './chatbot/chatbot.service';
 import { ChatbotModule } from './chatbot/chatbot.module';

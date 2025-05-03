@@ -18,6 +18,8 @@ import { diskStorage } from 'multer';
 import { Roles } from 'src/auth/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard'; // You'll need to create this guard
+import storage from 'src/common/cloudinary-storage';
+
 
 @Controller('user')
 export class UserController {
@@ -52,24 +54,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Post('update-profile')
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: diskStorage({
-        destination: './uploads/',
-        filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          callback(null, `${uniqueSuffix}-${file.originalname}`);
-        },
-      }),
-      fileFilter: (req, file, callback) => {
-        // Optional: Add file type validation
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
-          return callback(new BadRequestException('Only image files are allowed!'), false);
-        }
-        callback(null, true);
-      },
-    }),
-  )
+    @UseInterceptors(FileInterceptor('avatar', { storage }))
   async updateProfile(
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
@@ -88,9 +73,10 @@ export class UserController {
     }
 
     // Handle file upload
-    if (file) {
-      userData.avatar = `/uploads/${file.filename}`;
+    if (file && file.path) {
+      userData.avatar = file.path; // URL trực tiếp từ Cloudinary
     }
+    
 
     // Handle date of birth (dob)
     if (userData.dob && userData.dob.trim() !== '') {
@@ -130,24 +116,23 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Post('update-avatar')
-  async updateAvatar(@Request() req, @Body() data: { username: string; avatar: string }) {
-    const authenticatedUsername = req.user.username; // Extract username from token
-    console.log("Authenticated username from token:", authenticatedUsername);
-
-    if (!data.username || !data.avatar) {
-      throw new BadRequestException('Username and avatar are required');
+  @UseInterceptors(FileInterceptor('avatar', { storage }))
+  async updateAvatar(
+    @Request() req, 
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    const username = req.user.username;
+    if (!file || !file.path) {
+      throw new BadRequestException('File avatar is required');
     }
-
-    // Validate that the username in the request matches the authenticated user
-    if (data.username !== authenticatedUsername) {
-      throw new BadRequestException('You can only update your own avatar');
-    }
-
-    await this.userService.updateAvatar(data.username, data.avatar);
-
+  
+    const avatarUrl = file.path; // đây là URL trên Cloudinary
+    await this.userService.updateAvatar(username, avatarUrl);
+  
     return {
       success: true,
       message: 'Avatar updated successfully',
+      avatar: avatarUrl,       // trả về URL về cho client
     };
   }
 

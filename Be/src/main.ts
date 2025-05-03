@@ -2,9 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as express from 'express';
+import * as dotenv from 'dotenv';
 import { join } from 'path';
-import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
-
+// import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
@@ -15,7 +16,7 @@ async function bootstrap() {
     credentials: true,
   });
   app.use(express.urlencoded({ extended: true }));
-  app.useGlobalFilters(new AllExceptionsFilter());
+  // app.useGlobalFilters(new AllExceptionsFilter());
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   app.useGlobalPipes(new ValidationPipe());
