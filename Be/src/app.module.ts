@@ -27,6 +27,10 @@ import { ChatGateway } from './chat/chat.gateway';
 import { ChatService } from './chat/chat.service';
 import { ChatbotController } from './chatbot/chatbot.controller';
 import { ChatbotService } from './chatbot/chatbot.service';
+import { ChatbotModule } from './chatbot/chatbot.module';
+import { GeminiModule } from './chatbot/gemini.module';
+
+
 @Module({
   imports: [AuthModule, PendingUsersModule,ScheduleModule.forRoot(), ItemsModule, MongooseModule.forRoot('mongodb+srv://thuanhai:thuanhai123@cluster0.zeum7vn.mongodb.net/tickets?retryWrites=true&w=majority&appName=Cluster0'),
     ConfigModule.forRoot({
@@ -53,7 +57,7 @@ import { ChatbotService } from './chatbot/chatbot.service';
           strict: true,
         }
        }
-    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule, PaymentModule, MailerModule, OtpModule, ChatModule
+    }), UsersModule, CompaniesModule, VehicleModule, DriverModule, TripModule, TicketModule, SeatModule, PaymentModule, MailerModule, OtpModule, ChatModule, ChatbotModule, GeminiModule
   ],
 
   controllers: [AppController, ChatbotController],
