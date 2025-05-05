@@ -9,6 +9,10 @@ const socket = io(`${import.meta.env.VITE_API_URL}`, {
   withCredentials: true,
   autoConnect: false,
 });
+const getAvatarUrl = (avatar) => {
+  if (!avatar) return defaultAvatar;
+  return avatar.startsWith("http") ? avatar : `${API_URL}${avatar}`;
+};
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
@@ -18,7 +22,6 @@ const ChatBox = () => {
   const userId = localStorage.getItem("userId");
   const username = localStorage.getItem("username") || "Bạn";
   const userAvatar = localStorage.getItem("avatar") || "";
-  const defaultAvatar = "https://i.pravatar.cc/40";
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -116,11 +119,7 @@ const ChatBox = () => {
               >
                 {!mine && (
                   <img
-                    src={
-                      m.sender.avatar
-                        ? `${import.meta.env.VITE_API_URL}${m.sender.avatar}`
-                        : defaultAvatar
-                    }
+                   src={getAvatarUrl(m.sender.avatar)}
                     alt="Avatar"
                     className="w-8 h-8 rounded-full mr-2 object-cover"
                   />
@@ -140,11 +139,7 @@ const ChatBox = () => {
                 </div>
                 {mine && (
                   <img
-                    src={
-                      userAvatar
-                        ? `${import.meta.env.VITE_API_URL}${userAvatar}`
-                        : defaultAvatar
-                    }
+                   src={getAvatarUrl(userAvatar)}
                     alt="Avatar"
                     className="w-8 h-8 rounded-full ml-2 object-cover"
                   />

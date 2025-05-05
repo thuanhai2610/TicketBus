@@ -37,7 +37,7 @@ const Profile = () => {
           localStorage.setItem("username", response.data.username);
           localStorage.setItem("userId", response.data.userId);
           localStorage.setItem("avatar", response.data.avatar);
-
+          
           const avatar = response.data.avatar
             ? response.data.avatar.startsWith("http")
               ? response.data.avatar

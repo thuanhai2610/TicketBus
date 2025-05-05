@@ -10,15 +10,24 @@ const socket = io(`${import.meta.env.VITE_API_URL}`, {
   autoConnect: false,
 });
 
+const defaultAvatar = "https://i.pravatar.cc/40";
+
+const getAvatarUrl = (avatar) => {
+  if (!avatar) return defaultAvatar;
+  return avatar.startsWith("https://res.cloudinary.com")
+    ? avatar
+    : `${import.meta.env.VITE_API_URL}${avatar}`;
+};
+
 const Support = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const chatContainerRef = useRef(null);
+
   const userId = localStorage.getItem("userId");
   const username = localStorage.getItem("username") || "Bạn";
   const userAvatar = localStorage.getItem("avatar") || "";
-  const defaultAvatar = "https://i.pravatar.cc/40";
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -52,6 +61,7 @@ const Support = () => {
 
   const sendMessage = () => {
     if (!newMessage.trim() || !userId) return;
+
     const payload = {
       senderId: userId,
       content: newMessage,
@@ -91,10 +101,10 @@ const Support = () => {
     });
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center p-4 ">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center p-4">
       <div className="w-full shadow-gray-500 max-w-lg bg-white dark:bg-gray-800 rounded-2xl shadow-xl flex flex-col h-[80vh] md:h-[600px]">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 ">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <h1 className="text-xl font-semibold text-gray-800 dark:text-white text-center">
             Chat với Admin
           </h1>
@@ -119,11 +129,7 @@ const Support = () => {
               >
                 {!mine && (
                   <img
-                    src={
-                      m.sender.avatar
-                        ? `${import.meta.env.VITE_API_URL}${m.sender.avatar}`
-                        : defaultAvatar
-                    }
+                    src={getAvatarUrl(m.sender.avatar)}
                     alt="Avatar"
                     className="w-8 h-8 rounded-full mr-2"
                   />
@@ -142,11 +148,7 @@ const Support = () => {
                 </div>
                 {mine && (
                   <img
-                    src={
-                      userAvatar
-                        ? `${import.meta.env.VITE_API_URL}${userAvatar}`
-                        : defaultAvatar
-                    }
+                    src={getAvatarUrl(userAvatar)}
                     alt="Avatar"
                     className="w-8 h-8 rounded-full ml-2"
                   />
