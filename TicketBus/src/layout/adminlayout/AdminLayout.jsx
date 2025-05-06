@@ -69,7 +69,7 @@ const AdminLayout = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.clear();
     setIsLoggedIn(false);
     setEmail("");
     setFirstName("");

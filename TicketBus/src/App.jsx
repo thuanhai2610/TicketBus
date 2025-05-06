@@ -40,6 +40,8 @@ import Support from "./pages/ticket/Support";
 import ChatBot from "./components/chatbot/Chatbot";
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
+     localStorage.getItem("token")
+
     return localStorage.getItem("theme") === "dark";
   });
 

@@ -91,7 +91,29 @@ const TicketHistory = () => {
             return <span className={`${baseClasses} bg-gray-100 text-gray-800`}>{status}</span>;
         }
       };
-      
+      useEffect(() => {
+        // Kiểm tra các vé Booked và hẹn giờ xoá sau 5 phút
+        tickets.forEach((ticket) => {
+            if (ticket._doc.status === "Booked") {
+                const ticketId = ticket._doc.ticketId;
+    
+                // Kiểm tra nếu chưa từng đặt timeout cho vé này
+                if (!window.bookedTimeouts) {
+                    window.bookedTimeouts = {};
+                }
+                if (!window.bookedTimeouts[ticketId]) {
+                    window.bookedTimeouts[ticketId] = setTimeout(async () => {
+                        try {
+                            await axios.delete(`${import.meta.env.VITE_API_URL}/tickets/${ticketId}`);
+                            fetchTickets();
+                        } catch (error) {
+                            console.error(`Không thể xoá vé ${ticketId}:`, error);
+                        }
+                    }, 5 * 60 * 1000); // 5 phút
+                }
+            }
+        });
+    }, [tickets]);
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-6">

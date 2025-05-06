@@ -219,5 +219,13 @@ export class TicketService {
   async findTripById(tripId: string) {
     return await this.tripService.findOne(tripId);
   }
-  
+  async remove(ticketId: string): Promise<{ message: string }> {
+    const result = await this.ticketModel.deleteOne({ ticketId });
+
+    if (result.deletedCount === 0) {
+      throw new NotFoundException(`Không tìm thấy vé với ID: ${ticketId}`);
+    }
+
+    return { message: `Vé ${ticketId} đã được xoá thành công.` };
+  }
 }

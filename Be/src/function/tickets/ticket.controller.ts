@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, NotFoundException, BadRequestException, Query, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, NotFoundException, BadRequestException, Query, Put, Delete } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { TripService } from '../trip/trip.service';
 import { SeatService } from '../seats/seat.service';
@@ -139,5 +139,8 @@ async updateTicket(
   
     return enrichedTickets;
   }
-  
+  @Delete(':ticketId')
+    remove(@Param('ticketId') ticketId: string) {
+      return this.ticketsService.remove(ticketId);
+    }
 }
