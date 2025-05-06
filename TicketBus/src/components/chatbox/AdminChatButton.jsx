@@ -54,7 +54,8 @@ const AdminChatButton = () => {
               />
             </svg>
           </button>
-          <ChatBox />
+          {localStorage.getItem("token") && <ChatBox />}
+
         </div>
       </div>
     </div>
