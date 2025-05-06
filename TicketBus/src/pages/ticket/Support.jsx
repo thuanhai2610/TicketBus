@@ -3,6 +3,8 @@ import { io } from "socket.io-client";
 import { FaPaperPlane, FaSmile } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+
 const ADMIN_ID = import.meta.env.VITE_ADMIN_ID;
 
 const socket = io(`${import.meta.env.VITE_API_URL}`, {
@@ -24,12 +26,21 @@ const Support = () => {
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const chatContainerRef = useRef(null);
-  const userId = localStorage.getItem("userId")
+  let userId = null;
+  let userAvatar = null;
   const username = localStorage.getItem("username") || "Bạn";
-  const userAvatar = localStorage.getItem("avatar") || "";
+  
   const token = localStorage.getItem("token");
 const navigate = useNavigate();
-
+if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      userId = decoded.userId; 
+      userAvatar = decoded.avatar
+    } catch (error) {
+      console.error("Token không hợp lệ:", error);
+    }
+  }
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
