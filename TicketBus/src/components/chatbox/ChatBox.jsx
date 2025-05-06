@@ -5,10 +5,11 @@ import EmojiPicker from "emoji-picker-react";
 
 const ADMIN_ID = import.meta.env.VITE_ADMIN_ID;
 
-const socket = io(`${import.meta.env.VITE_API_URL}`, {
+const socket = io(`${import.meta.env.API_URL}`, {
   withCredentials: true,
   autoConnect: false,
 });
+
 const getAvatarUrl = (avatar) => {
   if (!avatar) return defaultAvatar;
   return avatar.startsWith("http") ? avatar : `${API_URL}${avatar}`;

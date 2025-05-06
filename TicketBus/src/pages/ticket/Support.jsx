@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import { FaPaperPlane, FaSmile } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
-
+import { useNavigate } from "react-router-dom";
 const ADMIN_ID = import.meta.env.VITE_ADMIN_ID;
 
 const socket = io(`${import.meta.env.VITE_API_URL}`, {
@@ -24,10 +24,11 @@ const Support = () => {
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const chatContainerRef = useRef(null);
-
-  const userId = localStorage.getItem("userId");
+  const userId = localStorage.getItem("userId")
   const username = localStorage.getItem("username") || "Bạn";
   const userAvatar = localStorage.getItem("avatar") || "";
+  const token = localStorage.getItem("token");
+const navigate = useNavigate();
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -36,7 +37,10 @@ const Support = () => {
   }, [messages]);
 
   useEffect(() => {
-    if (!userId) return;
+
+    if (!token) {
+      navigate("/login"); // hoặc "/dang-nhap" tùy route bạn dùng
+    }
 
     socket.connect();
     socket.emit("join", userId);
@@ -57,7 +61,7 @@ const Support = () => {
       socket.off("receiveMessage");
       socket.disconnect();
     };
-  }, [userId]);
+  }, [token, navigate]);
 
   const sendMessage = () => {
     if (!newMessage.trim() || !userId) return;
