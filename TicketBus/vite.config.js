@@ -5,7 +5,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000,
+    port: 3000,  // Port cho frontend
   },
   resolve: {
     alias: {
@@ -13,7 +13,10 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  build: {
+    outDir: 'dist/public', // Đảm bảo Vite build vào thư mục 'dist/public' để NestJS phục vụ
+  },
   optimizeDeps: {
-  include: ['qrcode.react'],
-},
+    include: ['qrcode.react'],
+  },
 })
