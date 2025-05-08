@@ -22,7 +22,7 @@ async function bootstrap() {
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   app.useGlobalPipes(new ValidationPipe());
-  app.listen(port, () => {
+ await app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
   });
   
