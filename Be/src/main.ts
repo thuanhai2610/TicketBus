@@ -6,8 +6,10 @@ import * as dotenv from 'dotenv';
 import { join } from 'path';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 dotenv.config();
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const port = process.env.PORT || 3001;
   
   app.enableCors({
     origin: ['http://localhost:3000'],
@@ -20,9 +22,9 @@ async function bootstrap() {
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   app.useGlobalPipes(new ValidationPipe());
-
-  await app.listen(3001);
-  console.log(` Server running at http://localhost:3001`);
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
   
 }
 bootstrap();
