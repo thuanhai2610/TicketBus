@@ -177,42 +177,59 @@ export class TicketService {
     }
     return ticket;
   }
-  async updateTicket(ticketId: string, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
-    const ticket = await this.ticketModel.findOne({ ticketId }).exec();
-    if (!ticket) {
-      throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
-    }
-    if (updateTicketDto.status === 'Cancelled') {
-      const trip = await this.tripModel.findOne({ tripId: ticket.tripId }).exec();
-      if (!trip) {
-        throw new NotFoundException(`Trip with ID ${ticket.tripId} not found`);
-      }
-
-      let seatNumbers: string[] = [];
-      if (typeof ticket.seatNumber === 'string') {
-        seatNumbers = [ticket.seatNumber];
-      } else if (Array.isArray(ticket.seatNumber)) {
-        seatNumbers = ticket.seatNumber;
-      }
-
-      // Update seats to "Available"
-      for (const seatNumber of seatNumbers) {
-        await this.seatModel
-          .findOneAndUpdate(
-            { tripId: ticket.tripId, seatNumber: seatNumber },
-            { availabilityStatus: 'Available', updatedAt: new Date() },
-            { new: true }
-          )
-          .exec();
-
-      }
-     await this.updateTicketStatus(ticketId, 'Cancelled')
-
-    }
-    
-    Object.assign(ticket, updateTicketDto);
-    return ticket.save();
+ async updateTicket(ticketId: string, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
+  const ticket = await this.ticketModel.findOne({ ticketId }).exec();
+  if (!ticket) {
+    throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
   }
+
+  // Kiểm tra nếu trạng thái vé là "Cancelled", không thể hủy vé
+  if (ticket.status === 'Cancelled') {
+    throw new BadRequestException('Vé đã được  hủy, không thể hủy lại');
+  }
+
+  // Lấy thông tin chuyến đi
+  const trip = await this.tripModel.findOne({ tripId: ticket.tripId }).exec();
+  if (!trip) {
+    throw new NotFoundException(`Trip with ID ${ticket.tripId} not found`);
+  }
+  // Kiểm tra nếu trạng thái chuyến đi là IN_PROGRESS, COMPLETED hoặc CANCELLED, không thể hủy vé
+  if (['IN_PROGRESS', 'COMPLETED', 'CANCELLED'].includes(trip.status)) {
+    throw new BadRequestException('Chuyến đi đã bắt đầu, hoàn thành hoặc đã bị hủy, không thể hủy vé');
+  }
+if (ticket.status !== 'Paid' && ticket.status !== 'Booked') {
+  throw new BadRequestException('Chỉ có thể hủy vé ở trạng thái Paid hoặc Booked');
+}
+
+  // Cập nhật trạng thái vé thành "Cancelled"
+  if (updateTicketDto.status === 'Cancelled') {
+    let seatNumbers: string[] = [];
+    if (typeof ticket.seatNumber === 'string') {
+      seatNumbers = [ticket.seatNumber];
+    } else if (Array.isArray(ticket.seatNumber)) {
+      seatNumbers = ticket.seatNumber;
+    }
+
+    // Cập nhật trạng thái ghế thành "Available"
+    for (const seatNumber of seatNumbers) {
+      await this.seatModel
+        .findOneAndUpdate(
+          { tripId: ticket.tripId, seatNumber: seatNumber },
+          { availabilityStatus: 'Available', updatedAt: new Date() },
+          { new: true }
+        )
+        .exec();
+    }
+
+    // Cập nhật trạng thái vé
+    await this.updateTicketStatus(ticketId, 'Cancelled');
+  }
+
+  // Cập nhật các thuộc tính còn lại của vé
+  Object.assign(ticket, updateTicketDto);
+  return ticket.save();
+}
+
   async findByUsername(username: string) {
     return this.ticketModel.find({ username }).exec();
   }

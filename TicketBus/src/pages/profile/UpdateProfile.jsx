@@ -100,66 +100,116 @@ const UpdateProfile = () => {
     navigate(-1); // quay lại trang trước
     // hoặc navigate("/dashboard"); // nếu muốn chuyển tới trang cụ thể
   };
-  
+  const uploadAvatar = async () => {
+  if (!selectedFile) return null;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccessMsg("");
+  const formData = new FormData();
+  formData.append("avatar", selectedFile);
 
-    if (!formData.firstName || !formData.lastName || !formData.email) {
-      setError("Vui lòng điền đầy đủ thông tin bắt buộc!");
+  try {
+    const token = localStorage.getItem("token");
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_API_URL}/user/update-avatar`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (data.success) {
+      const fullAvatarUrl = data.avatar.startsWith("http")
+        ? data.avatar
+        : `${import.meta.env.VITE_API_URL}${data.avatar}`;
+
+      setProfile((prev) => ({
+        ...prev,
+        avatar: fullAvatarUrl,
+      }));
+
+      localStorage.setItem("avatar", fullAvatarUrl);
+      return fullAvatarUrl;
+    } else {
+      setError("Upload ảnh đại diện thất bại.");
+      return null;
+    }
+  } catch (err) {
+    setError("Lỗi khi tải ảnh lên.");
+    return null;
+  }
+};
+
+
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setSuccessMsg("");
+
+  if (!formData.firstName || !formData.lastName || !formData.email) {
+    setError("Vui lòng điền đầy đủ thông tin bắt buộc!");
+    return;
+  }
+
+  setLoading(true);
+
+  let avatarUrl = null;
+  if (selectedFile) {
+    avatarUrl = await uploadAvatar(); // upload trước khi cập nhật thông tin
+    if (!avatarUrl) {
+      setLoading(false);
       return;
     }
+  }
 
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No token found. Please log in.");
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found. Please log in.");
 
-      const formDataToSend = new FormData();
-      formDataToSend.append("firstName", formData.firstName || "");
-      formDataToSend.append("lastName", formData.lastName || "");
-      formDataToSend.append("email", formData.email || "");
-      formDataToSend.append("phone", formData.phone || "");
-      if (formData.dob?.trim()) {
-        formDataToSend.append("dob", formData.dob);
-      }
-      formDataToSend.append("gender", formData.gender || "");
-      formDataToSend.append("username", formData.username);
-
-      if (selectedFile) {
-        formDataToSend.append("avatar", selectedFile);
-      }
+    const formDataToSend = new FormData();
+    formDataToSend.append("firstName", formData.firstName || "");
+    formDataToSend.append("lastName", formData.lastName || "");
+    formDataToSend.append("email", formData.email || "");
+    formDataToSend.append("phone", formData.phone || "");
+    if (formData.dob?.trim()) {
+      formDataToSend.append("dob", formData.dob);
+    }
+    formDataToSend.append("gender", formData.gender || "");
+    formDataToSend.append("username", formData.username);
 
     await axios.post(
-        `${import.meta.env.VITE_API_URL}/user/update-profile`,
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setSuccessMsg("Cập nhật thông tin thành công!");
-
-      setTimeout(() => {
-        navigate("/user/profile")
-    window.location.reload();
-      }, 1000);
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      if (error.response?.status === 401) {
-        handleLogout();
-      } else {
-        setError(error.response?.data?.message || "Lỗi khi cập nhật thông tin! Vui lòng thử lại.");
+      `${import.meta.env.VITE_API_URL}/user/update-profile`,
+      formDataToSend,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } finally {
-      setLoading(false);
+    );
+if (!avatarUrl && profile.avatar) {
+  localStorage.setItem("avatar", profile.avatar);
+}
+    setSuccessMsg("Cập nhật thông tin thành công!");
+    setTimeout(() => {
+      window.location.reload(
+        
+      )
+      navigate("/user/profile");
+      ;
+    }, 500);
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    if (error.response?.status === 401) {
+      handleLogout();
+    } else {
+      setError(error.response?.data?.message || "Lỗi khi cập nhật thông tin! Vui lòng thử lại.");
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   const getImageUrl = (avatarPath) => {
     if (!avatarPath) return null;
