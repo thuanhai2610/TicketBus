@@ -22,12 +22,11 @@ const ChatBox = () => {
   const username = localStorage.getItem("username") || "Bạn";
   const token = localStorage.getItem("token");
  
-
   if (token) {
     try {
       const decoded = jwtDecode(token);
       userId = decoded.userId; 
-      userAvatar = decoded.avatar
+      userAvatar =localStorage.getItem("avatar") || decoded.avatar; 
     } catch (error) {
       console.error("Token không hợp lệ:", error);
     }

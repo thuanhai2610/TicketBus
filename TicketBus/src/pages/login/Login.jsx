@@ -88,7 +88,7 @@ const Login = () => {
         setSocialLoading(false);
     };
     return (
-        <GoogleOAuthProvider clientId={"1055268521864-uqrdrd5mpqbeskmqe28gb2kk37050t4b.apps.googleusercontent.com"}>
+        <GoogleOAuthProvider clientId={`${import.meta.env.VITE_GOOGLE_CLIENT_ID}`}>
             <div
                 className="flex min-h-screen items-center justify-center bg-cover bg-center dark:bg-transparent"
                 style={{backgroundImage: `url(${bgLogin})` }}
@@ -130,6 +130,7 @@ const Login = () => {
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-transparent dark:focus:ring-slate-300"
                                 required
+                                autoComplete="username"
                             />
                         </div>
 
@@ -141,6 +142,7 @@ const Login = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-10 dark:bg-transparent dark:focus:ring-slate-300"
                                 required
+                                autoComplete="current-password"
                             />
                             <button
                                 type="button"
@@ -163,7 +165,7 @@ const Login = () => {
                             className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary transition dark:bg-slate-500"
                             disabled={isLoading}
                         >
-                            {isLoading ? "Logging in..." : "Đăng Nhập"}
+                            {isLoading ? "Đang đăng nhập...." : "Đăng Nhập"}
                         </button>
                     </form>
 

@@ -31,19 +31,6 @@ const SupportUser = () => {
   const chatContainerRef = useRef(null);
   const adminAvatar = localStorage.getItem("avatarAdmin");
 
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "N/A";
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return "Invalid Date";
-    return d.toLocaleString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   useEffect(() => {
     socket.connect();
     socket.emit("join", ADMIN_ID);
