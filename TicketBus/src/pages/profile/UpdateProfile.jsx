@@ -193,10 +193,11 @@ if (!avatarUrl && profile.avatar) {
 }
     setSuccessMsg("Cập nhật thông tin thành công!");
     setTimeout(() => {
+       navigate("/user/profile");
       window.location.reload(
         
       )
-      navigate("/user/profile");
+     
       ;
     }, 500);
   } catch (error) {
