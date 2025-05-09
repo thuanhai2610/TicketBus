@@ -19,7 +19,7 @@ const Ticket = () => {
   const location = useLocation(); // Hook để đọc query parameters
   const mapRef = useRef(null);
   const leafletMapRef = useRef(null);
-
+  const token = localStorage.getItem("token")
   const fetchTrips = async (from, to, date) => {
     try {
       const response = await fetch(
@@ -60,7 +60,12 @@ const Ticket = () => {
 
     // Xóa routing cũ nếu có
     if (leafletMapRef.current._routing) {
-      leafletMapRef.current.removeControl(leafletMapRef.current._routing);
+      try {
+        leafletMapRef.current.removeControl(leafletMapRef.current._routing);
+      } catch (err) {
+        console.warn("Không thể xóa routing control:", err);
+      }
+      leafletMapRef.current._routing = null;
     }
 
     if (tripData && tripData.length > 0) {
@@ -164,7 +169,8 @@ const Ticket = () => {
 
           {/* Ticket section */}
           <div className={`transition-all duration-500 ${trips.length > 0 ? 'w-2/3' : 'w-full'}`}>
-            <SearchResult trips={trips} />
+           { token && <SearchResult trips={trips} />}
+           
           </div>
         </div>
 

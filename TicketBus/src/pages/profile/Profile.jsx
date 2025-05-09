@@ -34,10 +34,7 @@ const Profile = () => {
           const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/profile`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          localStorage.setItem("username", response.data.username);
-          localStorage.setItem("userId", response.data.userId);
-          localStorage.setItem("avatar", response.data.avatar);
-          
+          localStorage.setItem("username", response.data.username); 
           const avatar = response.data.avatar
             ? response.data.avatar.startsWith("http")
               ? response.data.avatar
@@ -174,8 +171,6 @@ const uploadAvatar = async () => {
                         <FaUserCircle className="w-full h-full text-gray-400 dark:text-gray-500" />
                       )}
                     </div>
-                    {/* <input type="file" onChange={handleAvatarChange} accept="image/*" className="mt-4" /> */}
-                    <button onClick={uploadAvatar} className="mt-4 px-4 py-2 border rounded-full text-sm text-gray-700 dark:text-gray-200">Upload ảnh</button>
                     <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">Dung lượng file tối đa 1 MB<br />Định dạng: .JPEG, .PNG</p>
                   </div>
 

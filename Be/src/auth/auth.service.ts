@@ -79,14 +79,15 @@ export class AuthService {
         }
       }
   
-      const payload = { username: user.username, sub: user._id.toString(), role: user.role };
+      const payload = { username: user.username, userId: user._id.toString(), role: user.role, avatar: user.avatar };
       console.log('Generating new token with payload:', payload);
       const newToken = this.jwtService.sign(payload);
   
       return {
         access_token: newToken,
         role: user.role,
-        sub: user._id.toString(),
+        userId: user._id.toString(),
+        avatar: user.avatar 
       };
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -265,7 +266,7 @@ export class AuthService {
         console.log('New user created:', existingUser);
     }
 
-    const payload = { username: existingUser.username, sub: existingUser._id.toString(), role: existingUser.role };
+    const payload = { username: existingUser.username, userId: existingUser._id.toString(), role: existingUser.role };
     return {
         access_token: this.jwtService.sign(payload),
         role: existingUser.role,

@@ -91,7 +91,6 @@ const TicketHistory = () => {
             return <span className={`${baseClasses} bg-gray-100 text-gray-800`}>{status}</span>;
         }
       };
-      
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-6">
