@@ -81,7 +81,7 @@ const Navbar = () => {
         setLastName('');
         setAvatar('');
         navigate("/");
-        // window.location.reload();
+        window.location.reload();
     };
 
     const handleGoToProfile = () => {

@@ -76,7 +76,7 @@ const AdminLayout = () => {
     setLastName("");
     setAvatar("");
     navigate("/");
-    // window.location.reload();
+    window.location.reload();
   };
 
   const toggleTrips = () => setIsTripsOpen(!isTripsOpen);
