@@ -46,9 +46,9 @@ const Login = () => {
             localStorage.setItem("token", access_token);
             localStorage.setItem("username", username);
             if (role === "admin") {
-                window.location.reload(navigate("/admin"));
+                window.location.reload("/admin");
             } else {
-                window.location.reload(navigate("/"));
+                window.location.reload("/");
             }
            
         } catch (error) {
