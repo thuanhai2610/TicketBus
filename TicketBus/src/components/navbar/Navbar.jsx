@@ -20,6 +20,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -32,7 +33,7 @@ const Navbar = () => {
     const [avatar, setAvatar] = useState('');
     const [isCompact, setIsCompact] = useState(false);
     const navigate = useNavigate();
-
+const { user, setUser } = useAuth();
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -73,16 +74,11 @@ const Navbar = () => {
         }
     }, []);
 
-    const handleLogout = () => {
-        localStorage.clear();
-        setIsLoggedIn(false);
-        setUsername('');
-        setFirstName('');
-        setLastName('');
-        setAvatar('');
-        // navigate("/");
-        window.location.reload("/");
-    };
+  const handleLogout = () => {
+  localStorage.clear();
+  setUser(null);
+  navigate("/");
+};
 
     const handleGoToProfile = () => {
         navigate(`/user/profile`);
@@ -167,12 +163,12 @@ const Navbar = () => {
 
                 {/* User Actions & Dark Mode Toggle */}
                 <div className="flex items-center space-x-4">
-                    {isLoggedIn ? (
+                    {user  ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger className="flex items-center space-x-3 cursor-pointer">
                                 {avatar ? (
                                     <img
-                                        src={avatar}
+                                        src={user.avatar}
                                         alt="User Avatar"
                                         className="w-10 h-10 rounded-full border border-primary object-cover"
                                         onError={(e) => {
@@ -189,7 +185,7 @@ const Navbar = () => {
                                     <FaUserCircle className="w-10 h-10 text-gray-500 dark:text-white" />
                                 )}
                                   <span className="text-black dark:text-white font-medium">
-                                {firstName} {lastName}
+                               {user.firstName} {user.lastName}
                             </span>
                             </DropdownMenuTrigger>
 

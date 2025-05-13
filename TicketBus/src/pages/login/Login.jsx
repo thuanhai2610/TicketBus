@@ -7,7 +7,7 @@ import { FaRegEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import bgLogin from "../../assets/bgLogin.jpg"
-
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
     const [username, setUsername] = useState("");
@@ -18,7 +18,7 @@ const Login = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
-
+const { fetchUser } = useAuth();
     useEffect(() => {
         if (location.state?.error) {
             setError(location.state.error);
@@ -45,11 +45,12 @@ const Login = () => {
             }
             localStorage.setItem("token", access_token);
             localStorage.setItem("username", username);
-            if (role === "admin") {
-                window.location.reload("/admin");
-            } else {
-                window.location.reload("/");
-            }
+            await fetchUser(access_token);
+        if (role === "admin") {
+            navigate("/admin");
+        } else {
+            navigate("/");
+        }
            
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Đăng nhập lỗi, vui lòng kiểm tra lại thông tin đăng nhập.";
