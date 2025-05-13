@@ -50,7 +50,7 @@ const Login = () => {
             } else {
                 navigate("/");
             }
-            // window.location.reload();
+            window.location.reload();
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Đăng nhập lỗi, vui lòng kiểm tra lại thông tin đăng nhập.";
             setError(errorMessage);
@@ -74,7 +74,7 @@ const Login = () => {
             } else {
                 navigate("/");
             }
-            // window.location.reload();
+            window.location.reload();
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Google login failed. Please try again.";
             setError(errorMessage);
