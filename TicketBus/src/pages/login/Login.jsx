@@ -46,11 +46,11 @@ const Login = () => {
             localStorage.setItem("token", access_token);
             localStorage.setItem("username", username);
             if (role === "admin") {
-                window.location.reload("/admin");
+                navigate("/admin");
             } else {
-                window.location.reload("/");
+                navigate("/");
             }
-           
+            window.location.reload();
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Đăng nhập lỗi, vui lòng kiểm tra lại thông tin đăng nhập.";
             setError(errorMessage);

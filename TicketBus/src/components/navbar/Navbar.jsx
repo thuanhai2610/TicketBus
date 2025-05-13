@@ -80,8 +80,8 @@ const Navbar = () => {
         setFirstName('');
         setLastName('');
         setAvatar('');
-        // navigate("/");
-        window.location.reload("/");
+        navigate("/");
+        window.location.reload();
     };
 
     const handleGoToProfile = () => {
