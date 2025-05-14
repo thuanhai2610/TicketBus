@@ -20,8 +20,18 @@ const ChatBox = () => {
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const chatContainerRef = useRef(null);
-  const userId = localStorage.getItem("userId");
+   let userId = null;
   const username = localStorage.getItem("username") || "Bạn";
+  
+  const token = localStorage.getItem("token");
+if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      userId = decoded.userId; 
+    } catch (error) {
+      console.error("Token không hợp lệ:", error);
+    }
+  }
 
   useEffect(() => {
     if (chatContainerRef.current) {
