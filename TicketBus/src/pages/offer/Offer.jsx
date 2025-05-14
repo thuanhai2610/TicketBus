@@ -35,11 +35,12 @@ const Offer = () => {
   }, []);
 
   if (loading) return <p className="text-center py-10">Đang tải ưu đãi...</p>;
-  if (error)   return <p className="text-center py-10 text-red-600">{error}</p>;
+  if (error) return <p className="text-center py-10 text-red-600">{error}</p>;
 
   // Tính phân trang
   const start = (page - 1) * limit;
-  const pageItems = promotions.slice(start, start + limit);
+  const pageItems = Array.isArray(promotions) ? promotions.slice(start, start + limit) : [];
+
   const totalPages = Math.ceil(promotions.length / limit);
 
   const goToPage = (p) => {
@@ -54,11 +55,16 @@ const Offer = () => {
           Nhanh tay đặt vé để nhận những khuyến mãi cực hấp dẫn!
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pageItems.map((promo) => (
-            <PromotionCard key={promo._id} promo={promo} />
-          ))}
-        </div>
+        {pageItems.length === 0 ? (
+          <div>No promotions available.</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pageItems.map((promo) => (
+              <PromotionCard key={promo._id} promo={promo} />
+            ))}
+          </div>
+        )}
+
 
         {totalPages > 1 && (
           <div className="flex justify-center gap-2 mt-8 flex-wrap">
@@ -66,11 +72,10 @@ const Offer = () => {
               <button
                 key={p}
                 onClick={() => goToPage(p)}
-                className={`px-4 py-2 rounded-lg border ${
-                  p === page
-                    ? 'bg-primary text-white'
-                    : 'bg-white text-primary border-primary'
-                }`}
+                className={`px-4 py-2 rounded-lg border ${p === page
+                  ? 'bg-primary text-white'
+                  : 'bg-white text-primary border-primary'
+                  }`}
               >
                 {p}
               </button>

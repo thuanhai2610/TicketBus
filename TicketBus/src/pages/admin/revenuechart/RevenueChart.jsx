@@ -196,7 +196,7 @@ export default function RevenueChart({ chartHeight = 300 }) {
   if (error) return <p className="text-red-500">Lỗi: {error.message}</p>;
 
   return (
-    <div className="min-h-screen px-4 text-neutral-950">
+    <div className="px-4 text-neutral-950">
       <h2 className="font-bold uppercase text-3xl mb-6">Quản lý Doanh Thu</h2>
 
       {/* Summary Section */}

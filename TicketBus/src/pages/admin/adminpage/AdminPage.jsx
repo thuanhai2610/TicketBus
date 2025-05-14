@@ -185,14 +185,12 @@ const AdminPage = () => {
       const enrichedTrips = await batchFetchVehicleData(tripData);
       
       // Process trip stats
-      const currentWeekTrips = enrichedTrips.filter(
-        trip => new Date(trip.createdAt) >= oneWeekAgo
-      );
+     
       const previousWeekTrips = enrichedTrips.filter(
         trip => new Date(trip.createdAt) >= twoWeeksAgo && new Date(trip.createdAt) < oneWeekAgo
       );
       
-      const currentTripCount = currentWeekTrips.length;
+      const currentTripCount = enrichedTrips.length;
       const previousTripCount = previousWeekTrips.length;
       const tripTarget = 100; // Quarterly target
       

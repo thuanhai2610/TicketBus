@@ -25,7 +25,7 @@ const PieChartRecharts = ({ tickets }) => {
         {
             name: `Đang Thanh Toán ${getPercentage(pending)}%`,
             value: pending,
-            color: "#FACC15", // Bright Yellow
+            color: "#DCD800", // Bright Yellow
         },
         {
             name: `Thất Bại ${getPercentage(failed)}%`,
@@ -73,7 +73,7 @@ const PieChartRecharts = ({ tickets }) => {
                                         fill={
                                             activeIndex === index
                                                 ? entry.color
-                                                : `${entry.color}B3` // Slightly transparent when not active
+                                                : `${entry.color}B3` 
                                         }
                                         style={{
                                             transition: "all 0.3s ease",

@@ -158,7 +158,7 @@ const Ticket = () => {
               transition={{ duration: 1, ease: 'easeInOut' }}
               className="w-1/3"
             >
-              <h3 className="text-xl font-semibold mb-3 text-center">Bản Đồ Tuyến Đường</h3>
+              <h3 className="text-xl font-semibold  text-center">Bản Đồ Tuyến Đường</h3>
               <div
                 ref={mapRef}
                 className="w-full rounded-lg shadow-md"
