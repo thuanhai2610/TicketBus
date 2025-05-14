@@ -22,7 +22,6 @@ const ChatBox = () => {
   const chatContainerRef = useRef(null);
   const userId = localStorage.getItem("userId");
   const username = localStorage.getItem("username") || "Bạn";
-  const userAvatar = localStorage.getItem("avatar") || "";
 
   useEffect(() => {
     if (chatContainerRef.current) {
