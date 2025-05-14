@@ -1,8 +1,8 @@
-/* eslint-disable no-undef */
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import { FaPaperPlane, FaSmile } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
+import { jwtDecode } from "jwt-decode";
 
 const ADMIN_ID = import.meta.env.VITE_ADMIN_ID;
 
@@ -10,29 +10,31 @@ const socket = io(`${import.meta.env.VITE_API_URL}`, {
   withCredentials: true,
   autoConnect: false,
 });
-const getAvatarUrl = (avatar) => {
-  if (!avatar) return defaultAvatar;
-  return avatar.startsWith("http") ? avatar : `${import.meta.env.VITE_API_URL}${avatar}`;
-};
+
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const chatContainerRef = useRef(null);
-   let userId = null;
+  let userId = null;
+  let userAvatar = null;
   const username = localStorage.getItem("username") || "Bạn";
-  
   const token = localStorage.getItem("token");
-if (token) {
+ 
+  if (token) {
     try {
       const decoded = jwtDecode(token);
       userId = decoded.userId; 
+      userAvatar =localStorage.getItem("avatar") || decoded.avatar; 
     } catch (error) {
       console.error("Token không hợp lệ:", error);
     }
   }
-
+  const getAvatarUrl = (avatar) => {
+    if (!avatar) return defaultAvatar;
+    return avatar.startsWith("http") ? avatar : `${API_URL}${avatar}`;
+  };
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
