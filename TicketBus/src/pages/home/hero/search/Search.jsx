@@ -29,7 +29,7 @@ const Search = () => {
   const navigate = useNavigate();
 
 
-  const locationsGo = ["Nha Trang",  "Đà Nẵng"];
+  const locationsGo = ["Nha Trang", "Đà Nẵng"];
 
   const locations = ["Nha Trang", "Phú Yên", "Bình Định", "Quảng Ngãi", "Đà Nẵng", "Huế"];
 
@@ -125,9 +125,9 @@ const Search = () => {
               onSelect={setDate}
               disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
             />
-
           </PopoverContent>
         </Popover>
+
 
         {/* Nút tìm chuyến */}
         <button
