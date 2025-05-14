@@ -1,25 +1,35 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TopLayout from '../../layout/toppage/TopLayout';
 import RootLayout from '../../layout/RootLayout';
 import Search from '../home/hero/search/Search';
 import { motion } from 'framer-motion';
 import SearchResult from './searchresult/SearchResult';
 import bgImage from '../../assets/bgimg.png';
-import { data, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import L from 'leaflet';
-import { useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import 'leaflet-routing-machine';
 
+// 🛠 Fix lỗi thiếu icon marker
+import markerIcon from '../../assets/marker-icon.png';
+import markerShadow from '../../assets/marker-shadow.png';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
 const Ticket = () => {
   const [trips, setTrips] = useState([]);
-  const [showMap, setShowMap] = useState(false); // State to control map visibility
-  const location = useLocation(); // Hook để đọc query parameters
+  const [showMap, setShowMap] = useState(false);
+  const location = useLocation();
   const mapRef = useRef(null);
   const leafletMapRef = useRef(null);
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem("token");
+
   const fetchTrips = async (from, to, date) => {
     try {
       const response = await fetch(
@@ -42,13 +52,12 @@ const Ticket = () => {
   const updateMap = (tripData) => {
     if (!mapRef.current) return;
 
-    // Khởi tạo bản đồ nếu chưa có
     if (!leafletMapRef.current) {
       leafletMapRef.current = L.map(mapRef.current, {
-        doubleClickZoom: false,  
-        boxZoom: false,        
-        keyboard: false,        
-        tap: false              
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        tap: false
       }).setView([16.0544, 108.2022], 4);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -58,7 +67,6 @@ const Ticket = () => {
       leafletMapRef.current.invalidateSize();
     }
 
-    // Xóa routing cũ nếu có
     if (leafletMapRef.current._routing) {
       try {
         leafletMapRef.current.removeControl(leafletMapRef.current._routing);
@@ -69,10 +77,13 @@ const Ticket = () => {
     }
 
     if (tripData && tripData.length > 0) {
-      const trip = tripData[0]; // Lấy chuyến đầu tiên
-      if (trip && trip.departureLatitude && trip.departureLongtitude &&
-        trip.destinationLatitude && trip.destinationLongtitude) {
-
+      const trip = tripData[0];
+      if (
+        trip.departureLatitude &&
+        trip.departureLongtitude &&
+        trip.destinationLatitude &&
+        trip.destinationLongtitude
+      ) {
         const routingControl = L.Routing.control({
           waypoints: [
             L.latLng(trip.departureLatitude, trip.departureLongtitude),
@@ -86,7 +97,6 @@ const Ticket = () => {
           addWaypoints: false,
         }).addTo(leafletMapRef.current);
 
-        // Lưu lại để có thể xóa sau này
         leafletMapRef.current._routing = routingControl;
       } else {
         console.warn("Trip data missing required coordinate information:", trip);
@@ -94,7 +104,6 @@ const Ticket = () => {
     }
   };
 
-  // Đọc query parameters và gọi API khi trang được tải
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const departurePoint = searchParams.get('departurePoint');
@@ -106,8 +115,7 @@ const Ticket = () => {
     } else {
       setShowMap(false);
     }
-  }, [location.search]); 
-
+  }, [location.search]);
 
   useEffect(() => {
     return () => {
@@ -116,40 +124,32 @@ const Ticket = () => {
           leafletMapRef.current.removeControl(leafletMapRef.current._routing);
           leafletMapRef.current._routing = null;
         }
-  
         leafletMapRef.current.remove();
         leafletMapRef.current = null;
       }
     };
   }, []);
-  
 
-  // Handle custom search from Search component
   const handleSearch = (results) => {
     setTrips(results);
     setShowMap(results && results.length > 0);
 
     if (results && results.length > 0) {
-      // Small delay to ensure the map container is visible
       setTimeout(() => updateMap(results), 100);
     }
   };
 
   return (
     <div className='w-full space-y-12 pb-16'>
-      {/* Top Layout */}
       <TopLayout
         bgImg={bgImage}
         title={'Reserve your ticket'}
       />
 
       <RootLayout className="space-y-8 relative z-0">
-        {/* Search section */}
         <Search onSearchResults={handleSearch} />
 
-        {/* Searched bus tickets */}
         <div className="w-full flex flex-row gap-4 px-4">
-          {/* Map section */}
           {trips.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 100 }}
@@ -167,14 +167,10 @@ const Ticket = () => {
             </motion.div>
           )}
 
-          {/* Ticket section */}
           <div className={`transition-all duration-500 ${trips.length > 0 ? 'w-2/3' : 'w-full'}`}>
-           { token && <SearchResult trips={trips} />}
-           
+            {token && <SearchResult trips={trips} />}
           </div>
         </div>
-
-
       </RootLayout>
     </div>
   );

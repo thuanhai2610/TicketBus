@@ -36,7 +36,7 @@ if (token) {
     try {
       const decoded = jwtDecode(token);
       userId = decoded.userId; 
-      userAvatar = decoded.avatar
+      userAvatar =localStorage.getItem("avatar") || decoded.avatar
     } catch (error) {
       console.error("Token không hợp lệ:", error);
     }

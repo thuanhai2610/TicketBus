@@ -38,43 +38,27 @@ const TicketHistory = () => {
             console.error("Error fetching tickets:", error);
         }
     };
-    const cancelTicket = async () => {
-        const ticketId = prompt("Nhập mã vé bạn muốn hủy:");
-        if (!ticketId) return;
-    
-        // tìm vé trong danh sách tickets đã fetch
-        const ticket = tickets.find(t => t._doc.ticketId === ticketId);
-    
-        if (!ticket) {
-            alert("Không tìm thấy vé với mã đã nhập.");
-            return;
+  const cancelTicket = async () => {
+    const ticketId = prompt("Nhập mã vé bạn muốn hủy:");
+    if (!ticketId) return;
+
+    try {
+        const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/tickets/${ticketId}`, {
+            status: "Cancelled"
+        });
+           const message = data.message
+        if (data.success === false) {
+          alert(`Hủy vé không thành công! Lý do: ${message}`);        } else {
+            alert("Hủy vé thành công!");  // Thông báo khi hủy vé thành công
+            fetchTickets();  // Fetch lại danh sách vé sau khi hủy thành công
         }
-        switch (ticket.status) {
-            case "PENDING":
-                try {
-                    await axios.put(`${import.meta.env.VITE_API_URL}/tickets/${ticketId}`, {
-                        status: "Cancelled"
-                    });
-                    alert("Hủy vé thành công!");
-                    fetchTickets();
-                } catch (error) {
-                    console.error("Lỗi khi hủy vé:", error);
-                    alert("Hủy vé thất bại. Vui lòng thử lại.");
-                }
-                break;
-            case "IN_PROGRESS":
-                alert("Xe đang tiến hành. Bạn không thể hủy vé.");
-                break;
-            case "COMPLETED":
-                alert("Tuyến xe đã đến nơi. Bạn không thể hủy vé.");
-                break;
-            case "CANCELLED":
-                alert("Vé này đã bị hủy từ trước.");
-                break;
-            default:
-                alert("Trạng thái không xác định.");
-        }
-    };
+    } catch (error) {
+        console.error("Lỗi khi hủy vé:", error);
+        alert("Hủy vé thất bại. Vui lòng thử lại.");
+    }
+};
+
+
     
     const renderStatusBadge = (status) => {
         const baseClasses = "px-3 py-1 rounded-full text-xs font-semibold";

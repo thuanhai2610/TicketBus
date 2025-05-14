@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import RootLayout from "../../../layout/RootLayout";
 
+// Main slides for web
 const slides = [
     {
         title: "ĐẶT VÉ XE DỄ DÀNG",
@@ -19,16 +20,25 @@ const slides = [
         description: "Đặt vé trực tuyến qua BusTicket ngay hôm nay để nhận hàng loạt ưu đãi hấp dẫn! Chúng tôi thường xuyên cập nhật các chương trình khuyến mãi, mã giảm giá và chính sách tích điểm đổi quà giúp bạn tiết kiệm hơn trên mỗi chuyến đi. Hãy theo dõi để không bỏ lỡ những cơ hội giảm giá tốt nhất!",
         buttonText: "XEM KHUYẾN MÃI"
     },
+
+];
+
+const mobileSlides = [
     {
-        title: "DỊCH VỤ CHẤT LƯỢNG",
-        description: "Chúng tôi hợp tác với các nhà xe uy tín hàng đầu để mang đến cho bạn trải nghiệm di chuyển an toàn, thoải mái và đáng tin cậy. Với đội ngũ tài xế giàu kinh nghiệm, xe luôn được bảo dưỡng định kỳ, cùng nhiều tiện ích hiện đại như ghế massage, nước uống miễn phí, đảm bảo hành trình của bạn luôn trọn vẹn.",
-        buttonText: "TÌM HIỂU NGAY"
+        title: "ĐẶT VÉ NHANH",
+        description: "Tìm vé xe nhanh chóng và dễ dàng.",
+        buttonText: "ĐẶT NGAY"
     },
     {
-        title: "HỖ TRỢ KHÁCH HÀNG 24/7",
-        description: "Chúng tôi luôn sẵn sàng đồng hành cùng bạn mọi lúc, mọi nơi! Đội ngũ chăm sóc khách hàng chuyên nghiệp hoạt động 24/7 để hỗ trợ, giải đáp mọi thắc mắc về đặt vé, đổi vé, hay các vấn đề phát sinh trong chuyến đi. Hãy liên hệ ngay để được phục vụ nhanh chóng và chu đáo!",
-        buttonText: "LIÊN HỆ NGAY"
+        title: "TUYẾN ĐƯỜNG DỄ DÀNG",
+        description: "Chọn tuyến đường phù hợp với bạn.",
+        buttonText: "XEM TUYẾN"
     },
+    {
+        title: "ƯU ĐÃI MỚI",
+        description: "Nhận ngay các ưu đãi hấp dẫn.",
+        buttonText: "XEM ƯU ĐÃI"
+    }
 ];
 
 const Hero = () => {
@@ -37,7 +47,7 @@ const Hero = () => {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % slides.length);
+            setCurrentSlide((prev) => (prev + 1) % (window.innerWidth <= 768 ? mobileSlides.length : slides.length));
         }, 5000);
 
         return () => clearInterval(interval);
@@ -46,12 +56,14 @@ const Hero = () => {
     return (
         <motion.div
             ref={heroRef}
-            className='w-full flex-1 min-h-screen bg-[url("./assets/bg1.jpg")] bg-cover bg-no-repeat bg-top relative flex items-center justify-center'
+            className="w-full flex-1 min-h-[420px] sm:min-h-screen sm:bg-[url('./assets/bg1.jpg')] bg-[url('./assets/bg2.jpg')] bg-cover bg-no-repeat bg-top relative flex items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.85, ease: "easeInOut" }}
         >
-            <RootLayout className="absolute top-72 left-10 h-auto py-8 px-4 sm:px-6 md:px-8 flex items-start justify-start text-start flex-col gap-6">
+
+            {/* Web Version */}
+            <RootLayout className="hidden sm:flex absolute top-72 left-10 h-auto py-8 px-4 sm:px-6 md:px-8 items-start justify-start text-start flex-col gap-6">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentSlide}
@@ -78,7 +90,7 @@ const Hero = () => {
                 </AnimatePresence>
 
                 {/* Dots Indicator */}
-                <div className="flex gap-2 mt-4">
+                <div className="flex gap-2 mt-4 justify-center">
                     {slides.map((_, index) => (
                         <span
                             key={index}
@@ -88,8 +100,47 @@ const Hero = () => {
                     ))}
                 </div>
             </RootLayout>
-        </motion.div>
 
+            {/* Mobile Version */}
+            <RootLayout className="mt-10 w-[50%] absolute top-1/4 left-0 transform -translate-y-1/4 sm:hidden flex flex-col items-start justify-start gap-6">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentSlide}
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -50 }}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                        className="w-full text-start space-y-2"
+                    >
+                        <motion.h1 className="text-xs text-primaryblue font-bold uppercase tracking-wide">
+                            {mobileSlides[currentSlide].title}
+                        </motion.h1>
+
+                        <motion.p className="text-xs text-gray-400 text-start">
+                            {mobileSlides[currentSlide].description}
+                        </motion.p>
+
+                        <motion.button
+                            className=" w-24 px-3 py-1 bg-primary text-white text-xs flex font-semibold rounded-lg shadow-md shadow-slate-100 hover:bg-primaryblue hover:text-neutral-700 transition"
+                        >
+                            {mobileSlides[currentSlide].buttonText}
+                        </motion.button>
+                    </motion.div>
+                </AnimatePresence>
+
+                {/* Mobile Dots Indicator */}
+                <div className="flex gap-2 mt-1 justify-center">
+                    {mobileSlides.map((_, index) => (
+                        <span
+                            key={index}
+                            className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${index === currentSlide ? "bg-primaryblue scale-110" : "bg-gray-400"}`}
+                            onClick={() => setCurrentSlide(index)}
+                        ></span>
+                    ))}
+                </div>
+            </RootLayout>
+
+        </motion.div>
     );
 };
 

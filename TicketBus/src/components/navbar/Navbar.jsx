@@ -12,7 +12,6 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-
 import {
     Sheet,
     SheetContent,
@@ -30,7 +29,7 @@ const Navbar = () => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [avatar, setAvatar] = useState('');
-    const [isCompact, setIsCompact] = useState(false);
+    const [isCompact, setIsCompact] = useState(window.innerWidth < 1270);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -59,9 +58,6 @@ const Navbar = () => {
                         }
                     } catch (error) {
                         console.error("Lỗi lấy dữ liệu người dùng", error);
-                        setFirstName('');
-                        setLastName('');
-                        setAvatar('');
                     }
                 };
                 fetchUserData();
@@ -89,14 +85,23 @@ const Navbar = () => {
     };
 
     useEffect(() => {
+        if (isCompact) {
+            setIsVisible(true);
+            return;
+        }
+
+        let lastScroll = window.scrollY;
         const handleScroll = () => {
             const currentScroll = window.scrollY;
-            setIsVisible(currentScroll <= scrollPosition || currentScroll <= 50);
+            const scrollingUp = currentScroll < lastScroll;
+            setIsVisible(scrollingUp || currentScroll <= 50);
             setScrollPosition(currentScroll);
+            lastScroll = currentScroll;
         };
+
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [scrollPosition]);
+    }, [isCompact]);
 
     useEffect(() => {
         if (darkMode) {
@@ -110,147 +115,177 @@ const Navbar = () => {
 
     useEffect(() => {
         const handleResize = () => {
-            setIsCompact(window.innerWidth < window.screen.width * 0.6);
+            setIsCompact(window.innerWidth < 1270);
         };
-        handleResize(); // Initial check
+        handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     return (
-        <nav className={`w-full h-[10ch] fixed top-0 left-0 lg:px-24 md:px-16 sm:px-7 px-4 backdrop:blur-lg transition-transform duration-300 z-50 
-            ${isVisible ? "translate-y-0" : "-translate-y-full"} 
-            ${scrollPosition > 50 ? "bg-neutral-100 shadow-sm shadow-black dark:bg-primary dark:text-white" : "bg-neutral-100/10 dark:bg-neutral-800 dark:text-white"}`}>
-            <div className="w-full h-full flex items-center justify-between">
-                {/* Logo Section */}
-                <Link to="/" className='flex items-center text-4xl text-primary font-bold dark:text-primaryblue'>
-                    <img src={Logo} alt="Logo" className="h-12 w-12 mr-2" />
-                    Ticket<span className='text-neutral-800 dark:text-neutral-300'>Bus</span>
+        <nav className={`w-screen fixed top-0 left-0 overflow-x-hidden transition-transform duration-300 ease-in-out z-50
+            ${isVisible ? "translate-y-0" : "-translate-y-full"}
+            ${scrollPosition > 50 ? "bg-neutral-100 shadow-md shadow-black dark:bg-primary dark:text-white" : "bg-transparent dark:bg-neutral-800 dark:text-white"}`}
+            style={{ 
+                height: 'calc(96px + env(safe-area-inset-top, 0px))',
+                paddingLeft: 'env(safe-area-inset-left, 0px)',
+                paddingRight: 'env(safe-area-inset-right, 0px)',
+            }}
+        >
+            <div className="w-full h-full flex items-center justify-between mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+                {/* Logo */}
+                <Link to="/" className="flex items-center font-bold text-primary dark:text-primaryblue text-xl sm:text-2xl md:text-4xl">
+                    <img
+                        src={Logo}
+                        alt="Logo"
+                        className="h-7 w-7 md:h-12 md:w-12 mr-2 transition-all duration-200"
+                    />
+                    Ticket<span className="text-neutral-800 dark:text-neutral-300">Bus</span>
                 </Link>
 
-                {/* Navigation Links */}
+                {/* Center Navigation */}
                 <div className="flex-1 flex justify-center">
-                    {isCompact ? (
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <button className="flex items-center text-center px-4 py-2 rounded-lg transition">
-                                    <FaBars className="mr-2 h-6 w-6" />
-
-                                </button>
-                            </SheetTrigger>
-                            <SheetContent side="right">
-                                <SheetHeader>
-                                    <SheetTitle> <Link to="/" className='flex items-center text-4xl text-primary dark:text-primaryblue font-bold justify-center'>
-                                        <img src={Logo} alt="Logo" className="h-12 w-12 mr-2" />
-                                        Ticket<span className='text-neutral-800 dark:text-neutral-300'>Bus</span>
-                                    </Link></SheetTitle>
-                                </SheetHeader>
-                                <div className="flex flex-col space-y-4 mt-6 text-lg font-semibold text-center">
-                                    <Link to="/">Trang Chủ</Link>
-                                    <Link to="/offer">Chương trình khuyến mãi</Link>
-                                    <Link to="/bus-tickets">Tra cứu vé</Link>
-                                    <Link to="/blog">Tin tức</Link>
-                                    <Link to="/chatbot">Hướng Dẫn Đặt Vé</Link>
-                                </div>
-                            </SheetContent>
-                        </Sheet>
-                    ) : (
-                        <ul className="list-none flex items-center justify-center flex-wrap gap-8 text-lg text-neutral-900 dark:text-white font-semibold">
-                            <li><Link to="/" className='hover:text-primary ease-in-out duration-300'>Trang Chủ</Link></li>
-                            <li><Link to="/offer" className='hover:text-primary ease-in-out duration-300'>Chương trình khuyến mãi</Link></li>
-                            <li><Link to="/bus-tickets" className='hover:text-primary ease-in-out duration-300'>Tra cứu vé</Link></li>
-                            <li><Link to="/blog" className='hover:text-primary ease-in-out duration-300'>Tin tức</Link></li>
-                            <li><Link to="/chatbot" className='hover:text-primary ease-in-out duration-300'>Hướng Dẫn Đặt Vé</Link></li>
+                    {!isCompact && (
+                        <ul className="list-none flex items-center justify-center flex-wrap gap-6 text-lg font-semibold text-neutral-900 dark:text-white">
+                            <li><Link to="/" className="hover:text-primary transition">Trang Chủ</Link></li>
+                            <li><Link to="/offer" className="hover:text-primary transition">Khuyến Mãi</Link></li>
+                            <li><Link to="/bus-tickets" className="hover:text-primary transition">Tra cứu vé</Link></li>
+                            <li><Link to="/blog" className="hover:text-primary transition">Tin tức</Link></li>
+                            <li><Link to="/chatbot" className="hover:text-primary transition">Hướng Dẫn Đặt Vé</Link></li>
                         </ul>
                     )}
                 </div>
 
-                {/* User Actions & Dark Mode Toggle */}
-                <div className="flex items-center space-x-4">
+                {/* Right Section */}
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                    {isCompact && (
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <button
+                                    className="flex items-center justify-center p-2 rounded-lg transition hover:bg-gray-200 dark:hover:bg-gray-700 z-50"
+                                    aria-label="Open menu"
+                                >
+                                    <FaBars className="h-5 w-5 text-neutral-900 dark:text-white" />
+                                </button>
+                            </SheetTrigger>
+                            <SheetContent
+                                side="right"
+                                className="w-[80vw] max-w-[320px] bg-white dark:bg-gray-800 p-5 flex flex-col overflow-y-auto"
+                                style={{
+                                    paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))',
+                                    paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
+                                    paddingLeft: 'env(safe-area-inset-left, 0px)',
+                                    paddingRight: 'env(safe-area-inset-right, 0px)',
+                                }}
+                            >
+                                <SheetHeader>
+                                    <SheetTitle>
+                                        <Link to="/" className="flex items-center text-2xl font-bold justify-center text-primary dark:text-primaryblue">
+                                            <img src={Logo} alt="Logo" className="h-8 w-8 mr-2" />
+                                            Ticket<span className="text-neutral-800 dark:text-neutral-300">Bus</span>
+                                        </Link>
+                                    </SheetTitle>
+                                </SheetHeader>
+                                <div className="flex flex-col space-y-5 mt-6 text-base font-semibold text-center">
+                                    <Link
+                                        to="/"
+                                        className="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition touch-manipulation"
+                                    >
+                                        Trang Chủ
+                                    </Link>
+                                    <Link
+                                        to="/offer"
+                                        className="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition touch-manipulation"
+                                    >
+                                        Khuyến Mãi
+                                    </Link>
+                                    <Link
+                                        to="/bus-tickets"
+                                        className="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition touch-manipulation"
+                                    >
+                                        Tra cứu vé
+                                    </Link>
+                                    <Link
+                                        to="/blog"
+                                        className="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition touch-manipulation"
+                                    >
+                                        Tin tức
+                                    </Link>
+                                    <Link
+                                        to="/chatbot"
+                                        className="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition touch-manipulation"
+                                    >
+                                        Hướng Dẫn Đặt Vé
+                                    </Link>
+                                </div>
+                            </SheetContent>
+                        </Sheet>
+                    )}
                     {isLoggedIn ? (
                         <DropdownMenu>
-                            <DropdownMenuTrigger className="flex items-center space-x-3 cursor-pointer">
+                            <DropdownMenuTrigger className="flex items-center space-x-1 cursor-pointer">
                                 {avatar ? (
                                     <img
                                         src={avatar}
                                         alt="User Avatar"
-                                        className="w-10 h-10 rounded-full border border-primary object-cover"
-                                        onError={(e) => {
-                                            e.target.style.display = 'none';
-                                            const parent = e.target.parentNode;
-                                            if (parent) {
-                                                const icon = document.createElement('span');
-                                                icon.innerHTML = '<svg class="w-10 h-10 text-gray-500 dark:text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>';
-                                                parent.appendChild(icon);
-                                            }
-                                        }}
+                                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-primary object-cover"
+                                        onError={(e) => (e.target.style.display = 'none')}
                                     />
                                 ) : (
-                                    <FaUserCircle className="w-10 h-10 text-gray-500 dark:text-white" />
+                                    <FaUserCircle className="w-8 h-8 sm:w-9 sm:h-9 text-gray-500 dark:text-white" />
                                 )}
-                                  <span className="text-black dark:text-white font-medium">
-                                {firstName} {lastName}
-                            </span>
+                                <span className="hidden sm:inline text-base text-black dark:text-white font-medium">
+                                    {firstName} {lastName}
+                                </span>
                             </DropdownMenuTrigger>
-
-                          
-
-                            <DropdownMenuContent className="bg-slate-200 dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-lg p-2 w-40 ">
-                 
+                            <DropdownMenuContent className="bg-slate-200 dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-lg p-2 w-44">
                                 <DropdownMenuItem disabled className="opacity-100 font-semibold cursor-default">
                                     {username}
                                 </DropdownMenuItem>
-
-                
-                                <DropdownMenuSeparator className="my-2 border-t border-gray-300 dark:border-gray-600" />
-
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem
                                     onClick={handleGoToProfile}
                                     className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                                 >
-                                    <span className="text-xs">👤</span> Tài Khoản
+                                    👤 Tài Khoản
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => navigate('/user/profile/history')}
                                     className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                                 >
-                                    <span className="text-xs">🔄</span> Lịch sử mua vé
+                                    🔄 Lịch sử mua vé
                                 </DropdownMenuItem>
-                                {/* <DropdownMenuItem
-                                    onClick={() => navigate('/user/profile/support')}
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                                >
-                                    <span className="text-xs">🔄</span> Hỗ trợ
-                                </DropdownMenuItem>
-                           */}
-                                <DropdownMenuSeparator className="my-2 border-t border-gray-300 dark:border-gray-600" />
-
-                          
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem
                                     onClick={handleLogout}
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-red-600 dark:text-red-400"
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400 cursor-pointer"
                                 >
-                                     <MdOutlineLogout  className="h-6 w-6" />
-                                    Đăng xuất
+                                    <MdOutlineLogout className="h-5 w-5 mr-1" /> Đăng xuất
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-
-
                     ) : (
                         <>
-                            <Link to="/login" className="text-neutral-950 text-base font-normal hover:text-primaryblue transition duration-300 dark:text-neutral-300">
+                            <Link
+                                to="/login"
+                                className="text-sm text-neutral-950 dark:text-neutral-300 hover:text-primaryblue transition"
+                            >
                                 Đăng nhập
                             </Link>
-                            <Link to="/register" className="px-4 py-1 border border-neutral-50 text-neutral-950 text-base font-normal rounded-full hover:bg-primary hover:text-neutral-50 transition duration-300 dark:text-neutral-300">
+                            <Link
+                                to="/register"
+                                className="px-2 py-1 border border-neutral-50 text-sm text-neutral-950 dark:text-neutral-300 rounded-full hover:bg-primary hover:text-white transition"
+                            >
                                 Đăng ký
                             </Link>
                         </>
                     )}
-
-                    {/* Dark Mode Toggle Button */}
-                    <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                        {darkMode ? <FaSun className="text-yellow-400" /> : <FaMoon className="text-gray-700 dark:text-white" />}
+                    <button
+                        onClick={() => setDarkMode(!darkMode)}
+                        className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                        aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                    >
+                        {darkMode ? <FaSun className="text-yellow-400 h-4 w-4" /> : <FaMoon className="text-gray-700 dark:text-white h-4 w-4" />}
                     </button>
                 </div>
             </div>
