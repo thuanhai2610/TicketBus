@@ -126,7 +126,7 @@ const Navbar = () => {
         <nav className={`w-screen fixed top-0 left-0 overflow-x-hidden transition-transform duration-300 ease-in-out z-50
             ${isVisible ? "translate-y-0" : "-translate-y-full"}
             ${scrollPosition > 50 ? "bg-neutral-100 shadow-md shadow-black dark:bg-primary dark:text-white" : "bg-transparent dark:bg-neutral-800 dark:text-white"}`}
-            style={{ 
+            style={{
                 height: 'calc(96px + env(safe-area-inset-top, 0px))',
                 paddingLeft: 'env(safe-area-inset-left, 0px)',
                 paddingRight: 'env(safe-area-inset-right, 0px)',
@@ -221,65 +221,108 @@ const Navbar = () => {
                             </SheetContent>
                         </Sheet>
                     )}
-                    {isLoggedIn ? (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger className="flex items-center space-x-1 cursor-pointer">
-                                {avatar ? (
-                                    <img
-                                        src={avatar}
-                                        alt="User Avatar"
-                                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-primary object-cover"
-                                        onError={(e) => (e.target.style.display = 'none')}
-                                    />
-                                ) : (
-                                    <FaUserCircle className="w-8 h-8 sm:w-9 sm:h-9 text-gray-500 dark:text-white" />
-                                )}
-                                <span className="hidden sm:inline text-base text-black dark:text-white font-medium">
-                                    {firstName} {lastName}
-                                </span>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="bg-slate-200 dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-lg p-2 w-44">
-                                <DropdownMenuItem disabled className="opacity-100 font-semibold cursor-default">
-                                    {username}
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    onClick={handleGoToProfile}
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                    {/* Desktop view (>= sm) */}
+                    <div className="hidden sm:flex items-center gap-3">
+                        {isLoggedIn ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="flex items-center gap-2 cursor-pointer">
+                                    {avatar ? (
+                                        <img
+                                            src={avatar}
+                                            alt="User Avatar"
+                                            className="w-10 h-10 rounded-full border border-primary object-cover"
+                                            onError={(e) => (e.target.style.display = 'none')}
+                                        />
+                                    ) : (
+                                        <FaUserCircle className="w-9 h-9 text-gray-500 dark:text-white" />
+                                    )}
+                                    <span className="text-base text-black dark:text-white font-medium">
+                                        {firstName} {lastName}
+                                    </span>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="bg-slate-200 dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-lg p-2 w-44">
+                                    <DropdownMenuItem disabled className="opacity-100 font-semibold cursor-default truncate">
+                                        {username}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={handleGoToProfile}>👤 Tài Khoản</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => navigate('/user/profile/history')}>🔄 Lịch sử mua vé</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400">
+                                        <MdOutlineLogout className="h-5 w-5 mr-1" /> Đăng xuất
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : (
+                            <>
+                                <Link
+                                    to="/login"
+                                    className="text-base text-neutral-950 dark:text-neutral-300 hover:text-primaryblue transition"
                                 >
-                                    👤 Tài Khoản
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => navigate('/user/profile/history')}
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                    Đăng nhập
+                                </Link>
+                                <Link
+                                    to="/register"
+                                    className="px-3 py-1 border border-neutral-200 dark:border-neutral-700 text-base text-neutral-950 dark:text-neutral-300 rounded-full hover:bg-primary hover:text-white transition"
                                 >
-                                    🔄 Lịch sử mua vé
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    onClick={handleLogout}
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400 cursor-pointer"
-                                >
-                                    <MdOutlineLogout className="h-5 w-5 mr-1" /> Đăng xuất
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    ) : (
-                        <>
-                            <Link
-                                to="/login"
-                                className="text-sm text-neutral-950 dark:text-neutral-300 hover:text-primaryblue transition"
-                            >
-                                Đăng nhập
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="px-2 py-1 border border-neutral-50 text-sm text-neutral-950 dark:text-neutral-300 rounded-full hover:bg-primary hover:text-white transition"
-                            >
-                                Đăng ký
-                            </Link>
-                        </>
-                    )}
+                                    Đăng ký
+                                </Link>
+                            </>
+                        )}
+                    </div>
+                    {/* Mobile view (< sm) */}
+                    <div className="flex sm:hidden items-center gap-3">
+                        {isLoggedIn ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="cursor-pointer">
+                                    {avatar ? (
+                                        <img
+                                            src={avatar}
+                                            alt="User Avatar"
+                                            className="w-8 h-8 rounded-full border border-primary object-cover"
+                                            onError={(e) => (e.target.style.display = 'none')}
+                                        />
+                                    ) : (
+                                        <FaUserCircle className="w-8 h-8 text-gray-500 dark:text-white" />
+                                    )}
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="bg-slate-200 dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-lg p-2 w-44">
+                                    <DropdownMenuItem disabled className="opacity-100 font-semibold cursor-default truncate">
+                                        {username}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={handleGoToProfile}>👤 Tài Khoản</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => navigate('/user/profile/history')}>🔄 Lịch sử</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400">
+                                        <MdOutlineLogout className="h-5 w-5 mr-1" /> Đăng xuất
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : (
+                            <>
+                                <div className="flex items-center space-x-1 text-xs">
+                                    <Link
+                                        to="/login"
+                                        className="text-neutral-950 dark:text-neutral-300 hover:text-primary hover:underline transition"
+                                    >
+                                        Đăng nhập
+                                    </Link>
+                                    <span className="text-neutral-500 dark:text-neutral-400 select-none">/</span>
+                                    <Link
+                                        to="/register"
+                                        className="py-1 text-neutral-950 dark:text-neutral-300 rounded-full hover:text-primary hover:underline transition"
+                                    >
+                                        Đăng ký
+                                    </Link>
+                                </div>
+
+                            </>
+                        )}
+                    </div>
+
+
+
                     <button
                         onClick={() => setDarkMode(!darkMode)}
                         className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
