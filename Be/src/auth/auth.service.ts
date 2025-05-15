@@ -103,9 +103,9 @@ export class AuthService {
       const existringUserEmail = await this.usersService.findByEmail(email);
       const existUsername = await this.usersService.findOne(username);
       if (existringUserEmail) {
-        throw new BadRequestException('Đã có email này rồi');
+        throw new BadRequestException('Email này đã được sử dụng');
       }   if (existUsername) {
-        throw new BadRequestException('Đã có username này rồi');
+        throw new BadRequestException('Username này đã được sử dụng');
       } 
       if (!email) {
         throw new BadRequestException('Bắt buộc phải có Email');
