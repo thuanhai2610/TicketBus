@@ -28,7 +28,7 @@ const SectionWrapper = ({ children }) => {
 
 const Home = () => {
   return (
-    <div className="space-y-16 w-full min-h-screen pb-16">
+    <div className="space-y-16 w-full h-auto pb-16">
       {/* Hero */}
       <SectionWrapper>
         <Hero />

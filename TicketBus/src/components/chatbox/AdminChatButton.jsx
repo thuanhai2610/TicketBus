@@ -15,16 +15,13 @@ const AdminChatButton = () => {
     <div>
       {/* Support Logo Button */}
       <img
-        src={logoChatBox} // Replace with the correct image path
+        src={logoChatBox}
         alt="Support Agent"
-        className={`fixed bottom-6 right-6 z-50 w-24 h-24 cursor-pointer transition-transform duration-200 ${isChatOpen ? "scale-0" : "scale-100 animate-subtleBounce"
-          }`} // Transition and animation for the image
-        onClick={toggleChat} // Add click functionality to toggle chat
+        className={`fixed bottom-6 right-6 z-50 cursor-pointer transition-transform duration-200  w-16 h-16 sm:w-24 sm:h-24 ${isChatOpen ? "scale-0" : "scale-100 animate-subtleBounce"}`}
+        onClick={toggleChat}
         aria-label="Mở hỗ trợ trò chuyện"
         title="Hỗ trợ trò chuyện"
       />
-
-
 
       {/* ChatBox */}
       <div
