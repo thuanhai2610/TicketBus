@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import { FaPaperPlane, FaSmile } from "react-icons/fa";
@@ -33,7 +34,7 @@ const ChatBox = () => {
   }
   const getAvatarUrl = (avatar) => {
     if (!avatar) return defaultAvatar;
-    return avatar.startsWith("http") ? avatar : `${API_URL}${avatar}`;
+    return avatar.startsWith("http") ? avatar : `${import.meta.env.VITE_API_URL}${avatar}`;
   };
   useEffect(() => {
     if (chatContainerRef.current) {
