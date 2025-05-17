@@ -244,7 +244,7 @@ const Navbar = () => {
         ${isVisible ? "translate-y-0" : "-translate-y-full"}
         ${scrollPosition > 50 ? "bg-gray-50 shadow-md dark:bg-gray-900" : "bg-transparent dark:bg-gray-900"}`}
       style={{
-        height: "calc(80px + env(safe-area-inset-top, 0px))",
+        height: "calc(96px + env(safe-area-inset-top, 0px))",
         paddingLeft: "env(safe-area-inset-left, 0px)",
         paddingRight: "env(safe-area-inset-right, 0px)",
       }}

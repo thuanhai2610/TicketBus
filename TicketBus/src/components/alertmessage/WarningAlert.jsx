@@ -13,7 +13,7 @@ const WarningAlert = ({message}) => {
         return null;
     }
   return (
-    <div className='flex items-center justify-between p4 text-sm text-yellow-600 bg-yellow-100 rounded-xl' role='alert'> 
+    <div className='flex items-center justify-between p-4 text-sm text-yellow-600 bg-yellow-100 rounded-xl' role='alert'> 
       <span>{message}</span>
 
       <button
