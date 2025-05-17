@@ -1,83 +1,69 @@
 /* eslint-disable no-unused-vars */
-import React from 'react'
-import { FaPhone } from 'react-icons/fa'
+import React from 'react';
+import { FaPhone } from 'react-icons/fa';
 
-const CompanyInvoice = ( {totalPrice,
+const CompanyInvoice = ({
+    ticketId,
+    bookedAt,
     passengerName,
-    totalSeats,
-    totalPassengers,
     departurePoint,
     destinationPoint,
     departureTime,
-    bookedAt,
- finalAmount,
-ticketId}) => { 
+    totalSeats,
+    totalPassengers,
+    finalAmount,
+}) => {
     const formatTime = (dateString) => {
         const date = new Date(dateString);
         const day = String(date.getUTCDate()).padStart(2, '0');
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
         const year = date.getUTCFullYear();
         const hours = String(date.getUTCHours()).padStart(2, '0');
         const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-      
         return `${day}/${month}/${year} - ${hours}:${minutes}`;
-      };
+    };
 
-      const formatDateVerbose = (isoString) => {
+    const formatDateVerbose = (isoString) => {
         if (!isoString) return '';
         const date = new Date(isoString);
         return `Ngày ${date.getDate().toString().padStart(2, '0')} tháng ${date.getMonth() + 1} năm ${date.getFullYear()}`;
-      };
-      
-  return (
-    <div className='w-full col-span-1 border-dashed border-l-2 relative'>
-        <div className="w-full bg-primary px-4 py-5 rounded-tr-3xl">
-            <h1 className="text-2xl text-neutral-50 font-bold text-center">
-                Bus Ticket 
-            </h1>
-        </div>
-        <div className="w-full px-4 py-7 space-y-2">
-            <p className="text-sm text-neutral-600 font-normal">
-                Hóa Đơn : {ticketId}
-            </p>
-            <p className="text-sm text-neutral-600 font-normal">
-                Ngày Đặt : {bookedAt ? formatDateVerbose(bookedAt) : ''}
-            </p>
-            <p className="text-sm text-neutral-600 font-normal">
-                Tên Khách Hàng: {passengerName}
-            </p>
-            <p className="text-sm text-neutral-600 font-normal">
-                Điểm Đi : {departurePoint} <span className="text-xs"></span>
-            </p>
-            <p className="text-sm text-neutral-600 font-normal">
-                Điểm Đến : {destinationPoint} <span className="text-xs"></span>
-            </p>
-            <p className="text-sm text-neutral-600 font-normal">
-                Giờ Khởi Hành : { departureTime ? formatTime(departureTime) : 'Unknown Time'}
-            </p>
-            <p className="text-sm text-neutral-600 font-normal">
-                Ghế : {Array.isArray(totalSeats) ? totalSeats.join(', ') : totalSeats}
-            </p>
-            <p className="text-sm text-neutral-600 font-normal">
-                Tổng Hành Khách: {totalPassengers}
-            </p>
-            <p className="text-sm text-neutral-600 font-normal">
-                Tổng Tiền : {Number(finalAmount).toLocaleString("vi-VN")} VNĐ
-            </p>
-        </div>
-      
-      {/* Right bottom section */}
-       <div className="w-full bg-primary absolute bottom-0 left-0 rounded-br-3xl flex items-center justify-center px-5 py-1.5">
-              <div className="flex items-center gap-x-2">
-                  <FaPhone  className='w-3 h-3 text-neutral-100'/>
-                  <p className="text-xs text-neutral-100 font-light">
-                 +84 8888-8888 , +84 9999-9999
-              </p>
-              </div>
-              
-            </div>
-    </div>
-  )
-}
+    };
 
-export default CompanyInvoice
+    return (
+        <div className="w-full col-span-1 border-dashed border-l-2 relative flex flex-col ">
+            {/* Header */}
+            <div className="w-full bg-primary px-2 py-5 rounded-tr-3xl">
+                <h1 className="text-2xl text-neutral-50 font-bold text-center uppercase">Bus Ticket</h1>
+            </div>
+
+            {/* Main content */}
+            <div className="flex-1 w-full px-4 py-6 space-y-2 text-sm text-neutral-600 font-normal">
+                <p>Mã Vé: <span className="font-semibold">{ticketId}</span></p>
+                
+                <p>Tên Khách Hàng: <span className="font-semibold">{passengerName}</span></p>
+
+                <hr className="border-dashed border-t border-neutral-300 my-2" />
+
+                <p>Điểm Đi: <span className="font-semibold">{departurePoint}</span></p>
+                <p>Điểm Đến: <span className="font-semibold">{destinationPoint}</span></p>
+                <p>Giờ Khởi Hành: <span className="font-semibold">{departureTime ? formatTime(departureTime) : 'Unknown Time'}</span></p>
+
+                <hr className="border-dashed border-t border-neutral-300 my-2" />
+
+                <p>Ghế: <span className="font-semibold">{Array.isArray(totalSeats) ? totalSeats.join(', ') : totalSeats}</span></p>
+             
+                <p className="pb-4">Tổng Tiền: <span className="font-bold text-base">{Number(finalAmount).toLocaleString("vi-VN")} VNĐ</span></p>
+            </div>
+
+            {/* Footer */}
+            <div className="w-full bg-primary rounded-br-3xl flex items-center justify-center px-5 py-2">
+                <div className="flex items-center gap-x-2 text-xs text-neutral-100 font-light">
+                    <FaPhone className="w-3 h-3" />
+                    <span>+84 8888-8888 , +84 9999-9999</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default CompanyInvoice;

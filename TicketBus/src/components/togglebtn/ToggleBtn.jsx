@@ -29,7 +29,7 @@ const ToggleBtn = ({ buttonText , buttonTextHidden , children}) => {
         <button
             onClick={toggleVisibility}
             className={`w-fit px-4 py-2 border-2 border-primary 
-                ${!isVisible ? "bg-primary text-neutral-50 " : "border-primary bg-transparent text-neutral-800 dark:text-neutral-50"} rounded-lg transition`}
+                ${!isVisible ? "bg-primary text-neutral-50 dark:border-neutral-50 " : "border-primary bg-transparent text-neutral-800 dark:text-neutral-50 dark:border-neutral-50"} rounded-lg transition`}
         >
             {isVisible ? buttonTextHidden : buttonText}
         </button>
