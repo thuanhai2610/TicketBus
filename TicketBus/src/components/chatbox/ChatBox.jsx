@@ -4,15 +4,13 @@ import { io } from "socket.io-client";
 import { FaPaperPlane, FaSmile } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
 import { jwtDecode } from "jwt-decode";
-
+import defaultavt from "../../assets/defaultavt.png"
 const ADMIN_ID = import.meta.env.VITE_ADMIN_ID;
 
 const socket = io(`${import.meta.env.VITE_API_URL}`, {
   withCredentials: true,
   autoConnect: false,
 });
-
-
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -22,7 +20,7 @@ const ChatBox = () => {
   let userAvatar = null;
   const username = localStorage.getItem("username") || "Bạn";
   const token = localStorage.getItem("token");
- 
+
   if (token) {
     try {
       const decoded = jwtDecode(token);
@@ -33,7 +31,7 @@ const ChatBox = () => {
     }
   }
   const getAvatarUrl = (avatar) => {
-    if (!avatar) return defaultAvatar;
+    if (!avatar) return defaultavt;
     return avatar.startsWith("http") ? avatar : `${import.meta.env.VITE_API_URL}${avatar}`;
   };
   useEffect(() => {

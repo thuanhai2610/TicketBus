@@ -20,7 +20,6 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard'; // You'll need to create this guard
 import storage from 'src/common/cloudinary-storage';
 
-
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UsersService) {}
@@ -48,7 +47,7 @@ export class UserController {
       phone: user.phone || '',
       dob: user.dob || '',
       gender: user.gender || '',
-      avatar: user.avatar || 'https://via.placeholder.com/150', // Default avatar
+      avatar: user.avatar , // Default avatar
     };
   }
 

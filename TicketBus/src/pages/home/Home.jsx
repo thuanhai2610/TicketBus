@@ -13,7 +13,6 @@ const SectionWrapper = ({ children }) => {
     triggerOnce: true, // Run animation only once
     threshold: 0.2, // Trigger animation when 20% of the element is in view
   })
-
   return (
     <motion.div
       ref={ref}

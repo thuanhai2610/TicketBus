@@ -20,7 +20,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
+import defaultavt from "../../assets/defaultavt.png";
 const Navbar = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
@@ -42,6 +42,7 @@ const Navbar = () => {
 
   // Handle resize for compact/mobile toggle
   useEffect(() => {
+     const token = localStorage.getItem("token");
     const handleResize = () => {
       setIsCompact(window.innerWidth < 1270);
       setIsMobile(window.innerWidth < 640);
@@ -67,21 +68,9 @@ const Navbar = () => {
             });
             setFirstName(response.data.firstName || "");
             setLastName(response.data.lastName || "");
-            if (response.data.avatar) {
-              if (response.data.avatar.startsWith("http")) {
-                setAvatar(response.data.avatar);
-              } else {
-                setAvatar(`${import.meta.env.VITE_API_URL}${response.data.avatar}`);
-              }
-            } else {
-              setAvatar("");
-            }
+             const avatar = response.data.avatar ? response.data.avatar : defaultavt;
+              setAvatar(avatar);
           } catch (error) {
-            setNotificationModal({
-              show: true,
-              message: "Không tải được thông tin người dùng! Vui lòng thử lại.",
-              type: "error",
-            });
           }
         };
         fetchUserData();
@@ -309,7 +298,7 @@ const Navbar = () => {
                 <DropdownMenuTrigger className="flex items-center gap-2 cursor-pointer">
                   {avatar ? (
                     <img
-                      src={avatar}
+                      src={avatar || localStorage.getItem(avatar)}
                       alt="User Avatar"
                       className={`rounded-full border border-primary object-cover ${
                         isMobile ? "w-8 h-8" : "w-9 h-9"
@@ -435,7 +424,7 @@ const Navbar = () => {
                 <DropdownMenuTrigger className="cursor-pointer">
                   {avatar ? (
                     <img
-                      src={avatar}
+                      src={avatar || localStorage.getItem(avatar)}
                       alt="User Avatar"
                       className="w-8 h-8 rounded-full border border-primary object-cover"
                       onError={(e) => (e.target.style.display = "none")}
