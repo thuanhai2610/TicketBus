@@ -5,7 +5,7 @@ import { FaRegEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import bgLogin from "../../assets/bgLogin.jpg";
-
+import defaultavt from "../../assets/defaultavt.png"
 // Tách ra component LoginForm để tránh tạo lại khi render lại
 function LoginForm({
   username,
